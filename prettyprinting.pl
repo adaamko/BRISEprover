@@ -160,8 +160,11 @@ pp_Op(latex,Op) -->
 pp_norm(screen,Norm) --> [Norm].
 pp_norm(html,Norm) --> [Norm].
 pp_norm(latex,Norm) -->
-    {replace_underscores(Norm,Norm_new)},
+    {atom(Norm),replace_underscores(Norm,Norm_new)},
     ['\\texttt{'],[Norm_new],['}'].
+pp_norm(latex,bb(A)) -->
+    {replace_underscores(A,A_new)},
+    ['\\texttt{bb('],[A_new],[')}'].
 
 /* pp_type
 */
@@ -683,9 +686,11 @@ replace_underscores(['_'|List]) --> ['\\_'], replace_underscores(List).
 replace_underscores([X|List]) --> [X],replace_underscores(List).
 */
 replace_underscores(Atom_in,Atom_out) :-
+%    term_string(Term_in,Atom_in),
     name(Atom_in,List_in),
     replace_underscores_aux(List_in,List_out),
     name(Atom_out,List_out).
+%    term_string(Term_out,Atom_out).
 
 replace_underscores_aux([],[]).
 replace_underscores_aux([95|Tail_in],[92,95|Tail_out]) :-
@@ -693,3 +698,7 @@ replace_underscores_aux([95|Tail_in],[92,95|Tail_out]) :-
 replace_underscores_aux([X|Tail_in],[X|Tail_out]) :-
     \+ X == 95,
     replace_underscores_aux(Tail_in,Tail_out).
+
+
+%%% TODO: pretty printing of bb(bla) and b(blub) etc
+%%% perhaps even max_measure(.,.,.)

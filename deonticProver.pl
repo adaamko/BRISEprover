@@ -37,12 +37,17 @@ Copyright 2020 Bjoern Lellmann
 */
 variable_with_arguments(Op) :-
     member(Op,[height, width, max_height, max_width, min_height,
-	       min_width, measure, max_measure, min_measure, area]).
+	       min_width, measure, max_measure, min_measure, area,
+	       plangebiet, bauland, grundflaeche, widmung, bauklasse,
+	       bauweise, bb, baulinie, baufluchtlinie, grenzlinie]).
 
 /* load parts for prettyprinting and for preprocessing
 */
 :- ensure_loaded([prettyprinting]).
 :- ensure_loaded([preprocessing]).
+/* load example formalisation
+*/
+:- ensure_loaded([pd7602]).
 
 /* DATA STRUCTURE
    We're working on sequents.
@@ -117,8 +122,18 @@ Input:
 */
 prove_online(Fml, Facts, D_Assumptions, Sup_Relation, Operators,
 	     Inclusions, Conflicts, P_list, derivability, Filename) :-
+    \+ member(test,Facts),
     prove_with_filename(Fml, Operators, Inclusions, Conflicts, P_list,
 			Facts, D_Assumptions, Sup_Relation, Filename).
+% for testing with the plandokumente
+prove_online(Fml, [test|Facts], D_Assumptions, Sup_Relation, Operators,
+	     Inclusions, Conflicts, P_list, derivability, Filename) :-
+    facts(plangebiet(7602),L),
+    append(Facts,L,Facts1),
+    obligations_plangebiet(plangebiet(7602),O),
+    append(O,D_Assumptions,D_Assumptions1),
+    prove_with_filename(Fml, Operators, Inclusions, Conflicts, P_list,
+			Facts1, D_Assumptions1, Sup_Relation, Filename).
 prove_online(Fml, Facts, D_Assumptions, Sup_Relation, Operators,
 	     Inclusions, Conflicts, P_list, compliance, Filename) :-
     include_type(obl,Operators,Obligations),

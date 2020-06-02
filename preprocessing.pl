@@ -100,6 +100,9 @@ added_at(->(A,B), ->(C,D)) :- added_at(A,C), added_at(B,D).
 added_at(modal(Op,A,B),modal(Op,C,D)) :- added_at(A,C), added_at(B,D).
 added_at(Norm:modal(Op,A,B),Norm:modal(Op,C,D)) :- added_at(A,C), added_at(B,D).
 added_at(A,at(A)) :- atom(A).
+added_at(A,at(A)) :-
+    A =.. [Var|_],
+    variable_with_arguments(Var).
 added_at(A beats B, C beats D) :- added_at(A,C), added_at(B,D).
 added_at(seq(L,N), seq(Lat,Nat)) :-
     maplist(added_at,L,Lat),
@@ -124,10 +127,12 @@ modalised(Complex,Complex1) :-
     member(Op, [neg,and,or,->]),
     maplist(modalised,Args,Args1),
     Complex1 =.. [Op|Args1].
+/*
 modalised(Complex,Complex1) :-
     Complex =.. [per,Op|Args],
     maplist(modalised,Args,Args1),
     Complex1 =.. [modal,per(Op)|Args1].
+*/
 modalised(Complex,Complex1) :-
     Complex =.. [Op|Args],
     \+ member(Op, [at,neg,:,and,or,->]),
