@@ -121,21 +121,21 @@ Input:
    predicate to be called from the web interface
 */
 prove_online(Fml, Facts, D_Assumptions, Sup_Relation, Operators,
-	     Inclusions, Conflicts, P_list, derivability, Filename) :-
+	     Inclusions, Conflicts, P_list, [], derivability, Filename) :-
     \+ member(test,Facts),
     prove_with_filename(Fml, Operators, Inclusions, Conflicts, P_list,
 			Facts, D_Assumptions, Sup_Relation, Filename).
 % for testing with the plandokumente
-prove_online(Fml, [test|Facts], D_Assumptions, Sup_Relation, Operators,
-	     Inclusions, Conflicts, P_list, derivability, Filename) :-
+prove_online(Fml, Facts, D_Assumptions, Sup_Relation, Operators,
+	     Inclusions, Conflicts, P_list, [pd(7602)], derivability, Filename) :-
     facts(plangebiet(7602),L),
     append(Facts,L,Facts1),
     obligations_plangebiet(plangebiet(7602),O),
     append(O,D_Assumptions,D_Assumptions1),
-    prove_with_filename(Fml, Operators, Inclusions, Conflicts, P_list,
+    prove_with_filename(Fml, [(obl,obl), (for,for), (per,obl)|Operators], Inclusions, [confl(obl,obl), confl(obl,per), confl(obl,for), confl(for,for), confl(for,per)|Conflicts], P_list,
 			Facts1, D_Assumptions1, Sup_Relation, Filename).
 prove_online(Fml, Facts, D_Assumptions, Sup_Relation, Operators,
-	     Inclusions, Conflicts, P_list, compliance, Filename) :-
+	     Inclusions, Conflicts, P_list, _, compliance, Filename) :-
     include_type(obl,Operators,Obligations),
     include_type(for,Operators,Prohibitions),
     preprocess(asmp(Facts, D_Assumptions, ops(Operators, Inclusions
