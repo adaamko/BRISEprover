@@ -1,9 +1,9 @@
 /*
 Copyright 2020 Bjoern Lellmann
 
-    This file is part of deonticProver 2.1.
+    This file is part of BRISEprover.
 
-    deonticProver 2.1 is free software: you can redistribute it and/or modify
+    BRISEprover is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
@@ -13,7 +13,7 @@ Copyright 2020 Bjoern Lellmann
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with deonticProver 2.1.  If not, see <http://www.gnu.org/licenses/>.
+    along with BRISEprover.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /* operator definitions etc */
@@ -47,7 +47,9 @@ variable_with_arguments(Op) :-
 :- ensure_loaded([preprocessing]).
 /* load example formalisation
 */
+:- ensure_loaded([assumptionhandler]).
 :- ensure_loaded([pd7602]).
+%:- ensure_loaded([pd7601]).
 
 /* DATA STRUCTURE
    We're working on sequents.
@@ -127,13 +129,15 @@ prove_online(Fml, Facts, D_Assumptions, Sup_Relation, Operators,
 			Facts, D_Assumptions, Sup_Relation, Filename).
 % for testing with the plandokumente
 prove_online(Fml, Facts, D_Assumptions, Sup_Relation, Operators,
-	     Inclusions, Conflicts, P_list, [pd(7602)], derivability, Filename) :-
-    facts(plangebiet(7602),L),
-    append(Facts,L,Facts1),
-    obligations_plangebiet(plangebiet(7602),O),
-    append(O,D_Assumptions,D_Assumptions1),
+	     Inclusions, Conflicts, P_list, Ex_list, derivability, Filename) :-
+    phrase(added_facts(Facts,Ex_list),New_Facts),
+%    facts(plangebiet(7602),L),
+%    append(Facts,L,Facts1),
+    phrase(added_assumptions(D_Assumptions,Ex_list),New_D_Assumptions),
+%    obligations_plangebiet(plangebiet(7602),O),
+%    append(O,D_Assumptions,D_Assumptions1),
     prove_with_filename(Fml, [(obl,obl), (for,for), (per,obl)|Operators], Inclusions, [confl(obl,obl), confl(obl,per), confl(obl,for), confl(for,for), confl(for,per)|Conflicts], P_list,
-			Facts1, D_Assumptions1, Sup_Relation, Filename).
+			New_Facts, New_D_Assumptions, Sup_Relation, Filename).
 prove_online(Fml, Facts, D_Assumptions, Sup_Relation, Operators,
 	     Inclusions, Conflicts, P_list, _, compliance, Filename) :-
     include_type(obl,Operators,Obligations),
