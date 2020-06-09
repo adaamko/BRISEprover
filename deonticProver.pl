@@ -118,7 +118,7 @@ Input:
 %[(obl,obl)], [confl(obl,obl)], [], [], derivability,
 %'test.tex'). 
 %@ true .
- 
+
 /* prove_online
    predicate to be called from the web interface
 */
@@ -200,7 +200,7 @@ prove_with_filename(Fml, Operators, Op_Inclusions, Op_Conflicts,
 					      , Op_Conflicts, Op_P),
 		    Sup_Relation), Ass_Processed,_),
     modalised(Fml,Fml1),
-    added_at(Fml1,Fml2),
+    added_at(Fml1,Fml2),!, % cut for efficiency
     (prove(Ass_Processed, seq([],[Fml2]), Derivation)
     ;
     nonderivable_statement(Derivation)),!,
@@ -214,6 +214,12 @@ prove_with_filename(Fml, Operators, Op_Inclusions, Op_Conflicts,
 /* prove_test
    to test the prove predicate
 */
+/* problematic example:
+for(staffelgeschoss, ((plangebiet(7602) and an_oeffentlicher_verkehrsflaeche) and an_strassenfront) and bb(76023))
+*/
+prove_test(Fml) :-
+    prove_online(Fml, [], [], [], [], [], [], [], [plangebiet(7602)], derivability, 'test.tex'),!.
+
 /*prove_test(Fml) :-
     prove(asmp([],[modal(obl,at(a) and at(c),at(b)), modal(obl, neg at(a),at(c)),
 		   modal(obl,at(a) and at(d), at(c) and at(d))],
@@ -271,20 +277,20 @@ prove_test2(Fml,Dass) :-
 /* initial sequents */
 prove(_, seq(Gamma, Delta),
       node(botL, seq([false],[]), seq(Gamma,Delta),[])) :-
-    member(false, Gamma).
+    member(false, Gamma),!. % green cut for efficiency
 prove(_, seq(Gamma, Delta),
       node(topR, seq([],[true]), seq(Gamma,Delta),[])) :-
-    member(true, Delta).
+    member(true, Delta),!. % green cut for efficiency
 prove(_, seq(Gamma, Delta),
       node(init, seq([F],[F]), seq(Gamma,Delta),[])) :-
-    member(F, Gamma), member(F, Delta).
+    member(F, Gamma), member(F, Delta),!. % green cut for efficiency
 
 /* factual assumptions */
 prove(asmp(Facts,_,_,_), seq(Gamma,Delta), node(fact, seq(Sigma, Pi),
 						seq(Gamma, Delta),[])) :-
     member(seq(Sigma,Pi), Facts),
     subset(Sigma,Gamma),
-    subset(Pi,Delta).
+    subset(Pi,Delta),!. % geen cut for efficiency
 
 /* Assumptions about measures
 */
@@ -294,35 +300,35 @@ prove(_, seq(Gamma,Delta),
 	   seq(Gamma, Delta), [])) :- 
     member(at(measure(Type,Object,N)),Gamma),
     member(at(max_measure(Type,Object,M)),Gamma),
-    N > M.
+    N > M,!.% green cut for efficiency
 % measure is not smaller than min_measure:
 prove(_, seq(Gamma,Delta),
       node(fact, seq([at(min_measure(Type,Object,N)),at(measure(Type,Object,M))],[]),
 	   seq(Gamma, Delta), [])) :- 
     member(at(measure(Type,Object,N)),Gamma),
     member(at(min_measure(Type,Object,M)),Gamma),
-    N < M.
+    N < M,!. % green cut for efficiency
 % min_measure is monotone:
 prove(_, seq(Gamma,Delta),
       node(fact, seq([at(min_measure(Type,Object,N))],[at(min_measure(Type,Object,M))]),
 	   seq(Gamma, Delta), [])) :- 
     member(at(min_measure(Type,Object,N)),Gamma),
     member(at(min_measure(Type,Object,M)),Delta),
-    M =< N.
+    M =< N, !. % green cut for efficiency
 % max_measure is monotone:
 prove(_, seq(Gamma,Delta),
       node(fact, seq([at(max_measure(Type,Object,N))],[at(max_measure(Type,Object,M))]),
 	   seq(Gamma, Delta), [])) :- 
     member(at(max_measure(Type,Object,N)),Gamma),
     member(at(max_measure(Type,Object,M)),Delta),
-    N =< M.
+    N =< M, !. % green cut for efficiency
 % min_measure is not larger than max_measure:
 prove(_, seq(Gamma,Delta),
       node(fact, seq([at(min_measure(Type,Object,N)),at(max_measure(Type,Object,M))],[]),
 	   seq(Gamma, Delta), [])) :- 
     member(at(min_measure(Type,Object,N)),Gamma),
     member(at(max_measure(Type,Object,M)),Gamma),
-    N > M.
+    N > M, !. % green cut for efficiency
 
       
 /* propositional rules */
@@ -333,13 +339,13 @@ prove(Assumptions, seq(Gamma,Delta),
     select(neg A, Gamma, Sigma),
     \+ member(A, Delta),
     \+ member(inv(A), Delta),
-    prove(Assumptions, seq([inv(A)|Sigma], [A|Delta]), T).
+    prove(Assumptions, seq([inv(A)|Sigma], [A|Delta]), T),!.% green cut for efficiency
 prove(Assumptions, seq(Gamma,Delta),
       node(negR, seq([],[neg A]), seq(Gamma,Delta), [T])) :-
     select(neg A, Delta, Pi),
     \+ member(A, Gamma),
     \+ member(inv(A), Gamma),
-    prove(Assumptions, seq([A|Gamma], [inv(A)|Pi]), T).
+    prove(Assumptions, seq([A|Gamma], [inv(A)|Pi]), T),!.% green cut for efficiency
 
 /* conjunction left */
 prove(Assumptions, seq(Gamma, Delta),
@@ -347,7 +353,7 @@ prove(Assumptions, seq(Gamma, Delta),
     select(A and B, Gamma, Sigma),
     ((\+ member(A,Gamma), \+ member(inv(A),Gamma))
     ;(\+ member(B,Gamma), \+ member(inv(B),Gamma))),
-    prove(Assumptions, seq([A,B|Sigma],Delta), T).
+    prove(Assumptions, seq([A,B|Sigma],Delta), T),!.% green cut for efficiency
 
 /* disjunction right */
 prove(Assumptions, seq(Gamma, Delta),
@@ -355,7 +361,7 @@ prove(Assumptions, seq(Gamma, Delta),
     select(A or B, Delta, Pi),
     ((\+ member(A,Delta), \+ member(inv(A),Delta))
     ;(\+ member(B,Delta), \+ member(inv(B),Delta))),
-    prove(Assumptions, seq(Gamma,[A,B|Pi]), T).
+    prove(Assumptions, seq(Gamma,[A,B|Pi]), T),!.% green cut for efficiency
 
 /* implication right */
 prove(Assumptions, seq(Gamma, Delta),
@@ -363,7 +369,7 @@ prove(Assumptions, seq(Gamma, Delta),
     select(A -> B, Delta, Pi),
     ((\+ member(A,Gamma), \+ member(inv(A),Gamma))
     ;(\+ member(B,Delta), \+ member(inv(B),Delta))),
-    prove(Assumptions, seq([A|Gamma],[B|Pi]), T).
+    prove(Assumptions, seq([A|Gamma],[B|Pi]), T),!.% green cut for efficiency
 
 /* branching rules */
 /* conjunction right */
@@ -373,7 +379,7 @@ prove(Assumptions, seq(Gamma, Delta),
     \+ member(A, Delta), \+ member(inv(A), Delta),
     \+ member(B, Delta), \+ member(inv(B), Delta),
     prove(Assumptions, seq(Gamma, [A|Pi]), T1),
-    prove(Assumptions, seq(Gamma, [B|Pi]), T2).
+    prove(Assumptions, seq(Gamma, [B|Pi]), T2),!.% green cut for efficiency
 
 /* disjunction left */
 prove(Assumptions, seq(Gamma, Delta),
@@ -382,7 +388,7 @@ prove(Assumptions, seq(Gamma, Delta),
     \+ member(A, Gamma), \+ member(inv(A), Gamma),
     \+ member(B, Gamma), \+ member(inv(B), Gamma),
     prove(Assumptions, seq([A|Sigma], Delta), T1),
-    prove(Assumptions, seq([B|Sigma], Delta), T2).
+    prove(Assumptions, seq([B|Sigma], Delta), T2),!.% green cut for efficiency
 
 /* implication left */
 prove(Assumptions, seq(Gamma, Delta),
@@ -391,7 +397,7 @@ prove(Assumptions, seq(Gamma, Delta),
     \+ member(A, Delta), \+ member(inv(A), Delta),
     \+ member(B, Gamma), \+ member(inv(B), Gamma),
     prove(Assumptions, seq([B|Sigma], Delta), T1),
-    prove(Assumptions, seq(Sigma, [A|Delta]), T2).
+    prove(Assumptions, seq(Sigma, [A|Delta]), T2),!.% green cut for efficiency
 
 
 /* deontic/modal rules */

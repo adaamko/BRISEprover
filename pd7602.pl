@@ -73,7 +73,9 @@ bauland(test(1)) --> [p(test_1)].
  * Facts about Bauland
  * Every bauland is in the plangebiet NOTE: should be covered by location_facts?
 */
+/*
 bauland_facts(plangebiet(7602),[bauland(7602_1) -> plangebiet(7602)]).
+*/
 % DCG:
 bauland_facts(plangebiet(7602)) --> [bauland(7602_1) -> plangebiet(7602)].
 bauland_facts(bauland(7602_1)) --> [].
@@ -81,9 +83,11 @@ bauland_facts(bauland(7602_1)) --> [].
 /* Grundflaechen auf dem Bauland
  * von der noerdlichsten im Uhrzeigersinn spiralfoermig nach innen
 */
+/*
 grundflaechen(bauland(7602_1), [grundflaeche(7602_1_
 1), grundflaeche(7602_1_2), grundflaeche(7602_1_3), grundflaeche(7602_
 1_4), grundflaeche(7602_1_5)]).
+*/
 % DCG:
 grundflaechen(bauland(7602_1))
 --> [grundflaeche(7602_1_1), grundflaeche(7602_1_2),
@@ -94,6 +98,7 @@ grundflaechen(bauland(7602_1))
 
 /* Facts about the grundflaechen on the bauland
 */
+/*
 grundflaechen_facts(bauland(7602_1), [
 	grundflaeche(7602_1_1) -> bauland(7602_1),
 	grundflaeche(7602_1_1) -> widmung(gb),
@@ -114,8 +119,10 @@ grundflaechen_facts(bauland(7602_1), [
 	grundflaeche(7602_1_5) -> bauklasse(i),
 	grundflaeche(7602_1_5) -> bauweise(g),
 				  grundflaeche(7602_1_5) -> bb(7602_2)]).
+*/
 % als DCG:
-grundflaechen_facts(bauland(7602_1))
+grundflaechen_facts(bauland(7602_1)) --> [].
+/* UNCOMMENT HERE!
 --> [grundflaeche(7602_1_1) -> bauland(7602_1),
 	grundflaeche(7602_1_1) -> widmung(gb),
 	grundflaeche(7602_1_1) -> bauklasse(iv),
@@ -135,9 +142,10 @@ grundflaechen_facts(bauland(7602_1))
 	grundflaeche(7602_1_5) -> bauklasse(i),
 	grundflaeche(7602_1_5) -> bauweise(g),
 				  grundflaeche(7602_1_5) -> bb(7602_2)].
-
+*/
 /* obligations about the grundflaechen
 */
+/*
 grundflaechen_obligations(bauland(7602_1), [
 			      obl( max_measure(gebaeude,hoehe,1200),
 				   grundflaeche(7602_1_1) ),
@@ -148,8 +156,11 @@ grundflaechen_obligations(bauland(7602_1), [
 			      obl( max_measure(gebaeude,hoehe,1200),
 				   grundflaeche(7602_1_4) ),
 			      obl( max_measure(gebaeude,hoehe,450), grundflaeche(7602_1_5) )]). 
+*/
 % als DCG:
-grundflaechen_obligations(bauland(7602_1)) --> [
+grundflaechen_obligations(bauland(7602_1)) --> %[].
+[
+/*
 			      obl( max_measure(gebaeude,hoehe,1200),
 				   grundflaeche(7602_1_1) ),
 			      obl( min_measure(gebaeude, hoehe, 3200)
@@ -158,11 +169,13 @@ grundflaechen_obligations(bauland(7602_1)) --> [
 				   grundflaeche(7602_1_3) ),
 			      obl( max_measure(gebaeude,hoehe,1200),
 				   grundflaeche(7602_1_4) ),
+*/
 			      obl( max_measure(gebaeude,hoehe,450), grundflaeche(7602_1_5) )]. 
 
 /* Fluchtlinien auf dem Bauland
  * vom noerdlichsten Ende im Uhrzeigersinn.
 */	
+/*
 fluchtlinien(bauland(7602_1),[baulinie(7602_1_1),
 			     baulinie(7602_1_2),
 			     baulinie(7602_1_3),
@@ -177,6 +190,7 @@ fluchtlinien(bauland(7602_1),[baulinie(7602_1_1),
 			     grenzlinie(7602_1_2),
 			     grenzlinie(7602_1_3)
 			    ]).
+*/
 % als DCG:
 fluchtlinien(bauland(7602_1)) --> [baulinie(7602_1_1),
 			     baulinie(7602_1_2),
@@ -195,10 +209,12 @@ fluchtlinien(bauland(7602_1)) --> [baulinie(7602_1_1),
 
 /* Facts about Fluchtlinien
 */
+/*
 fluchtlinien_facts(bauland(7602_1),[baulinie(7602_1_2) -> bb(7602_4),
 		       baulinie(7602_1_3) -> bb(7602_4),
 	               baulinie(7602_1_4) -> bb(7602_4)
 		   ]).
+*/
 % as DCG:
 fluchtlinien_facts(bauland(7602_1)) --> [baulinie(7602_1_2) -> bb(7602_4),
 		       baulinie(7602_1_3) -> bb(7602_4),
@@ -210,6 +226,7 @@ fluchtlinien_facts(bauland(7602_1)) --> [baulinie(7602_1_2) -> bb(7602_4),
 */
 %% NOTE: "Baulinien begrenzen das Bauland gegenueber oeffentlichen Verkehrsflaechen"
 %% also: an_oeffentlicher_Verkehrsflaeche <-> an_baulinie?
+/*
 textliche_bestimmungen(plangebiet(7602), 
 		       [b7602_3_4:for( staffelgeschoss,
 				       plangebiet(7602) and
@@ -265,11 +282,13 @@ textliche_bestimmungen(plangebiet(7602),
 			bb(7602_8): obl( max_measure(flaeche, anteil,
 						     60), bb(7602_8) )
 		       ]).
+*/
 % as DCG:
 textliche_bestimmungen(plangebiet(7602)) --> 
 		       [b7602_3_4:for( staffelgeschoss,
 				       plangebiet(7602) and
 				       an_oeffentlicher_verkehrsflaeche),
+%/* UNCOMMENT HERE!
 			b7602_3_5: for( erker or balkon or loggia,
 				       plangebiet(7602) and
 				       an_baulinie and
@@ -319,7 +338,10 @@ textliche_bestimmungen(plangebiet(7602)) -->
 			obl( oedf and min_measure(oedf, hoehe, 300),
 			     bb(7602_7) ),
 			bb(7602_8): obl( max_measure(flaeche, anteil,
-						     60), bb(7602_8) )
+						     60), bb(7602_8) ),
+%*/
+			bb(test): for(a, b),
+			bb(test): per(a, d)
 		       ].
 
 %% bb(7602_6): skipped this for the time being... 
