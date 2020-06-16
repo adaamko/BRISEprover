@@ -338,13 +338,13 @@ prove(Assumptions, seq(Gamma,Delta),
       node(negL, seq([neg A],[]), seq(Gamma,Delta), [T])) :-
     select(neg A, Gamma, Sigma),
     \+ member(A, Delta),
-    \+ member(inv(A), Delta),
+    \+ member(inv(A), Delta),!, % green cut for invertibility
     prove(Assumptions, seq([inv(A)|Sigma], [A|Delta]), T),!.% green cut for efficiency
 prove(Assumptions, seq(Gamma,Delta),
       node(negR, seq([],[neg A]), seq(Gamma,Delta), [T])) :-
     select(neg A, Delta, Pi),
     \+ member(A, Gamma),
-    \+ member(inv(A), Gamma),
+    \+ member(inv(A), Gamma),!, % green cut for invertibility
     prove(Assumptions, seq([A|Gamma], [inv(A)|Pi]), T),!.% green cut for efficiency
 
 /* conjunction left */
@@ -360,7 +360,7 @@ prove(Assumptions, seq(Gamma, Delta),
       node(disjR, seq([],[A or B]), seq(Gamma,Delta), [T])) :-
     select(A or B, Delta, Pi),
     ((\+ member(A,Delta), \+ member(inv(A),Delta))
-    ;(\+ member(B,Delta), \+ member(inv(B),Delta))),
+    ;(\+ member(B,Delta), \+ member(inv(B),Delta))),!, % green cut for invertibility
     prove(Assumptions, seq(Gamma,[A,B|Pi]), T),!.% green cut for efficiency
 
 /* implication right */
@@ -368,7 +368,7 @@ prove(Assumptions, seq(Gamma, Delta),
       node(implR, seq([],[A -> B]), seq(Gamma,Delta), [T])) :-
     select(A -> B, Delta, Pi),
     ((\+ member(A,Gamma), \+ member(inv(A),Gamma))
-    ;(\+ member(B,Delta), \+ member(inv(B),Delta))),
+    ;(\+ member(B,Delta), \+ member(inv(B),Delta))),!, % green cut for invertibility
     prove(Assumptions, seq([A|Gamma],[B|Pi]), T),!.% green cut for efficiency
 
 /* branching rules */
@@ -377,7 +377,7 @@ prove(Assumptions, seq(Gamma, Delta),
       node(conjR, seq([],[A and B]), seq(Gamma, Delta), [T1,T2])) :-
     select(A and B, Delta, Pi),
     \+ member(A, Delta), \+ member(inv(A), Delta),
-    \+ member(B, Delta), \+ member(inv(B), Delta),
+    \+ member(B, Delta), \+ member(inv(B), Delta),!, % green cut for invertibility
     prove(Assumptions, seq(Gamma, [A|Pi]), T1),
     prove(Assumptions, seq(Gamma, [B|Pi]), T2),!.% green cut for efficiency
 
@@ -386,7 +386,7 @@ prove(Assumptions, seq(Gamma, Delta),
       node(disjL, seq([A or B],[]), seq(Gamma, Delta), [T1,T2])) :-
     select(A or B, Gamma, Sigma),
     \+ member(A, Gamma), \+ member(inv(A), Gamma),
-    \+ member(B, Gamma), \+ member(inv(B), Gamma),
+    \+ member(B, Gamma), \+ member(inv(B), Gamma),!, % green cut for invertibility
     prove(Assumptions, seq([A|Sigma], Delta), T1),
     prove(Assumptions, seq([B|Sigma], Delta), T2),!.% green cut for efficiency
 
@@ -395,7 +395,7 @@ prove(Assumptions, seq(Gamma, Delta),
       node(implL, seq([A -> B],[]), seq(Gamma, Delta), [T1,T2])) :-
     select(A -> B, Gamma, Sigma),
     \+ member(A, Delta), \+ member(inv(A), Delta),
-    \+ member(B, Gamma), \+ member(inv(B), Gamma),
+    \+ member(B, Gamma), \+ member(inv(B), Gamma),!, % green cut for invertibility
     prove(Assumptions, seq([B|Sigma], Delta), T1),
     prove(Assumptions, seq(Sigma, [A|Delta]), T2),!.% green cut for efficiency
 
@@ -411,7 +411,7 @@ prove(Assumptions, seq(Gamma,Delta),
     impl(Assumptions, Op1, Op2, A, C, Seq),
     prove(Assumptions, Seq, T1),
     prove(Assumptions, seq([B],[D]), T2),
-    prove(Assumptions, seq([D],[B]), T3).
+    prove(Assumptions, seq([D],[B]), T3),!. % green cut for efficiency
 
 /* D rule */
 prove(Assumptions, seq(Gamma,Delta),
@@ -423,7 +423,7 @@ prove(Assumptions, seq(Gamma,Delta),
     confl(Assumptions, Op1, Op2, A, C, Seq),
     prove(Assumptions, Seq, T1),
     prove(Assumptions, seq([B],[D]), T2),
-    prove(Assumptions, seq([D],[B]), T3).
+    prove(Assumptions, seq([D],[B]), T3),!. % green cut for efficiency
 
 /* P rule */
 /* NOTE: for operators with Op confl Op this already is covered by the
@@ -435,7 +435,7 @@ prove(Assumptions, seq(Gamma,Delta),
     member(modal(Op,A,B), Gamma),
     nontrivial(Assumptions, Op),
     confl(Assumptions, Op, Op, A, A, Seq),
-    prove(Assumptions, Seq, T).
+    prove(Assumptions, Seq, T),!. % green cut for efficiency
 
 /* assumption right rule */
 prove(asmp(Facts,D_ass_list,Op_char,Rel), seq(Gamma,Delta),
@@ -460,7 +460,7 @@ prove(asmp(Facts,D_ass_list,Op_char,Rel), seq(Gamma,Delta),
     % HERE TODO [x] change the modal(Op2,C,D) to Assumption
     not_overruled(r,asmp(Facts,D_ass_list,Op_char,Rel),
 			  modal(Op1,A,B), Assumption, Outer_list,
-	    Tree_list).
+	    Tree_list),!. % green cut for efficiency
 	    
 /* assumption left rule */
 prove(asmp(Facts,D_ass_list,Op_char,Rel), seq(Gamma,Delta),
@@ -486,7 +486,7 @@ prove(asmp(Facts,D_ass_list,Op_char,Rel), seq(Gamma,Delta),
     % HERE: TODO [x] change the modal(Op2,C,D) to Assumption
     not_overruled(l,asmp(Facts,D_ass_list,Op_char,Rel),
 			  modal(Op1,A,B), Assumption, Outer_list,
-	    Tree_list).
+	    Tree_list),!. % green cut for efficiency
 	    
 
 /* applicable_outer
@@ -774,3 +774,17 @@ member_norm((Norm:modal(Op,A,B)),Op,A,B,D_ass) :-
 */
 modal_arguments(modal(Op,A,B),Op,A,B).
 modal_arguments((_:modal(Op,A,B)),Op,A,B).
+
+
+/* For testing: create assumptions.
+*/
+make_assumptions(asmp(A,B,C,D)) :-
+    phrase(added_facts([],[plangebiet(7602)]),New_Facts),
+    phrase(added_assumptions([],[plangebiet(7602)]),New_D_Assumptions),
+    preprocess(asmp(New_Facts, New_D_Assumptions,
+		    ops([(obl,obl), (per,obl), (for,for)], []
+			, [confl(obl,obl), confl(obl,per),
+			   confl(obl,for), confl(for,for),
+			   confl(for,per)], []), []), asmp(A,B,C,D), _
+	      ),!. 
+    

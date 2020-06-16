@@ -403,3 +403,24 @@ lift_DCG(_,[]) --> [].
 lift_DCG(Body,[A|Tail]) -->
     {T =.. [Body,A], phrase(T,L)}, L, lift_DCG(Body,Tail).
 		
+
+/* confl_list /3
+ * given a deontic formula, filter out the conflict list for that
+ * formula, i.e., the list of deontic assumptions for which the
+ * content is in conflict and which are not inferior.
+*/
+% NOTE: possibly scope for more efficency: assume that Ass1 is of the
+% form modal(Op1,A,B) from the beginning.
+% NOTE2: possibly scope for making things nicer: store the derivation
+% of Confl(A,C) together with the formula Ass2.
+confl_list(Ass1, Assumptions, [Ass2|Tail_ass], [Ass2|Tail_list]) :-
+    modal_arguments(Ass1,Op1,A,B),
+    modal_arguments(Ass2,Op2,C,D),
+    conflicts(Assumptions,Op1,Op2),
+    confl(Assumptions,Op1,Op2,A,C,Seq),
+    prove(Assumptions,Seq,Tree),
+    nbeats(Assumptions,modal(Op1,A,B), modal(Op2,C,D)),
+    confl_list(Ass1, Assumptions, Tail_ass, Tail_list).
+confl_list(Ass, Assumptions, [_|Tail_ass], Tail_list) :-
+    confl_list(Ass, Assumptions, Tail_ass, Tail_list).
+confl_list(_, _, [], []).					
