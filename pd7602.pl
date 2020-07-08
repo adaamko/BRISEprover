@@ -144,7 +144,7 @@ textliche_bestimmungen(plangebiet(7602),
 					 an_strassenfront ), 
 			bb(7602_4):
 			for(fenster_von_wohnung_zu_verkehrsflaeche,
-			    bb(7604) ), 
+			    bb(7602_4) ), 
 			bb(7602_5): per(gebaeude and
 					max_measure(gebaeude, hoehe,
 						    450) and
