@@ -1,9 +1,9 @@
 /*
 Copyright 2020 Bjoern Lellmann
 
-    This file is part of deonticProver 2.1.
+    This file is part of BRISEprover.
 
-    deonticProver 2.1 is free software: you can redistribute it and/or modify
+    BRISEprover is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
@@ -13,7 +13,7 @@ Copyright 2020 Bjoern Lellmann
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with deonticProver 2.1.  If not, see <http://www.gnu.org/licenses/>.
+    along with BRISEprover.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /* operator definitions etc */
@@ -47,7 +47,9 @@ variable_with_arguments(Op) :-
 :- ensure_loaded([preprocessing]).
 /* load example formalisation
 */
+:- ensure_loaded([assumptionhandler]).
 :- ensure_loaded([pd7602]).
+%:- ensure_loaded([pd7601]).
 
 /* DATA STRUCTURE
    We're working on sequents.
@@ -116,26 +118,28 @@ Input:
 %[(obl,obl)], [confl(obl,obl)], [], [], derivability,
 %'test.tex'). 
 %@ true .
- 
+
 /* prove_online
    predicate to be called from the web interface
 */
 prove_online(Fml, Facts, D_Assumptions, Sup_Relation, Operators,
-	     Inclusions, Conflicts, P_list, derivability, Filename) :-
+	     Inclusions, Conflicts, P_list, [], derivability, Filename) :-
     \+ member(test,Facts),
     prove_with_filename(Fml, Operators, Inclusions, Conflicts, P_list,
 			Facts, D_Assumptions, Sup_Relation, Filename).
 % for testing with the plandokumente
-prove_online(Fml, [test|Facts], D_Assumptions, Sup_Relation, Operators,
-	     Inclusions, Conflicts, P_list, derivability, Filename) :-
-    facts(plangebiet(7602),L),
-    append(Facts,L,Facts1),
-    obligations_plangebiet(plangebiet(7602),O),
-    append(O,D_Assumptions,D_Assumptions1),
-    prove_with_filename(Fml, Operators, Inclusions, Conflicts, P_list,
-			Facts1, D_Assumptions1, Sup_Relation, Filename).
 prove_online(Fml, Facts, D_Assumptions, Sup_Relation, Operators,
-	     Inclusions, Conflicts, P_list, compliance, Filename) :-
+	     Inclusions, Conflicts, P_list, Ex_list, derivability, Filename) :-
+    phrase(added_facts(Facts,Ex_list),New_Facts),
+%    facts(plangebiet(7602),L),
+%    append(Facts,L,Facts1),
+    phrase(added_assumptions(D_Assumptions,Ex_list),New_D_Assumptions),
+%    obligations_plangebiet(plangebiet(7602),O),
+%    append(O,D_Assumptions,D_Assumptions1),
+    prove_with_filename(Fml, [(obl,obl), (for,for), (per,obl)|Operators], Inclusions, [confl(obl,obl), confl(obl,per), confl(obl,for), confl(for,for), confl(for,per)|Conflicts], P_list,
+			New_Facts, New_D_Assumptions, Sup_Relation, Filename).
+prove_online(Fml, Facts, D_Assumptions, Sup_Relation, Operators,
+	     Inclusions, Conflicts, P_list, _, compliance, Filename) :-
     include_type(obl,Operators,Obligations),
     include_type(for,Operators,Prohibitions),
     preprocess(asmp(Facts, D_Assumptions, ops(Operators, Inclusions
@@ -196,7 +200,7 @@ prove_with_filename(Fml, Operators, Op_Inclusions, Op_Conflicts,
 					      , Op_Conflicts, Op_P),
 		    Sup_Relation), Ass_Processed,_),
     modalised(Fml,Fml1),
-    added_at(Fml1,Fml2),
+    added_at(Fml1,Fml2),!, % cut for efficiency
     (prove(Ass_Processed, seq([],[Fml2]), Derivation)
     ;
     nonderivable_statement(Derivation)),!,
@@ -210,6 +214,12 @@ prove_with_filename(Fml, Operators, Op_Inclusions, Op_Conflicts,
 /* prove_test
    to test the prove predicate
 */
+/* problematic example:
+for(staffelgeschoss, ((plangebiet(7602) and an_oeffentlicher_verkehrsflaeche) and an_strassenfront) and bb(76023))
+*/
+prove_test(Fml) :-
+    prove_online(Fml, [], [], [], [], [], [], [], [plangebiet(7602)], derivability, 'test.tex'),!.
+
 /*prove_test(Fml) :-
     prove(asmp([],[modal(obl,at(a) and at(c),at(b)), modal(obl, neg at(a),at(c)),
 		   modal(obl,at(a) and at(d), at(c) and at(d))],
@@ -267,20 +277,20 @@ prove_test2(Fml,Dass) :-
 /* initial sequents */
 prove(_, seq(Gamma, Delta),
       node(botL, seq([false],[]), seq(Gamma,Delta),[])) :-
-    member(false, Gamma).
+    member(false, Gamma),!. % green cut for efficiency
 prove(_, seq(Gamma, Delta),
       node(topR, seq([],[true]), seq(Gamma,Delta),[])) :-
-    member(true, Delta).
+    member(true, Delta),!. % green cut for efficiency
 prove(_, seq(Gamma, Delta),
       node(init, seq([F],[F]), seq(Gamma,Delta),[])) :-
-    member(F, Gamma), member(F, Delta).
+    member(F, Gamma), member(F, Delta),!. % green cut for efficiency
 
 /* factual assumptions */
 prove(asmp(Facts,_,_,_), seq(Gamma,Delta), node(fact, seq(Sigma, Pi),
 						seq(Gamma, Delta),[])) :-
     member(seq(Sigma,Pi), Facts),
     subset(Sigma,Gamma),
-    subset(Pi,Delta).
+    subset(Pi,Delta),!. % geen cut for efficiency
 
 /* Assumptions about measures
 */
@@ -290,35 +300,35 @@ prove(_, seq(Gamma,Delta),
 	   seq(Gamma, Delta), [])) :- 
     member(at(measure(Type,Object,N)),Gamma),
     member(at(max_measure(Type,Object,M)),Gamma),
-    N > M.
+    N > M,!.% green cut for efficiency
 % measure is not smaller than min_measure:
 prove(_, seq(Gamma,Delta),
       node(fact, seq([at(min_measure(Type,Object,N)),at(measure(Type,Object,M))],[]),
 	   seq(Gamma, Delta), [])) :- 
     member(at(measure(Type,Object,N)),Gamma),
     member(at(min_measure(Type,Object,M)),Gamma),
-    N < M.
+    N < M,!. % green cut for efficiency
 % min_measure is monotone:
 prove(_, seq(Gamma,Delta),
       node(fact, seq([at(min_measure(Type,Object,N))],[at(min_measure(Type,Object,M))]),
 	   seq(Gamma, Delta), [])) :- 
     member(at(min_measure(Type,Object,N)),Gamma),
     member(at(min_measure(Type,Object,M)),Delta),
-    M =< N.
+    M =< N, !. % green cut for efficiency
 % max_measure is monotone:
 prove(_, seq(Gamma,Delta),
       node(fact, seq([at(max_measure(Type,Object,N))],[at(max_measure(Type,Object,M))]),
 	   seq(Gamma, Delta), [])) :- 
     member(at(max_measure(Type,Object,N)),Gamma),
     member(at(max_measure(Type,Object,M)),Delta),
-    N =< M.
+    N =< M, !. % green cut for efficiency
 % min_measure is not larger than max_measure:
 prove(_, seq(Gamma,Delta),
       node(fact, seq([at(min_measure(Type,Object,N)),at(max_measure(Type,Object,M))],[]),
 	   seq(Gamma, Delta), [])) :- 
     member(at(min_measure(Type,Object,N)),Gamma),
     member(at(max_measure(Type,Object,M)),Gamma),
-    N > M.
+    N > M, !. % green cut for efficiency
 
       
 /* propositional rules */
@@ -328,14 +338,14 @@ prove(Assumptions, seq(Gamma,Delta),
       node(negL, seq([neg A],[]), seq(Gamma,Delta), [T])) :-
     select(neg A, Gamma, Sigma),
     \+ member(A, Delta),
-    \+ member(inv(A), Delta),
-    prove(Assumptions, seq([inv(A)|Sigma], [A|Delta]), T).
+    \+ member(inv(A), Delta),!, % green cut for invertibility
+    prove(Assumptions, seq([inv(A)|Sigma], [A|Delta]), T),!.% green cut for efficiency
 prove(Assumptions, seq(Gamma,Delta),
       node(negR, seq([],[neg A]), seq(Gamma,Delta), [T])) :-
     select(neg A, Delta, Pi),
     \+ member(A, Gamma),
-    \+ member(inv(A), Gamma),
-    prove(Assumptions, seq([A|Gamma], [inv(A)|Pi]), T).
+    \+ member(inv(A), Gamma),!, % green cut for invertibility
+    prove(Assumptions, seq([A|Gamma], [inv(A)|Pi]), T),!.% green cut for efficiency
 
 /* conjunction left */
 prove(Assumptions, seq(Gamma, Delta),
@@ -343,23 +353,23 @@ prove(Assumptions, seq(Gamma, Delta),
     select(A and B, Gamma, Sigma),
     ((\+ member(A,Gamma), \+ member(inv(A),Gamma))
     ;(\+ member(B,Gamma), \+ member(inv(B),Gamma))),
-    prove(Assumptions, seq([A,B|Sigma],Delta), T).
+    prove(Assumptions, seq([A,B|Sigma],Delta), T),!.% green cut for efficiency
 
 /* disjunction right */
 prove(Assumptions, seq(Gamma, Delta),
       node(disjR, seq([],[A or B]), seq(Gamma,Delta), [T])) :-
     select(A or B, Delta, Pi),
     ((\+ member(A,Delta), \+ member(inv(A),Delta))
-    ;(\+ member(B,Delta), \+ member(inv(B),Delta))),
-    prove(Assumptions, seq(Gamma,[A,B|Pi]), T).
+    ;(\+ member(B,Delta), \+ member(inv(B),Delta))),!, % green cut for invertibility
+    prove(Assumptions, seq(Gamma,[A,B|Pi]), T),!.% green cut for efficiency
 
 /* implication right */
 prove(Assumptions, seq(Gamma, Delta),
       node(implR, seq([],[A -> B]), seq(Gamma,Delta), [T])) :-
     select(A -> B, Delta, Pi),
     ((\+ member(A,Gamma), \+ member(inv(A),Gamma))
-    ;(\+ member(B,Delta), \+ member(inv(B),Delta))),
-    prove(Assumptions, seq([A|Gamma],[B|Pi]), T).
+    ;(\+ member(B,Delta), \+ member(inv(B),Delta))),!, % green cut for invertibility
+    prove(Assumptions, seq([A|Gamma],[B|Pi]), T),!.% green cut for efficiency
 
 /* branching rules */
 /* conjunction right */
@@ -367,27 +377,27 @@ prove(Assumptions, seq(Gamma, Delta),
       node(conjR, seq([],[A and B]), seq(Gamma, Delta), [T1,T2])) :-
     select(A and B, Delta, Pi),
     \+ member(A, Delta), \+ member(inv(A), Delta),
-    \+ member(B, Delta), \+ member(inv(B), Delta),
+    \+ member(B, Delta), \+ member(inv(B), Delta),!, % green cut for invertibility
     prove(Assumptions, seq(Gamma, [A|Pi]), T1),
-    prove(Assumptions, seq(Gamma, [B|Pi]), T2).
+    prove(Assumptions, seq(Gamma, [B|Pi]), T2),!.% green cut for efficiency
 
 /* disjunction left */
 prove(Assumptions, seq(Gamma, Delta),
       node(disjL, seq([A or B],[]), seq(Gamma, Delta), [T1,T2])) :-
     select(A or B, Gamma, Sigma),
     \+ member(A, Gamma), \+ member(inv(A), Gamma),
-    \+ member(B, Gamma), \+ member(inv(B), Gamma),
+    \+ member(B, Gamma), \+ member(inv(B), Gamma),!, % green cut for invertibility
     prove(Assumptions, seq([A|Sigma], Delta), T1),
-    prove(Assumptions, seq([B|Sigma], Delta), T2).
+    prove(Assumptions, seq([B|Sigma], Delta), T2),!.% green cut for efficiency
 
 /* implication left */
 prove(Assumptions, seq(Gamma, Delta),
       node(implL, seq([A -> B],[]), seq(Gamma, Delta), [T1,T2])) :-
     select(A -> B, Gamma, Sigma),
     \+ member(A, Delta), \+ member(inv(A), Delta),
-    \+ member(B, Gamma), \+ member(inv(B), Gamma),
+    \+ member(B, Gamma), \+ member(inv(B), Gamma),!, % green cut for invertibility
     prove(Assumptions, seq([B|Sigma], Delta), T1),
-    prove(Assumptions, seq(Sigma, [A|Delta]), T2).
+    prove(Assumptions, seq(Sigma, [A|Delta]), T2),!.% green cut for efficiency
 
 
 /* deontic/modal rules */
@@ -401,7 +411,7 @@ prove(Assumptions, seq(Gamma,Delta),
     impl(Assumptions, Op1, Op2, A, C, Seq),
     prove(Assumptions, Seq, T1),
     prove(Assumptions, seq([B],[D]), T2),
-    prove(Assumptions, seq([D],[B]), T3).
+    prove(Assumptions, seq([D],[B]), T3),!. % green cut for efficiency
 
 /* D rule */
 prove(Assumptions, seq(Gamma,Delta),
@@ -413,7 +423,7 @@ prove(Assumptions, seq(Gamma,Delta),
     confl(Assumptions, Op1, Op2, A, C, Seq),
     prove(Assumptions, Seq, T1),
     prove(Assumptions, seq([B],[D]), T2),
-    prove(Assumptions, seq([D],[B]), T3).
+    prove(Assumptions, seq([D],[B]), T3),!. % green cut for efficiency
 
 /* P rule */
 /* NOTE: for operators with Op confl Op this already is covered by the
@@ -425,7 +435,7 @@ prove(Assumptions, seq(Gamma,Delta),
     member(modal(Op,A,B), Gamma),
     nontrivial(Assumptions, Op),
     confl(Assumptions, Op, Op, A, A, Seq),
-    prove(Assumptions, Seq, T).
+    prove(Assumptions, Seq, T),!. % green cut for efficiency
 
 /* assumption right rule */
 prove(asmp(Facts,D_ass_list,Op_char,Rel), seq(Gamma,Delta),
@@ -450,7 +460,7 @@ prove(asmp(Facts,D_ass_list,Op_char,Rel), seq(Gamma,Delta),
     % HERE TODO [x] change the modal(Op2,C,D) to Assumption
     not_overruled(r,asmp(Facts,D_ass_list,Op_char,Rel),
 			  modal(Op1,A,B), Assumption, Outer_list,
-	    Tree_list).
+	    Tree_list),!. % green cut for efficiency
 	    
 /* assumption left rule */
 prove(asmp(Facts,D_ass_list,Op_char,Rel), seq(Gamma,Delta),
@@ -476,7 +486,7 @@ prove(asmp(Facts,D_ass_list,Op_char,Rel), seq(Gamma,Delta),
     % HERE: TODO [x] change the modal(Op2,C,D) to Assumption
     not_overruled(l,asmp(Facts,D_ass_list,Op_char,Rel),
 			  modal(Op1,A,B), Assumption, Outer_list,
-	    Tree_list).
+	    Tree_list),!. % green cut for efficiency
 	    
 
 /* applicable_outer
@@ -764,3 +774,17 @@ member_norm((Norm:modal(Op,A,B)),Op,A,B,D_ass) :-
 */
 modal_arguments(modal(Op,A,B),Op,A,B).
 modal_arguments((_:modal(Op,A,B)),Op,A,B).
+
+
+/* For testing: create assumptions.
+*/
+make_assumptions(asmp(A,B,C,D)) :-
+    phrase(added_facts([],[plangebiet(7602)]),New_Facts),
+    phrase(added_assumptions([],[plangebiet(7602)]),New_D_Assumptions),
+    preprocess(asmp(New_Facts, New_D_Assumptions,
+		    ops([(obl,obl), (per,obl), (for,for)], []
+			, [confl(obl,obl), confl(obl,per),
+			   confl(obl,for), confl(for,for),
+			   confl(for,per)], []), []), asmp(A,B,C,D), _
+	      ),!. 
+    
