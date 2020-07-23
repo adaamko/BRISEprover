@@ -1,3 +1,8 @@
+/* TODO:
+   [ ] for modern version: change the pretty printing of the
+   assumption rules to reflect the new rules
+*/
+
 /*
 Copyright 2020 Bjoern Lellmann
 
@@ -42,7 +47,7 @@ pp_compliance_output(Format,Assumptions,Formula,Disj,Derivation) -->
     pp_footer(Format).
 
 pp_compliance_result(screen,_,nonderivable) -->
-    ['The input complies with the noms!'].
+    ['The input complies with the norms!'].
 pp_compliance_result(screen,_,Derivation) -->
     ['The input does not comply with the norms because:'],
     pp_result(screen,Derivation).
@@ -91,6 +96,9 @@ pp_result(latex,node(Rule,PF,Seq,Suc)) -->
 /* pp_header
    DCG for producing the header depending on the format
 */
+/* TODO:
+   [ ] add clause for html
+*/
 pp_header(screen,Assumptions, Fml) -->
     pp_nl_tab(0),
     ['The assumptions are:'],
@@ -131,7 +139,10 @@ pp_header(latex,asmp(Facts, D_ass, ops(Op_list, Incl, Confl, P_list),
 pp_header(html,_,_) --> [].
 
 /* pp_footer
-   DCG for producgin the footer depending on the format
+   DCG for producing the footer depending on the format
+*/
+/* TODO
+   [ ] add clause for html
 */
 pp_footer(screen) --> [].
 pp_footer(latex) --> pp_nl_tab(0), ['\\end{document}'].
@@ -345,6 +356,11 @@ pp_Seq_list(latex,[Seq|[]]) -->
 pp_Seq_list(latex,[Seq1,Seq2|Tail]) -->
     ['\\big( '],pp_Seq(latex,Seq1),[' \\big); '],
     pp_Seq_list(latex,[Seq2|Tail]).
+pp_Seq_list(html,[]) --> [].
+pp_Seq_list(html,[Seq|[]]) -->
+    ['( '], pp_Seq(html,Seq), [' )'].
+pp_Seq_list(html, [Seq1,Seq2|Tail]) -->
+    ['( '], pp_Seq(html,Seq1), [' ); '], pp_Seq_list(html, [Seq2|Tail]).
 
 /* pp_assumptions
 */

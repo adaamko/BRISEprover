@@ -160,7 +160,6 @@ grundflaechen_obligations(bauland(7602_1), [
 % als DCG:
 grundflaechen_obligations(bauland(7602_1)) --> %[].
 [
-/*
 			      obl( max_measure(gebaeude,hoehe,1200),
 				   grundflaeche(7602_1_1) ),
 			      obl( min_measure(gebaeude, hoehe, 3200)
@@ -169,7 +168,6 @@ grundflaechen_obligations(bauland(7602_1)) --> %[].
 				   grundflaeche(7602_1_3) ),
 			      obl( max_measure(gebaeude,hoehe,1200),
 				   grundflaeche(7602_1_4) ),
-*/
 			      obl( max_measure(gebaeude,hoehe,450), grundflaeche(7602_1_5) )]. 
 
 /* Fluchtlinien auf dem Bauland

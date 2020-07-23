@@ -29,12 +29,8 @@ Copyright 2020 Bjoern Lellmann
    saturates the operators under inclusions, conflicts, etc; adds
    nt(.) around operators for nontriviality assumptions; checks
    that the superiority relation is acyclic.
-   
-   TODO
-   [X] add permissions for every operator with type obligation and
-   conflict only with that operator.
 */
-preprocess(asmp(Facts,D_Ass, ops(Ops, Op_Incl, Op_Confl, Op_P),
+preprocess(classic,asmp(Facts,D_Ass, ops(Ops, Op_Incl, Op_Confl, Op_P),
 		Sup_Rel), asmp(Facts_new, D_Ass_new,
 			       ops(Ops, Op_Incl1, Op_Confl_new,
 				   Op_P_new), Sup_Rel),[]) :-
@@ -47,13 +43,33 @@ preprocess(asmp(Facts,D_Ass, ops(Ops, Op_Incl, Op_Confl, Op_P),
     verified_op_types(Ops,_),
     verified_assumptions(D_Ass1,Ops,_),
     saturated_inclusions(Op_Incl,Op_Incl1),
-%    add_permissions(ops(Ops,Op_Incl1, Op_Confl, Op_P),
-%		    ops(Ops_new, Op_Incl_new, Op_Confl1, Op_P1)),
     saturated_conflicts(Op_Incl1, Op_Confl, Op_Confl_new),
     saturated_P(Op_Incl1, Op_Confl_new, Op_P1, Op_P_new),
     verified_superiority_relation(Sup_Rel),
     acyclic(D_Ass_new,Sup_Rel).
-% Version where the permissions are automatically added:
+% Modern version using conflict lists:
+preprocess(modern,asmp(Facts,D_Ass, ops(Ops, Op_Incl, Op_Confl, Op_P),
+		Sup_Rel), asmp(Facts_new, D_Ass_new,
+			       ops(Ops, Op_Incl1, Op_Confl_new,
+				   Op_P_new), Sup_Rel),[]) :-
+    maplist(modalised,Facts,Facts1),
+    maplist(added_at,Facts1,Facts2),
+    saturated_facts(Facts2,Facts_new),
+    maplist(modalised,D_Ass,D_Ass1),
+    maplist(added_at,D_Ass1,D_Ass_new),
+    maplist(add_nt,Op_P, Op_P1),
+    verified_op_types(Ops,_),
+    verified_assumptions(D_Ass1,Ops,_),
+    saturated_inclusions(Op_Incl,Op_Incl1),
+    saturated_conflicts(Op_Incl1, Op_Confl, Op_Confl_new),
+    saturated_P(Op_Incl1, Op_Confl_new, Op_P1, Op_P_new),
+    verified_superiority_relation(Sup_Rel),
+    acyclic(D_Ass_new,Sup_Rel),
+    retractall(conflicting_assumptions(_,_)),
+    make_conflict_lists(asmp(Facts_new, D_Ass_new,
+			       ops(Ops, Op_Incl1, Op_Confl_new,
+				   Op_P_new), Sup_Rel), D_Ass_new).
+% Old version where the permissions are automatically added:
 /*
 preprocess(asmp(Facts,D_Ass, ops(Ops, Op_Incl, Op_Confl, Op_P),
 		Sup_Rel), asmp(Facts_new, D_Ass_new,
@@ -245,6 +261,7 @@ verified_op_types([(Op,_)|Tail_ops],Bad_ops) :-
     \+ member((Op,_),Tail_ops),
     verified_op_types(Tail_ops,Bad_ops).
 
+
 /* verified_assumptions /3
    true if Bad_Ass contains those assumptions from D_Ass which do not
    have an operator with type in Ops
@@ -287,10 +304,12 @@ saturated_conflicts(Incl, Confl, Confl_sat) :-
     saturated_conflicts(Incl,[confl(Op3,Op2)|Confl], Confl_sat).
 saturated_conflicts(_,Confl,Confl).
 
+
 /* add_nt
    true for an operator Op and its nontriviality statement nt(Op)
 */
 add_nt(X,nt(X)).
+
 
 /* saturated_P
    true if saturating Op_P under preimages of Op_incl yields Op_P_new
@@ -303,6 +322,7 @@ saturated_P(Op_incl, Op_confl, Op_P, Op_P_new) :-
     saturated_P(Op_incl, Op_confl, [nt(Op2)|Op_P], Op_P_new).
 saturated_P(_,_,Op_P,Op_P).
 
+
 /* NOTE: CHANGED THIS HERE
    MAKE SURE EVERYTHING STILL WORKS (NOT YET IN THE ONLINE SYSTEM!)
    TODO []check this!
@@ -313,6 +333,7 @@ saturated_P(_,_,Op_P,Op_P).
 verified_superiority_relation([]).
 verified_superiority_relation([beats(_,_)|Tail]) :-
     verified_superiority_relation(Tail).
+
 
 /* acyclic /2
  * True if a list of srauta and a relation (given as a list) does not
@@ -332,6 +353,7 @@ cyclic_relation(D_Ass,Relation) :-
     member((_:Fml2), D_Ass),
     beats(asmp([],D_Ass,[],Relation), Fml1, Fml2),
     beats(asmp([],D_Ass,[],Relation), Fml2, Fml1).
+
 
 /* cycles_in_relation /3
  * true if Cycle_list contains all tuples of normed deontic
@@ -372,6 +394,7 @@ added_facts(Facts,[Ex|Tail]) --> {facts(Ex,List)}, List, added(Facts,Tail).
 % new version:
 added_facts(Facts,List) --> Facts, lift_DCG(facts_plangebiet,List).
 
+
 /* added_assumptions
  * DCG for adding deontic assumptions for a list of examples
  * obligations_plangebiet//1 is specified in assumptionhandler.pl
@@ -385,6 +408,7 @@ added_assumptions(D_ass,[Ex|Tail])
 added_assumptions(D_ass, List)
 --> D_ass, lift_DCG(obligations_plangebiet,List).
 
+
 /* NEED:
    Given a list of examples / plangebiete:
    - create list of factual assumptions from these => facts_plangebiet_list
@@ -394,6 +418,7 @@ added_assumptions(D_ass, List)
    - add background facts to the factual assumptions
    - add obligations from Bauordnung to deontic_assumptions
 */
+
 
 /* lift_DCG//2
  * lift a DCG body defined on single objects to a list of objects and
@@ -418,9 +443,38 @@ confl_list(Ass1, Assumptions, [Ass2|Tail_ass], [Ass2|Tail_list]) :-
     modal_arguments(Ass2,Op2,C,D),
     conflicts(Assumptions,Op1,Op2),
     confl(Assumptions,Op1,Op2,A,C,Seq),
-    prove(Assumptions,Seq,Tree),
+    prove(modern,Assumptions,Seq,_),
     nbeats(Assumptions,modal(Op1,A,B), modal(Op2,C,D)),
     confl_list(Ass1, Assumptions, Tail_ass, Tail_list).
 confl_list(Ass, Assumptions, [_|Tail_ass], Tail_list) :-
     confl_list(Ass, Assumptions, Tail_ass, Tail_list).
 confl_list(_, _, [], []).					
+
+
+/* confl_list_test
+   for testing
+*/
+confl_list_test(Ass, AsmpList,L) :-
+    confl_list(Ass,asmp([],[],ops([(obl,obl),(per,obl),(for,for)], [], [confl(obl,obl), confl(obl,per), confl(per,obl), confl(obl,for), confl(for,for), confl(per,for)],[]),[]), AsmpList,L).
+
+
+/* make_conflict_lists /2
+   constructs the conflict list for every deontic assumption and adds
+   them to the program
+   ATTENTION: This uses assert!
+*/
+make_conflict_lists(_,[]).
+make_conflict_lists(asmp(Facts,D_Ass,Ops,Sup),[Ass|TailAss]) :-
+    confl_list(Ass,asmp(Facts,D_Ass,Ops,Sup),D_Ass,Confl_list),
+    assertz(conflicting_assumptions(Ass,Confl_list)),
+    make_conflict_lists(asmp(Facts,D_Ass,Ops,Sup),TailAss).
+
+mcl_test(List) :-
+    make_conflict_lists(asmp([],List,ops([(obl,obl),(per,obl),(for,for)], [], [confl(obl,obl), confl(obl,per), confl(per,obl), confl(for,obl), confl(obl,for), confl(for,for), confl(per,for)],[]),[]),List).
+
+/* CONTINUE HERE:
+   [x] add make_conflict_lists to preprocessing
+   [ ] add the call to conflict lists to the assumption rules
+   [ ] retract all conflicting_assumptions before everything
+   [ ] retract all conflicting_assumptions after everything
+*/
