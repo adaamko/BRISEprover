@@ -466,7 +466,8 @@ confl_list_test(Ass, AsmpList,L) :-
 make_conflict_lists(_,[]).
 make_conflict_lists(asmp(Facts,D_Ass,Ops,Sup),[Ass|TailAss]) :-
     confl_list(Ass,asmp(Facts,D_Ass,Ops,Sup),D_Ass,Confl_list),
-    assertz(conflicting_assumptions(Ass,Confl_list)),
+    modal_arguments(Ass,Op,A,B),
+    assertz(conflicting_assumptions(modal(Op,A,B),Confl_list)),
     make_conflict_lists(asmp(Facts,D_Ass,Ops,Sup),TailAss).
 
 mcl_test(List) :-
@@ -474,7 +475,7 @@ mcl_test(List) :-
 
 /* CONTINUE HERE:
    [x] add make_conflict_lists to preprocessing
-   [ ] add the call to conflict lists to the assumption rules
-   [ ] retract all conflicting_assumptions before everything
+   [x] add the call to conflict lists to the assumption rules
+   [x] retract all conflicting_assumptions before everything
    [ ] retract all conflicting_assumptions after everything
 */

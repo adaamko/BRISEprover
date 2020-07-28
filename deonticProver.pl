@@ -234,8 +234,9 @@ for(staffelgeschoss, ((plangebiet(7602) and an_oeffentlicher_verkehrsflaeche) an
    maximal height of buildings of 1200 on grundflaeche 7602_1_1.
 */
 prove_test(Fml, D_ass, Version) :-
-    prove_online(Fml, [], D_ass, [], [], [], [], [], [plangebiet(7602)],
+    prove_online(Fml, [], D_ass, [(n1 beats n2)], [(obl,obl)], [], [confl(obl,obl)], [], [plangebiet(7602),plangebiet(7601)],
 		 Version, derivability, 'test.tex'),!.
+%
 
 /*prove_test(Fml) :-
     prove(asmp([],[modal(obl,at(a) and at(c),at(b)), modal(obl, neg at(a),at(c)),
@@ -697,12 +698,12 @@ not_overruled_modern(Side,asmp(Facts,D_ass,Op_char,Rel), modal(Op1,A,B), Assumpt
 	      , [node(notoverruled(Fml3,seq([F],[D]),[T]))| Tail_tree]) :-
     % Fml3 = modal(Op3,E,F) is not more specific than Assumption = modal(Op2,C,D):
     modal_arguments(Assumption,_,_,D),
-    modal_arguments(Fml3,_,_,F),
+    modal_arguments(Fml3,Op3,E,F),
     % NOTE: Scope for efficiency improvement here: pre-calculate the
     % "more specific" part of the conflict list for each assumption.
     \+ prove(modern,asmp(Facts,D_ass,Op_char,Rel), seq([F],[D]),_),
     % modal(Op3,E,F) = Fml3 is overridden by another more specific assumption:
-    conflicting_assumptions(Fml3,Confl_list_Fml3),
+    conflicting_assumptions(modal(Op3,E,F),Confl_list_Fml3),
     overridden_modern(Side,asmp(Facts,D_ass,Op_char,Rel), modal(Op1,A,B),
 	       Assumption, Fml3, Confl_list_Fml3, T),
     not_overruled_modern(Side,asmp(Facts,D_ass,Op_char,Rel), modal(Op1,A,B),
