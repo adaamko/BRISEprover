@@ -6,9 +6,9 @@
 /*
 Copyright 2020 Bjoern Lellmann
 
-    This file is part of deonticProver 1.3.
+    This file is part of BRISEprover.
 
-    deonticProver 1.3 is free software: you can redistribute it and/or modify
+    BRISEprover is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
@@ -18,7 +18,7 @@ Copyright 2020 Bjoern Lellmann
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with deonticProver 1.3.  If not, see <http://www.gnu.org/licenses/>.
+    along with BRISEprover.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /* prettyprinting.pl
@@ -28,24 +28,33 @@ Copyright 2020 Bjoern Lellmann
 
   :- use_module(library(lists)).
 
+
 /* nonderivable_statement
 */
 nonderivable_statement(nonderivable).
 
 
-/* pp_output
-   DCG for producing the output.
+/* pp_output//4
+   DCG for producing the output of a derivability check.
 */
 pp_output(Format,Assumptions,Formula,Derivation) -->
     pp_header(Format,Assumptions,Formula),
     pp_result(Format,Derivation),
     pp_footer(Format).
 
+
+/* pp_compliance_output//5
+   DCG for producing the output of a compliance check
+*/
 pp_compliance_output(Format,Assumptions,Formula,Disj,Derivation) -->
     pp_header(Format,Assumptions,Formula),
     pp_compliance_result(Format,Disj,Derivation),
     pp_footer(Format).
 
+
+/* pp_compliance_result//3
+   DCG for pretty printing the result of a compliance check
+*/
 pp_compliance_result(screen,_,nonderivable) -->
     ['The input complies with the norms!'].
 pp_compliance_result(screen,_,Derivation) -->
@@ -55,13 +64,11 @@ pp_compliance_result(latex,Disj,nonderivable) -->
     pp_nl_tab(0),
     ['\\begin{center}Result: The input complies with the
     norms, because we cannot derive\\\\'],
-%    pp_nl_tab(0), ['\\['],
     pp_nl_tab(0), ['\\begin{adjustbox}{max width=\\textwidth}'],
     pp_nl_tab(0), ['$'],pp_Fml(latex,Disj),['$'],
     pp_nl_tab(0),
     ['\\end{adjustbox}'],
     pp_nl_tab(0),['\\end{center}'].
-%    pp_nl_tab(0), ['\\]'].
 pp_compliance_result(latex,_,node(Rule,PF,Seq,Suc)) -->
     pp_nl_tab(0),
     ['\\begin{center}Result: The input does not comply with the norms,
@@ -75,6 +82,9 @@ pp_compliance_result(latex,_,node(Rule,PF,Seq,Suc)) -->
     ['\\end{adjustbox}'],pp_nl_tab(0),['\\]'],pp_nl_tab(0).
 
 
+/* pp_result//2
+   DCG for pretty printing the result of a derivability check
+*/
 pp_result(screen,Derivation) --> pp_derivation(screen,0,Derivation).
 pp_result(html,Derivation) --> pp_derivation(html,0,Derivation).
 pp_result(latex,nonderivable) -->
@@ -92,8 +102,7 @@ pp_result(latex,node(Rule,PF,Seq,Suc)) -->
     ['\\end{adjustbox}'],pp_nl_tab(0),['\\]'],pp_nl_tab(0).
 
 
-
-/* pp_header
+/* pp_header//3
    DCG for producing the header depending on the format
 */
 /* TODO:
@@ -138,7 +147,8 @@ pp_header(latex,asmp(Facts, D_ass, ops(Op_list, Incl, Confl, P_list),
     ['\\end{center}'].
 pp_header(html,_,_) --> [].
 
-/* pp_footer
+
+/* pp_footer//1
    DCG for producing the footer depending on the format
 */
 /* TODO
@@ -149,13 +159,14 @@ pp_footer(latex) --> pp_nl_tab(0), ['\\end{document}'].
 pp_footer(html) --> [].
 
 
-/* pp_Op /2
-   DCG for printing an operator
+/* pp_Op//2
+   DCG for pretty printing an operator
 */
+% clauses for printing on screen
 pp_Op(screen,per(Op)) -->
     ['per['],[Op],[']'].
 pp_Op(screen,Op) --> [Op].
-% clauses for latex
+% clauses for printing in latex
 pp_Op(latex,neg) --> ['\\neg'].
 pp_Op(latex,and) --> ['\\land'].
 pp_Op(latex,or) --> ['\\lor'].
@@ -165,8 +176,11 @@ pp_Op(latex,per(Op)) -->
 pp_Op(latex,Op) -->
     {replace_underscores(Op,Op_new)},
     ['\\mathsf{'],[Op_new],['}'].
+% TODO [ ] clauses for printing in html
 
-/* pp_norm
+
+/* pp_norm//2
+   DCG for pretty printing a norm statement
 */
 pp_norm(screen,Norm) --> [Norm].
 pp_norm(html,Norm) --> [Norm].
@@ -177,7 +191,9 @@ pp_norm(latex,bb(A)) -->
     {replace_underscores(A,A_new)},
     ['\\texttt{bb('],[A_new],[')}'].
 
-/* pp_type
+
+/* pp_type//2
+   DCG for pretty printing an operator type
 */
 pp_type(screen,Type) --> [Type].
 pp_type(html,Type) --> [Type].
@@ -185,9 +201,10 @@ pp_type(latex,Type) -->
     {replace_underscores(Type,Type_new)},
     ['\\mathsf{'],[Type_new],['}'].
 
-/* pp_Fml /2
- * DCG to write a formula. Takes additional argument Form for the
- * format (either 'screen', 'latex' or 'html').
+
+/* pp_Fml//2
+   DCG to pretty print a formula. Takes additional argument for the
+   format (either 'screen', 'latex' or 'html').
 */
 % clauses for html: 
 pp_Fml(html,at(X)) --> {atom(X)}, [X].
@@ -292,8 +309,8 @@ pp_Fml(screen,(Op1 -> Op2)) -->
     pp_Op(screen,Op1),['->'],pp_Op(screen,Op2).
 
 
-/* pp_Fml_list /2
- * DCG to write a list of formulae.
+/* pp_Fml_list//2
+   DCG to pretty print a list of formulae.
 */
 pp_Fml_list(_, []) --> [].
 pp_Fml_list(Form, [inv(_)|Tail]) -->
@@ -302,11 +319,13 @@ pp_Fml_list(Form, [A|[]]) -->
     pp_Fml(Form, A).
 pp_Fml_list(Form, [A|Tail]) --> 
     pp_Fml(Form, A), [', '], pp_Fml_list(Form, Tail).
-/* pp_Fml_list /3
- * DCG for writing a list of formulae in html format, depending on the
- * side of the sequent.
- * The additional argument specifies the left or right hand side of
- * the sequent.
+
+
+/* pp_Fml_list//3
+   DCG for writing a list of formulae in html format, depending on the
+   side of the sequent.
+   The additional argument specifies the left or right hand side of
+   the sequent.
 */
 pp_Fml_list(html,l, []) --> ['true'].
 pp_Fml_list(html,r, []) --> ['we have a contradiction'].
@@ -318,7 +337,7 @@ pp_Fml_list(html,r, [A|Tail]) -->
     pp_Fml(html, A), [' or '], pp_Fml_list(html,r, Tail).
 
 
-/* pp_Seq
+/* pp_Seq//2
  * DCG to print a sequent, with argument specifying whether it is
  * printed on screen, in latex, or as explanation in html.
 */
@@ -336,7 +355,7 @@ pp_Seq(html,seq(A,B)) -->
  then it is the case that ( '], pp_Fml_list(html,r,B),[' )'].
 
 
-/* pp_Seq_arrow
+/* pp_Seq_arrow//1
    DCG for printing the sequent arrow in the different formats
 */
 pp_Seq_arrow(screen) --> [' => '].
@@ -344,7 +363,7 @@ pp_Seq_arrow(latex) --> ['\\seq'].
 pp_Seq_arrow(html) --> [' => '].
 
 
-/* pp_Seq_list
+/* pp_Seq_list//2
    DCG for printing a list of sequents
 */
 pp_Seq_list(screen,[]) --> [].
@@ -362,7 +381,9 @@ pp_Seq_list(html,[Seq|[]]) -->
 pp_Seq_list(html, [Seq1,Seq2|Tail]) -->
     ['( '], pp_Seq(html,Seq1), [' ); '], pp_Seq_list(html, [Seq2|Tail]).
 
-/* pp_assumptions
+
+/* pp_assumptions//2
+   DCG for pretty printing the assumptions
 */
 pp_assumptions(screen,asmp(Facts,D_Ass,ops(Ops,Incl,Confl,Rec),Sup))
 -->
@@ -382,7 +403,7 @@ pp_assumptions(screen,asmp(Facts,D_Ass,ops(Ops,Incl,Confl,Rec),Sup))
     ['Superiority relation: '], pp_Fml_list(screen,Sup).
     
 
-/* pp_derivation
+/* pp_derivation//3
    DCG for producing a derivation in latex, html, or on the screen.
    First argument is the format, second argument is indenting depth,
    third argument is the derivation tree.
@@ -495,9 +516,6 @@ pp_derivation(screen,N,node(notoverruled(Fml,_,[Suc]))) -->
 pp_derivation(screen,N,node(overrides(Fml1, Fml2),[T1,T2,T3])) -->
     pp_nl_tab(N),
     ['The assumption '],pp_Fml(screen,Fml2),
-/*    [' is not more specific than the one we used'],
-    pp_nl_tab(N),
-*/
     [' is overridden by the assumption '],pp_Fml(screen,Fml1), 
     [' because: '],pp_nl_tab(N+2),
     ['It is applicable:'],
@@ -565,7 +583,6 @@ pp_derivation(latex,N,node(asmpL(Op1,Assumption), _, Seq, Suc)) -->
     pp_Seq(latex,Seq),['}{'],
     pp_derivation_list(latex,N+2,Suc),
     pp_nl_tab(N),['}'].
-% TODO: [ ] add the underivability stuff / blocks for assumption rules
 % clauses for the different blocks in the assumption rules:    
 pp_derivation(latex,N,node(no_p_conflict(Op,Seq))) -->
     pp_nl_tab(N),
@@ -579,8 +596,7 @@ pp_derivation(latex,N,node(not_overruled(Assumption),Suc))
     pp_nl_tab(N),
     ['\\begin{array}[b]{l}\\text{The assumption}\\\\'],
     pp_Fml(latex,Assumption),
-    ['\\\\ \\text{is not overruled:}\\end{array}'], %pp_Fml(latex,Assumption),
-%    [' is not overruled: & '],
+    ['\\\\ \\text{is not overruled:}\\end{array}'], 
     pp_nl_tab(N),
     ['&'],
     pp_derivation_list(latex,N+2,Suc).
@@ -606,7 +622,6 @@ pp_derivation(latex,N,node(superior(Norm1:_, Norm2:Fml2))) -->
     pp_nl_tab(N),
     ['\\begin{array}[b]{l}\\text{For }'],
     pp_Fml(latex,Norm2:Fml2),[':\\\\ '],
-    %[' is inferior to '],pp_Fml(latex,Norm1:Fml1),
     pp_Fml(latex, Norm1 beats Norm2),
     ['\\end{array}'].
 pp_derivation(latex,N,node(notoverruled(Fml,Seq,[Suc]))) -->
@@ -621,32 +636,17 @@ pp_derivation(latex,N,node(overrides(Fml1, Fml2),[T1,T2,T3])) -->
     ['\\begin{array}[b]{l}\\text{For }'],
     pp_Fml(latex,Fml2), [':\\\\ '],
     ['\\text{Overridden by}\\\\'],
-    %['\\begin{array}[b]{l}\\text{Overridden by}\\\\'],
     pp_Fml(latex,Fml1),
-    %['\\\\ \\text{ and overridden by: }'],
     pp_nl_tab(N),
-    %['and it is overridden by the assumption '],
-    %pp_Fml(latex,Fml1), 
     ['\\text{ because:} \\end{array}'],
     pp_nl_tab(N),['&'],
     pp_derivation_list(latex,N+2,[T1,T2,T3]).
-/*
-    ['It is applicable:'],
-    pp_derivation(latex,N+4,T1),
-    pp_nl_tab(N+2),
-    ['It is more specific:'],
-    pp_derivation(latex,N+4,T2),
-    pp_nl_tab(N+2),
-    ['It reinstates what we want to derive:'],
-    pp_derivation(latex,N+4,T3).
-*/
 
-		  
 
-/* pp_derivation_list
+/* pp_derivation_list//3
    DCG for pretty printing a list of derivations
 */
-% TODO: [ ] add this.
+% TODO: [ ] add this for html.
 pp_derivation_list(screen,_,[]) --> [].
 pp_derivation_list(screen,N,[Der|[]]) -->
     pp_derivation(screen,N,Der).
@@ -680,19 +680,21 @@ rule_type(asmpR(_,_),modal).
 rule_type(asmpL(_,_),modal).
 
 
-/* pp_tab(N)
+/* pp_tab//1
  * DCG for indenting using N spaces
 */
 pp_tab(0) --> [].
 pp_tab(N) --> {N =\=0, M is N-1}, [' '], pp_tab(M).
 
-/* pp_nl_tab(N)
+
+/* pp_nl_tab//1
    DCG for newline followed by N spaces
 */
 pp_nl_tab(N) --> ['
 '],pp_tab(N).
 
-/* replace_underscores
+
+/* replace_underscores /2
    For replacing prefixing underscores with the escape character.
 */
 /*
