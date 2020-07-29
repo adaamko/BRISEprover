@@ -138,6 +138,7 @@ prove_online(Fml, Facts, D_Assumptions, Sup_Relation, Operators,
     prove_with_filename(Fml, [(obl,obl), (for,for), (per,obl)|Operators], Inclusions, [confl(obl,obl), confl(obl,per), confl(obl,for), confl(for,for), confl(for,per)|Conflicts], P_list,
 			New_Facts, New_D_Assumptions, Sup_Relation,
 			Version, Filename).
+% For compliance checks
 prove_online(Fml, Facts, D_Assumptions, Sup_Relation, Operators,
 	     Inclusions, Conflicts, P_list, _, Version, compliance, Filename) :-
     include_type(obl,Operators,Obligations),
@@ -221,6 +222,8 @@ prove_with_filename(Fml, Operators, Op_Inclusions, Op_Conflicts,
     close(Stream),!.
 
 
+/* TESTING PREDICATES */
+
 /* prove_test
    to test the prove predicate
 */
@@ -291,6 +294,9 @@ prove_test2(Fml,Dass) :-
     prove(asmp([],[norm1:modal(obl,a,b), modal(obl, neg a,c), modal(obl,a, c and d)],ops([(obl,obl)],[obl -> obl],[confl(obl,obl)],[]),[]), seq([],[neg modal(obl,neg a,b and c and d)]),T)
 */
 
+/*  END OF TESTING PREDICATES */
+
+
 
 /* prove /4
    prove(Logic,Ass,Seq,Tree) is true if given the assumptions Ass, the
@@ -315,8 +321,7 @@ prove(_,asmp(Facts,_,_,_), seq(Gamma,Delta), node(fact, seq(Sigma, Pi),
     subset(Sigma,Gamma),
     subset(Pi,Delta),!. % geen cut for efficiency
 
-/* Assumptions about measures
-*/
+/* Assumptions about measures */
 % measure is not greater than max_measure:
 prove(_,_, seq(Gamma,Delta),
       node(fact, seq([at(measure(Type,Object,N)),at(max_measure(Type,Object,M))],[]),
@@ -460,7 +465,7 @@ prove(L,Assumptions, seq(Gamma,Delta),
     prove(L,Assumptions, Seq, T),!. % green cut for efficiency
 
 /* assumption right rule */
-/* classic version (for the specificit handling as in the DEON papers */
+/* classic version (for the specificity handling as in the DEON papers */
 prove(classic,asmp(Facts,D_ass_list,Op_char,Rel), seq(Gamma,Delta),
       node(asmpR(Op1,Assumption), seq([],[modal(Op1,A,B)]),
 	   seq(Gamma,Delta), [T1,T2,T3,node(not_overruled(Assumption),Tree_list)]))
@@ -480,7 +485,6 @@ prove(classic,asmp(Facts,D_ass_list,Op_char,Rel), seq(Gamma,Delta),
     include(applicable_assumption(asmp(Facts,D_ass_list,Op_char,Rel),
 			     modal(Op2,C,D)),
 	    D_ass_list, Outer_list),
-    % HERE TODO [x] change the modal(Op2,C,D) to Assumption
     not_overruled(r,asmp(Facts,D_ass_list,Op_char,Rel),
 			  modal(Op1,A,B), Assumption, Outer_list,
 	    Tree_list),!. % green cut for efficiency
@@ -526,11 +530,6 @@ prove(classic,asmp(Facts,D_ass_list,Op_char,Rel), seq(Gamma,Delta),
     include(applicable_assumption(asmp(Facts,D_ass_list,Op_char,Rel),
 				  modal(Op2,C,D)), D_ass_list,
 	    Outer_list),
-/*  OLD:  include(applicable_outer(asmp(Facts,D_ass_list,Op_char,Rel),
-			     modal(Op1,A,B),modal(Op2,C,D)),
-	    D_ass_list, Outer_list),
-*/
-    % HERE: TODO [x] change the modal(Op2,C,D) to Assumption
     not_overruled(l,asmp(Facts,D_ass_list,Op_char,Rel),
 			  modal(Op1,A,B), Assumption, Outer_list,
 	    Tree_list),!. % green cut for efficiency
@@ -560,8 +559,6 @@ prove(modern,asmp(Facts,D_ass_list,Op_char,Rel), seq(Gamma,Delta),
    or conflicting undefeated assumption modal(Op3,E,F) from a list of
    possibly conflicting assumptions.
    Takes the side of the assumption rule as the first argument.
-*/
-/* TODO: [ ] add the "modern" version using the conflict list
 */
 /* classic version (for specificity handling as in the DEON papers) */
 not_overruled(_,_,_,_,[],[]).
@@ -611,9 +608,6 @@ not_overruled(Side,asmp(Facts,D_ass,Op_char,Rel), modal(Op1,A,B), Assumption
     % modal(Op3,E,F) is overridden by another more specific assumption:
     include(applicable_assumption(asmp(Facts,D_ass,Op_char,Rel),
 				  modal(Op3,E,F)), D_ass, Inner_list),
-/* OLD: include(applicable_inner(asmp(Facts,D_ass,Op_char,Rel),
-			     modal(Op1,A,B), modal(Op3,E,F)),D_ass,Inner_list),
-*/
     overridden(Side,asmp(Facts,D_ass,Op_char,Rel), modal(Op1,A,B),
 	       Assumption, Fml3, Inner_list, T),
     not_overruled(Side,asmp(Facts,D_ass,Op_char,Rel), modal(Op1,A,B),
@@ -636,11 +630,6 @@ not_overruled(Side,asmp(Facts,D_ass,Op_char,Rel), modal(Op1,A,B), Assumption
    conflicting assumptions is indeed conflicting and don't need to
    check it again.
 */
-
-/* TODO
-   [x] change overridden to overridden_modern if necessary.
-*/
-
 not_overruled_modern(_,_,_,_,[],[]).
 
 % clause for not applicable (condition of the possibly conflicting
@@ -765,19 +754,6 @@ overridden_modern(_,Asmp,  modal(_,_,B), _, Fml3
     prove(modern,Asmp,seq([Y],[F]),T2),
     confl(Asmp,Op3,Op4,E,X,Seq),
     prove(modern,Asmp,Seq,T3).
-/*
-overridden_modern(l,Asmp,  modal(Op1,A,B), _, Fml3
-	   , [Fml4|_],
-	   node(overrides(Fml4, Fml3),[T1,T2,T3]))
-:-
-    modal_arguments(Fml3,Op3,E,F),
-    modal_arguments(Fml4,Op4,X,Y),
-    nbeats(Asmp,modal(Op3,E,F),modal(Op4,X,Y)),
-    prove(modern,Asmp,seq([B],[Y]),T1),
-    prove(modern,Asmp,seq([Y],[F]),T2),
-    confl(Asmp,Op3,Op4,E,X,Seq),
-    prove(modern,Asmp,Seq,T3).
-*/
 overridden_modern(Side,Asmp, F1, F2, F3, [_|Tail_list], Tree) :-
     overridden_modern(Side,Asmp, F1,F2,F3, Tail_list, Tree).
 
@@ -920,7 +896,8 @@ member_norm((Norm:modal(Op,A,B)),Op,A,B,D_ass) :-
 
 
 /* modal_arguments
-   true if the 
+   true if the norm in the first argument has the operator in the
+   second and the arguments in the last two.
 */
 modal_arguments(modal(Op,A,B),Op,A,B).
 modal_arguments((_:modal(Op,A,B)),Op,A,B).
