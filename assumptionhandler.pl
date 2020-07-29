@@ -3,6 +3,7 @@
  * deontic assumptions from the Bebauungsplan.
 */
 
+
 /* facts_plangebiet//1
  * generates all the factual assumptions about a Plangebiet, including
  * the location-based ones, and the ones about the Bauland,
@@ -15,6 +16,7 @@ facts_plangebiet(Plangebiet) -->
     {phrase(bauland(Plangebiet),Bs)},
     lift_DCG(combined_facts,Bs).
 
+
 /* combined_facts//1
  * combines facts about the Bauland, the Grundflaechen and the
  * Fluchtlinien on that Bauland.
@@ -25,6 +27,7 @@ combined_facts(Bauland)
 --> bauland_facts(Bauland), 
     grundflaechen_facts(Bauland),
     fluchtlinien_facts(Bauland).
+
 
 /* obligations_plangebiet//1
  * generates the list of obligations for all Grunddflaechen on the
@@ -38,6 +41,7 @@ obligations_plangebiet(Plangebiet)
     lift_DCG(grundflaechen_obligations,Bs),
     textliche_bestimmungen(Plangebiet).
     
+
 /* on_location /3
  * true if Term1 and Term2 are objects in a location in List and Term1
  * is located on Term2
@@ -54,6 +58,7 @@ on_location(List,Term1,Term2) :-
     Term2 =.. [_,Name2|_],
     \+ Name1 = Name2,
     sub_atom(Name1,0,_,_,Name2).
+
 
 /* objects//1
  * Given a list of Plangebiete as parameter generates the list of
