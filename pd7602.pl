@@ -121,9 +121,8 @@ grundflaechen_facts(bauland(7602_1), [
 				  grundflaeche(7602_1_5) -> bb(7602_2)]).
 */
 % als DCG:
-grundflaechen_facts(bauland(7602_1)) --> [].
-/* UNCOMMENT HERE!
---> [grundflaeche(7602_1_1) -> bauland(7602_1),
+grundflaechen_facts(bauland(7602_1)) --> 
+    [grundflaeche(7602_1_1) -> bauland(7602_1),
 	grundflaeche(7602_1_1) -> widmung(gb),
 	grundflaeche(7602_1_1) -> bauklasse(iv),
 	grundflaeche(7602_1_1) -> bauweise(g),
@@ -142,7 +141,7 @@ grundflaechen_facts(bauland(7602_1)) --> [].
 	grundflaeche(7602_1_5) -> bauklasse(i),
 	grundflaeche(7602_1_5) -> bauweise(g),
 				  grundflaeche(7602_1_5) -> bb(7602_2)].
-*/
+
 /* obligations about the grundflaechen
 */
 /*
