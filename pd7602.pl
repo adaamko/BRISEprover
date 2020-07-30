@@ -196,7 +196,7 @@ pp([Term|List]) :-
 /* For testing: imaginary plangebiet(7601)
 */
 
-
+/*
 bauland(plangebiet(7601)) --> [bauland(7601_1)].
 
 %bauland_facts(plangebiet(7601)) --> [].
@@ -223,3 +223,4 @@ textliche_bestimmungen(plangebiet(7601))
 
 
 
+*/

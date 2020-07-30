@@ -4,7 +4,7 @@
 
 bauland(plangebiet(7601)) --> [bauland(7601_1)].
 
-bauland_facts(plangebiet(7601)) --> [].
+bauland_facts(bauland(7601_1)) --> [].
 
 grundflaechen(bauland(7601_1))
 --> [grundflaeche(7601_1_1), grundflaeche(7601_1_2)].

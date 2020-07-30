@@ -44,13 +44,23 @@ variable_with_arguments(Op) :-
 
 /* load parts for prettyprinting and for preprocessing
 */
+:- dynamic(conflicting_assumptions/2). % is asserted in preprocessing
 :- ensure_loaded([prettyprinting]).
 :- ensure_loaded([preprocessing]).
 /* load example formalisation
+ * every Plangebiet has its own file
 */
+:- multifile(bauland/3).
+:- multifile(bauland_facts/3).
+:- multifile(grundflaechen/3).
+:- multifile(grundflaechen_facts/3).
+:- multifile(grundflaechen_obligations/3).
+:- multifile(fluchtlinien/3).
+:- multifile(fluchtlinien_facts/3).
+:- multifile(textliche_bestimmungen/3).
 :- ensure_loaded([assumptionhandler]).
 :- ensure_loaded([pd7602]).
-%:- ensure_loaded([pd7601]).
+:- ensure_loaded([pd7601]).
 
 
 /* DATA STRUCTURE
@@ -331,7 +341,7 @@ prove(_,_, seq(Gamma,Delta),
     N > M,!.% green cut for efficiency
 % measure is not smaller than min_measure:
 prove(_,_, seq(Gamma,Delta),
-      node(fact, seq([at(min_measure(Type,Object,N)),at(measure(Type,Object,M))],[]),
+      node(fact, seq([at(measure(Type,Object,N)),at(min_measure(Type,Object,M))],[]),
 	   seq(Gamma, Delta), [])) :- 
     member(at(measure(Type,Object,N)),Gamma),
     member(at(min_measure(Type,Object,M)),Gamma),
