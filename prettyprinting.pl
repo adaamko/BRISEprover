@@ -1,8 +1,3 @@
-/* TODO:
-   [ ] for modern version: change the pretty printing of the
-   assumption rules to reflect the new rules
-*/
-
 /*
 Copyright 2020 Bjoern Lellmann
 

@@ -90,6 +90,9 @@ add_permissions(ops([(Op1,Type)|Ops],Incl,Confl,Rec),
 /* added_at
  * true if second argument is first argument with at(AT) instead of
  * atom AT
+ * Also converts the content of variables with arguments into a
+ * string, except for the last argument of
+ * measures/max_measures/min_measures.
 */
 added_at(false,false).
 added_at(true,true).
@@ -100,9 +103,24 @@ added_at(->(A,B), ->(C,D)) :- added_at(A,C), added_at(B,D).
 added_at(modal(Op,A,B),modal(Op,C,D)) :- added_at(A,C), added_at(B,D).
 added_at(Norm:modal(Op,A,B),Norm:modal(Op,C,D)) :- added_at(A,C), added_at(B,D).
 added_at(A,at(A)) :- atom(A).
+/*
+added_at(measure(A,B,C),at(measure(D,E,C))) :-
+    atom_string(A,D),
+    atom_string(B,E).
+added_at(max_measure(A,B,C),at(max_measure(D,E,C))) :-
+    atom_string(A,D),
+    atom_string(B,E).
+added_at(min_measure(A,B,C),at(min_measure(D,E,C))) :-
+    atom_string(A,D),
+    atom_string(B,E).
+*/
+added_at(A,at(A)) :-
+    A =.. [Var,_],
+    variable_with_arguments(Var).
 added_at(A,at(A)) :-
     A =.. [Var|_],
     variable_with_arguments(Var).
+/*    \+ member(Var,[measure, max_measure, min_measure]),*/
 added_at(A beats B, C beats D) :- added_at(A,C), added_at(B,D).
 added_at(seq(L,N), seq(Lat,Nat)) :-
     maplist(added_at,L,Lat),

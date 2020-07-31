@@ -1,0 +1,156 @@
+#+TITLE: BRISEprover - notes
+
+
+* explanation output
+  Would be nice flashy output :)
+
+** TODO add prettyprinting(html)
+
+** TODO website: add selector for derivation/explanation
+
+** TODO pass the selector through PhP and script
+
+
+* Formatting/pretty printing
+
+** TODO underscores in names
+   Check how to represent names bb(7602.1.4) as bb( <string> ) instead
+   of bb( <number> )
+
+   _Problem_: The underscore is used in Prolog for digit grouping of
+   integers, see [[https://www.swi-prolog.org/pldoc/man?section%3Dsyntax][SWIPL 2.16, Section 2.16.1.5]]. Hence the underscore
+   gets deleted if the rest of the symbols are natural numbers...
+
+   _Problem_: The dot is used as the floating point. Hence things with
+   more than one dot result in a type error, e.g., 3.2.1.
+
+   _Solution 1_: Use a different symbol, e.g., * should work.
+
+   _Solution 2_: give up on having the identifier as a pure string of
+   numbers, and start with a letter instead. E.g., for b_3_2_1 it does
+   work.
+   _Possible solution 3_: Do something with dictionaries? At least
+   there is a "Type error: 'dict' expected, found 'b' (an atom)".
+
+** TODO pretty printing for measures
+   add clause for the initial sequents obtained via the measures.
+
+** TODO make sure it is compatible with location_facts
+   in particular with the structure used in the naming (as tree, with
+   subtree meaning "on location").
+
+* Checking consistency of a formalisation
+  => reuse the vikalpa-check?
+
+* Comparing different formalisations / interpretations
+  in particular for comparing different formalisations of the
+  Bauordnung.
+  Could do:
+  - load two different bauordnungen
+  - give each of the bauordnungen their own norm name 'bo1', 'bo2'
+  - do a "vikalpa-check" for every formula in each of the
+    bauordnungen, with 'bo1 beats bo2' and 'bo2 beats bo1' and no
+    superiority
+  - interpret results :)
+
+* Efficiency improvements
+
+** TODO Restricted conflict lists
+   I.e., for hearts(A,B), consider { spades(C,D) : hearts confl
+   spades, confl(A,C), hearts(A,B) nbeats spades(C,D), |- D => B }
+   To cut down the time necessary for checking whether a conflicting
+   obligation is overruled by a more specific one.
+
+** Some form of global caching for modal formulae?
+   Perhaps in particular for nonderivable sequents to prevent having
+   to check all the possibilities again.
+   _BUT_: this would mean we need to adjust the proof search towards
+   what is done in the countermodel construction for BiM
+
+   E.g.: Could have dynamic predicate underivable/1 with clause in the
+   prove predicate
+   prove(Seq) :- member(hearts(A,B),Seq), ( \+
+   underivable(hearts(A,B)), ... ; asserta(underivable(hearts(A,B))), fail).
+   => _Should work!_
+
+** cut after the first premiss in two-premiss rules?
+   To prevent re-checking a derivation for the first one if the second
+   one doesn't have one.
+
+** DONE Cuts after the rules
+   To prevent re-checking for derivations if the sequent is derivable
+   already.
+
+* new specificity rule
+
+** DONE calculate conflict list in preprocessing
+
+** DONE add parameter for the logic to prove predicate
+   Old one: classic
+   New one: modern
+
+*** DONE change the parameter in:
+    - [X] no_conflict_p
+    - [X] overridden
+    - [X] not_overruled
+    - [X] confl_list
+    - [X] prove_online
+    - [X] prove_with_filename
+
+** DONE modify assumption rules with conflict list
+
+** DONE allow for Norm:Fml in the construction of the conflict lists
+   => conflicting_assumptions only defined for modal(Op,A,B), even if
+   the Assumption in the clause for the assumption rule is of the form
+   Norm:modal(Op,A,B).
+
+** DONE adjust pretty printing
+   Was nothing to do in the end.
+
+** TODO compare speed
+
+** DONE website: add selector for logic 
+
+** DONE pass selector through php and script
+
+** DONE check that measures work as they should
+
+
+* Compliance checks
+
+** TODO Check whether it makes sense in our case.
+** Re-activate the compliance check (if it works)
+
+* Measures
+** DONE Write the theory for measures
+   See [[file:~/Dropbox/sketchesdrop/papers/2020specificityrevisited/2020specificityrevisited.pdf][2020specificityrevisited.pdf]] (in
+   Dropbox/papers/2020specificityrevisited/)
+   
+   
+* loading examples as DCG
+
+** DONE find why we can't have 2 examples
+   bug in:
+   phrase(facts_plangebiet(plangebiet(7601)),L)
+   -> phrase(combined_facts(bauland(76011)),L)
+   -> bauland_facts(bauland(76011)) <== _THIS ONE_
+   ==> bauland_facts need to be about the bauland, not about the
+   plangebiet....
+
+** DONE write format for new files
+   I.e., which entries *have* to be there, what is the structure for
+   the data, etc.
+
+** DONE Find out why we can't split the DCG across two files
+   Problematic example: have the clause for bauland(plangebiet(7601))
+   in the additional file pd7601.pl.
+   Then SWIPL complains that it doesn't find it.
+
+   _Problem_: We get a "Redefined static procedure" when we try to
+   load two files with definitions for the same predicate. In
+   particular, the second one overwrites the first one.
+
+   _Solution_: We can use multifile/1 to tell prolog that a predicate
+   is spread out over multiple files to prevent redefining it:
+   E.g.: :- multifile(bauordnung) if the clauses for bauordnung are
+   spread over 2 files.
