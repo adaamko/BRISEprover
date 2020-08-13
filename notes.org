@@ -5,7 +5,62 @@
   Would be nice flashy output :)
 
 ** TODO add prettyprinting(html)
+   - [X] pp_header(html,Assumption,Formula)
+   - [X] pp_footer(html)
+   - [X] pp_result(html,Derivation)
+   - [ ] ( pp_compliance_result(html,Derivation) )
+   - [ ] pp_derivation(html,0,Derivation)
+   - [X] pp_Op(html,Op)
+   - [X] pp_norm(html,Norm)
+   - [X] pp_type(html,Type)
+   - [ ] pp_Fml(html,Fml)
+     - [ ] types
+     - [ ] conflicts
+     - [ ] inclusions
+     - [ ] p_list
+   - [X] pp_Fml_list(html,Side,List)
+   - [X] pp_Seq(html,Seq)
+   - [X] pp_Seq_list(html,List)
+   - [X] pp_assumptions(html,Asmp)?
+     => now contained in pp_header.
+   - [ ] pp_derivation_list(html,List)
+     => CHECK if we even need that for html?
+   - [X] explain_html_new(File,Sequent,Assumptions,Tree)
+     (in deonticProver1.3)
+     => explain_with_filename and explain_online in BRISEprover
+   - [ ] tree_vs_named_tree_new(Tree,Tree_named)
+     (uses pp_html_DCG_new in deonticProver1.3)
+   - [ ] pp_html_input_DCG(Sequent,Assumption)
+     (in deonticProver1.3; for printing the assumptions)
+   - [ ] pp_html_DCG_new
+     (in deonticProver1.3; uses pp_derivation(html,2,Tree))
+   - [X] pp_Facts(html,Facts)
+     (in deonticProver1.3; from pp_html_input_DCG)
+     - [X] pp_fact_list(html,List)
+   - [X] pp_srauta(html,Srauta)
+     (in deonticProver1.3; from pp_html_input_DCG)
+     - [X] pp_srauta_list(html,List)
+   - [X] pp_relation(html,Relation)
+     (in deonticProver1.3; from pp_html_input_DCG)
+     - [X] pp_relation_list(html,list)
+   - [ ] pp_html_deriv?
+   - [ ] pp_html_truncated_new(Depth,Tree)
+   - [ ] ( pp_html_truncated_new_prop(Rulename) )
+     (for the detailed explanations for the propositional rules)
+   - [ ] pp_html_truncated_new_modal(Name,Seq)
+   - [ ] pp_html_derivable_statement(Name,Seq)
+   - [ ] pp_html_successors_new
+   - [ ] pp_html_truncated_successors_new?
+   - [ ] pp_html_aux_list_new
+   - [ ] pp_html_truncated_list?
+   - [ ] pp_html_skip_list_new
+     - [ ] pp_html_skip_list_aux_new
+   - [ ] format_name(Name)
+   - [ ] tree_vs_named_tree_new
+     - [ ] tree_vs_named_tree_aux_new
+     - [ ] treelist_vs_named_treelist_new
 
+    
 ** TODO website: add selector for derivation/explanation
 
 ** TODO pass the selector through PhP and script
@@ -32,6 +87,24 @@
    _Possible solution 3_: Do something with dictionaries? At least
    there is a "Type error: 'dict' expected, found 'b' (an atom)".
 
+
+   _SUMMARY:_ (After discussion with Martin Riener on 2020-08-05)
+   Either write a parser, or use a different symbol => USE DIFFERENT
+   SYMBOL: "3407/3/4" or "3407:3:4" would work PRO "/": only one
+   keystroke on US keyboard. If shift is forgotten on German keyboard
+   it is more apparent ("/" vs "7" instead of ":" vs "."); maybe
+   clearer than ":". CON "/": two keystrokes on German keyboard; looks
+   perhaps not so nice.
+   PRO ":": Looks a bit sleeker; easier to type on German keyboard
+   than "/". CON ":": more non-standard than "/"; not so good to type
+   on US keyboard.
+
+*** TODO Fix bug for bb(X:Y:Z)
+    Problem: get a "syntax error" when trying to input bb(3:4:2) or so
+    as norm name. For formulae it seems to work. => pretty printing of
+    norms might need an additional clause catching all other
+    operators?
+    
 ** TODO pretty printing for measures
    add clause for the initial sequents obtained via the measures.
 

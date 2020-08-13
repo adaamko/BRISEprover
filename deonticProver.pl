@@ -39,7 +39,7 @@ variable_with_arguments(Op) :-
     member(Op,[height, width, max_height, max_width, min_height,
 	       min_width, measure, max_measure, min_measure, area,
 	       plangebiet, bauland, grundflaeche, widmung, bauklasse,
-	       bauweise, bb, baulinie, baufluchtlinie, grenzlinie]).
+	       bauweise, bb, b, baulinie, baufluchtlinie, grenzlinie]).
 
 
 /* load parts for prettyprinting and for preprocessing
@@ -172,6 +172,22 @@ prove_online(Fml, Facts, D_Assumptions, Sup_Relation, Operators,
     close(Stream),!.
 
 
+/* explain_online
+   for outputting explanation.
+   TODO: [ ] merge this with prove_online using a parameter for output format.
+*/
+explain_online(Fml, Facts, D_Assumptions, Sup_Relation, Operators,
+	     Inclusions, Conflicts, P_list, Ex_list, Version, derivability, Filename) :-
+    phrase(added_facts(Facts,Ex_list),New_Facts),
+%    facts(plangebiet(7602),L),
+%    append(Facts,L,Facts1),
+    phrase(added_assumptions(D_Assumptions,Ex_list),New_D_Assumptions),
+%    obligations_plangebiet(plangebiet(7602),O),
+%    append(O,D_Assumptions,D_Assumptions1),
+    explain_with_filename(Fml, [(obl,obl), (for,for), (per,obl)|Operators], Inclusions, [confl(obl,obl), confl(obl,per), confl(obl,for), confl(for,for), confl(for,per)|Conflicts], P_list,
+			New_Facts, New_D_Assumptions, Sup_Relation,
+			Version, Filename).
+
 /* apply_op
    (for compliance check)
 */
@@ -226,6 +242,28 @@ prove_with_filename(Fml, Operators, Op_Inclusions, Op_Conflicts,
     ;
     nonderivable_statement(Derivation)),!,
     phrase(pp_output(latex,Ass_Processed,Fml2,Derivation),L),
+    atomic_list_concat(L,L1),
+    open(Filename,write,Stream),
+    write(Stream,L1),
+    close(Stream),!.
+/* explain_with_filename
+   For outputting explanation
+   TODO [ ] merge this with prove_with_filename using a parameter for the output.
+*/
+explain_with_filename(Fml, Operators, Op_Inclusions, Op_Conflicts,
+		    Op_P, Facts, D_Assumptions, Sup_Relation, Version,
+		    Filename
+		   ) :-
+    preprocess(Version,asmp(Facts, D_Assumptions, ops(Operators, Op_Inclusions
+					      , Op_Conflicts, Op_P),
+		    Sup_Relation), Ass_Processed,_),
+    modalised(Fml,Fml1),
+    added_at(Fml1,Fml2),!, % cut for efficiency
+    (prove(Version,Ass_Processed, seq([],[Fml2]), Derivation)
+    ;
+    nonderivable_statement(Derivation)),!,
+    tree_vs_named_tree(Derivation,Derivation_named),
+    phrase(pp_output(html,Ass_Processed,Fml2,Derivation_named),L),
     atomic_list_concat(L,L1),
     open(Filename,write,Stream),
     write(Stream,L1),
@@ -316,20 +354,20 @@ prove_test2(Fml,Dass) :-
 /* initial sequents */
 prove(_,_, seq(Gamma, Delta),
       node(botL, seq([false],[]), seq(Gamma,Delta),[])) :-
-    member(false, Gamma),!. % green cut for efficiency
+    member(false, Gamma),!. % cut for efficiency
 prove(_,_, seq(Gamma, Delta),
       node(topR, seq([],[true]), seq(Gamma,Delta),[])) :-
-    member(true, Delta),!. % green cut for efficiency
+    member(true, Delta),!. % cut for efficiency
 prove(_,_, seq(Gamma, Delta),
       node(init, seq([F],[F]), seq(Gamma,Delta),[])) :-
-    member(F, Gamma), member(F, Delta),!. % green cut for efficiency
+    member(F, Gamma), member(F, Delta),!. % cut for efficiency
 
 /* factual assumptions */
 prove(_,asmp(Facts,_,_,_), seq(Gamma,Delta), node(fact, seq(Sigma, Pi),
 						seq(Gamma, Delta),[])) :-
     member(seq(Sigma,Pi), Facts),
     subset(Sigma,Gamma),
-    subset(Pi,Delta),!. % geen cut for efficiency
+    subset(Pi,Delta),!. % cut for efficiency
 
 /* Assumptions about measures */
 % measure is not greater than max_measure:
@@ -338,35 +376,35 @@ prove(_,_, seq(Gamma,Delta),
 	   seq(Gamma, Delta), [])) :- 
     member(at(measure(Type,Object,N)),Gamma),
     member(at(max_measure(Type,Object,M)),Gamma),
-    N > M,!.% green cut for efficiency
+    N > M,!.% cut for efficiency
 % measure is not smaller than min_measure:
 prove(_,_, seq(Gamma,Delta),
       node(fact, seq([at(measure(Type,Object,N)),at(min_measure(Type,Object,M))],[]),
 	   seq(Gamma, Delta), [])) :- 
     member(at(measure(Type,Object,N)),Gamma),
     member(at(min_measure(Type,Object,M)),Gamma),
-    N < M,!. % green cut for efficiency
+    N < M,!. % cut for efficiency
 % min_measure is monotone:
 prove(_,_, seq(Gamma,Delta),
       node(fact, seq([at(min_measure(Type,Object,N))],[at(min_measure(Type,Object,M))]),
 	   seq(Gamma, Delta), [])) :- 
     member(at(min_measure(Type,Object,N)),Gamma),
     member(at(min_measure(Type,Object,M)),Delta),
-    M =< N, !. % green cut for efficiency
+    M =< N, !. % cut for efficiency
 % max_measure is monotone:
 prove(_,_, seq(Gamma,Delta),
       node(fact, seq([at(max_measure(Type,Object,N))],[at(max_measure(Type,Object,M))]),
 	   seq(Gamma, Delta), [])) :- 
     member(at(max_measure(Type,Object,N)),Gamma),
     member(at(max_measure(Type,Object,M)),Delta),
-    N =< M, !. % green cut for efficiency
+    N =< M, !. % cut for efficiency
 % min_measure is not larger than max_measure:
 prove(_,_, seq(Gamma,Delta),
       node(fact, seq([at(min_measure(Type,Object,N)),at(max_measure(Type,Object,M))],[]),
 	   seq(Gamma, Delta), [])) :- 
     member(at(min_measure(Type,Object,N)),Gamma),
     member(at(max_measure(Type,Object,M)),Gamma),
-    N > M, !. % green cut for efficiency
+    N > M, !. % cut for efficiency
 
       
 /* propositional rules */

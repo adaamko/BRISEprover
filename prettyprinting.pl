@@ -24,6 +24,21 @@ Copyright 2020 Bjoern Lellmann
   :- use_module(library(lists)).
 
 
+/* for testing
+*/
+html_test(Fml,Deriv) :-
+    phrase(pp_output(html,asmp([seq([at(a)],[at(b)])], [bb_2_3:modal(obl,at(c),at(d)), modal(for,at(d), at(e))], ops([], [], [], []),
+		     [bb_2_3 beats b_33]),Fml,Deriv),L),
+    atomic_list_concat(L,L1),
+    open('test.html',write,Stream),
+    write(Stream,L1),
+    close(Stream),!.
+/*Reminder:
+    asmp(Facts, Deontic_assumptions, Op_characterisation, Relation)
+   where Op_characterisation has the form
+     ops(Operator_list, Inclusion_relation, Conflict_relation, P_relation)
+*/
+
 /* nonderivable_statement
 */
 nonderivable_statement(nonderivable).
@@ -81,7 +96,19 @@ pp_compliance_result(latex,_,node(Rule,PF,Seq,Suc)) -->
    DCG for pretty printing the result of a derivability check
 */
 pp_result(screen,Derivation) --> pp_derivation(screen,0,Derivation).
-pp_result(html,Derivation) --> pp_derivation(html,0,Derivation).
+%pp_result(html,Derivation) --> pp_derivation(html,0,Derivation).
+pp_result(html,nonderivable) -->
+    ["<div>"], pp_nl_tab(0),
+    ["<kbd>Result</kbd>"],pp_nl_tab(0),
+    ["<p>The input is not derivable.</p>"],pp_nl_tab(0),
+    ["</div>"].
+pp_result(html,Derivation) -->
+    ["<div>"], pp_nl_tab(0),
+    ["<kbd>Result</kbd>"],pp_nl_tab(0),
+    ["<p>"],
+    pp_derivation(html,2,Derivation),
+    ["</p>"],pp_nl_tab(0),
+    ["</div>"].
 pp_result(latex,nonderivable) -->
     pp_nl_tab(0),
     ['\\begin{center}Result: Not derivable!\\end{center}'].
@@ -140,18 +167,152 @@ pp_header(latex,asmp(Facts, D_ass, ops(Op_list, Incl, Confl, P_list),
     pp_Fml(latex,Fml),
     ['$'], pp_nl_tab(0),
     ['\\end{center}'].
-pp_header(html,_,_) --> [].
+pp_header(html,asmp(Facts, D_ass, ops(Op_list, Incl, Confl, P_list), Relation),Fml) -->
+    ["<!DOCTYPE html>
+
+<head>
+  <title>Test page</title>
+  
+<!--  <link type=\"text/css\" rel=\"stylesheet\" href=\"stylesheet.css\" media=\"screen\" />
+-->
+  <style>
+  .abstract {
+    color: rgb(55,55,55);
+    display:none;
+    width: 100%;
+    text-align: left;
+    margin:15px;
+    }
+  body {
+    font-family:\"Helvetica Neue\",Helvetica,Arial,sans-serif;
+    font-size:14px;
+    line-height:1.42857143;
+    color:#333;
+    background-color:#fff
+  }
+  kbd {
+    padding:2px 4px;
+    font-size:90%;
+    color:#fff;
+    background-color:#333;
+    border-radius:3px;
+    -webkit-box-shadow:inset 0 -1px 0 rgba(0,0,0,.25);
+    box-shadow:inset 0 -1px 0 rgba(0,0,0,.25)
+  }
+  code {
+    padding:2px 4px;
+    font-size:90%;
+    color:#c7254e;
+    background-color:#f9f2f4;
+    border-radius:4px
+  }
+  hr {
+    margin-top:20px;
+    margin-bottom:20px;
+    border:0;
+    border-top:1px solid #eee
+  }
+  </style>
+</head>
+
+<body>
+
+  <div>
+"],
+    pp_nl_tab(2),
+    ["<kbd>Input</kbd>"], pp_nl_tab(2),
+    ["<p> The input formula is: <br /><code>"], pp_nl_tab(2), 
+    pp_Fml(html,Fml),["</code></p>"], pp_nl_tab(2),
+    ["<p>The saturated factual assumptions are: <br />"], pp_nl_tab(2),
+    pp_Facts(html,Facts), ["</p>"], pp_nl_tab(2),
+    ["<p>The deontic assumptions are: <br />"], pp_nl_tab(2),
+    pp_srauta(html,D_ass), ["</p>"], pp_nl_tab(2),
+    ["<p>The superiority relation is given by: <br />"], pp_nl_tab(2),
+    pp_relation(html,Relation), ["</p>"], pp_nl_tab(2),
+    ["</div>"], pp_nl_tab(0), pp_nl_tab(0),
+    ["<hr>"], pp_nl_tab(0), pp_nl_tab(0).
+
+
+/* pp_Facts
+ * DCG for printing a list of facts.
+*/
+pp_Facts(html,[]) --> ["No factual assumptions."].
+pp_Facts(html,[Fact|List]) -->
+    pp_nl_tab(0),
+    ["<ul>"],pp_nl_tab(0),
+    pp_fact_list(html,[Fact|List]),
+    ["</ul>"].
+
+pp_fact_list(html,[]) --> [].
+pp_fact_list(html,[Fact|List]) -->
+    pp_nl_tab(0),
+    ["<li>"], pp_nl_tab(2),
+    ["<code>"], pp_Seq(html,Fact), ["</code>"], pp_nl_tab(0),
+    ["</li>"], pp_nl_tab(0),
+    pp_fact_list(html,List).
+
+/* pp_srauta
+ * DCG for printing a list of deontic assumptions.
+*/
+pp_srauta(html,[]) --> ["No deontic assumptions."].
+pp_srauta(html,[Srauta|List]) -->
+    pp_nl_tab(0),
+    ["<ul>"],pp_nl_tab(0),
+    pp_srauta_list(html,[Srauta|List]),
+    ["</ul>"].
+% pp_Fml_list_DCG(html,l,A)
+
+pp_srauta_list(html,[]) --> [].
+pp_srauta_list(html,[Srauta|List]) -->
+    pp_nl_tab(0),
+    ["<li>"], pp_nl_tab(2),
+    ["<code>"], pp_Fml(html,Srauta), ["</code>"], pp_nl_tab(0),
+    ["</li>"], pp_nl_tab(0),
+    pp_srauta_list(html,List).
+
+/* pp_relation
+ * DCG for printing a list giving the superiority relation.
+*/
+pp_relation(html,[]) --> ["No relation given."].
+pp_relation(html,[Relation|List]) -->
+    pp_nl_tab(0),
+    ["<ul>"],pp_nl_tab(0),
+    pp_relation_list(html,[Relation|List]),
+    ["</ul>"].
+
+pp_relation_list(html,[]) --> [].
+pp_relation_list(html,[Relation|List]) -->
+    pp_nl_tab(0),
+    ["<li>"], pp_nl_tab(2),
+    ["<code>"], pp_Fml(html,Relation), ["</code>"], pp_nl_tab(0),
+    ["</li>"], pp_nl_tab(0),
+    pp_relation_list(html,List).
+
 
 
 /* pp_footer//1
    DCG for producing the footer depending on the format
 */
 /* TODO
-   [ ] add clause for html
+   [x] add clause for html
 */
 pp_footer(screen) --> [].
 pp_footer(latex) --> pp_nl_tab(0), ['\\end{document}'].
-pp_footer(html) --> [].
+pp_footer(html) --> ["
+
+  <script>
+    function myFunction(currDiv) {
+        var x = document.getElementById(currDiv);
+        if (x.style.display === 'block') {
+            x.style.display = 'none';
+        } else {
+            x.style.display = 'block';
+        }
+    }
+  </script>
+
+</body>"].
+
 
 
 /* pp_Op//2
@@ -171,7 +332,18 @@ pp_Op(latex,per(Op)) -->
 pp_Op(latex,Op) -->
     {replace_underscores(Op,Op_new)},
     ['\\mathsf{'],[Op_new],['}'].
-% TODO [ ] clauses for printing in html
+% clauses for printing in html
+pp_Op(html,obl) -->
+    ['it should be the case that '].
+pp_Op(html,for) -->
+    ['it is forbidden that '].
+pp_Op(html,for) -->
+    ['it is permitted that '].
+pp_Op(html,rec) -->
+    ['it is recommended that '].
+pp_Op(html,Op) -->
+    {replace_underscores(Op,Op_new)},
+    ['it is '],[Op_new],[' that '].
 
 
 /* pp_norm//2
@@ -182,16 +354,22 @@ pp_norm(html,Norm) --> [Norm].
 pp_norm(latex,Norm) -->
     {atom(Norm),replace_underscores(Norm,Norm_new)},
     ['\\texttt{'],[Norm_new],['}'].
+pp_norm(latex,Norm) -->
+    {\+ atom(Norm), term_to_atom(Norm,Norm1),
+     replace_underscores(Norm1,Norm_new)}, 
+    ['\\texttt{'],[Norm_new],['}'].
+/*
 pp_norm(latex,bb(A)) -->
     {replace_underscores(A,A_new)},
     ['\\texttt{bb('],[A_new],[')}'].
-
+*/
 
 /* pp_type//2
    DCG for pretty printing an operator type
 */
 pp_type(screen,Type) --> [Type].
-pp_type(html,Type) --> [Type].
+pp_type(html,obl) --> [' obligation type '].
+pp_type(html,for) --> [' prohibition type '].
 pp_type(latex,Type) -->
     {replace_underscores(Type,Type_new)},
     ['\\mathsf{'],[Type_new],['}'].
@@ -203,6 +381,28 @@ pp_type(latex,Type) -->
 */
 % clauses for html: 
 pp_Fml(html,at(X)) --> {atom(X)}, [X].
+pp_Fml(html,at(measure(X,Y,N))) -->
+    ['the '],[Y],[' of a '],[X],[' is '],[N].
+pp_Fml(html,at(min_measure(X,Y,N))) -->
+    ['the '],[Y],[' of a '],[X],[' is at least '],[N].
+pp_Fml(html,at(max_measure(X,Y,N))) -->
+    ['the '],[Y],[' of a '],[X],[' is at most '],[N].
+pp_Fml(html,at(plangebiet(X))) -->
+    ['the Plangebiet is '],[X].
+pp_Fml(html,at(bauland(X))) -->
+    ['the Bauland is '],[X].
+pp_Fml(html,at(grundflaeche(X))) -->
+    ['the Grundfl&auml;che is '],[X].
+pp_Fml(html,at(widmung(X))) -->
+    ['the Widmung is '],[X].
+pp_Fml(html,at(bauklasse(X))) -->
+    ['the Bauklasse is '],[X].
+pp_Fml(html,at(bauweise(X))) -->
+    ['the Bauweise is '],[X].
+/*  atomics with arguments:
+    area, plangebiet, bauland, grundflaeche, widmung, bauklasse,
+    bauweise, bb, baulinie, baufluchtlinie, grenzlinie
+*/
 pp_Fml(html,at(X)) --> {\+ atom(X), term_to_atom(X,Y)}, [Y].
 pp_Fml(html,true) --> ['true'].
 pp_Fml(html,false) --> ['false'].
@@ -218,6 +418,18 @@ pp_Fml(html,->(A,B)) -->
     ['if ('], pp_Fml(html,A),
     ['), then ('],
     pp_Fml(html,B), [')'].
+pp_Fml(html,neg(modal(for,A,B))) -->
+    ['it is not forbidden that ('],
+    pp_Fml(html,A),
+    ['), given ('],pp_Fml(html,B),[')'].
+pp_Fml(html,neg(modal(obl,A,B))) -->
+    ['it is not obligatory that ('],
+    pp_Fml(html,A),
+    ['), given ('],pp_Fml(html,B),[')'].
+pp_Fml(html,neg(modal(rec,A,B))) -->
+    ['it is not recommended that ('],
+    pp_Fml(html,A),
+    ['), given ('],pp_Fml(html,B),[')'].
 pp_Fml(html,neg(A)) -->
     ['not ('],
     pp_Fml(html,A),
@@ -235,6 +447,7 @@ pp_Fml(html,seq(L,N)) -->
     ['It we assume that '], pp_Fml_list(html,L), 
     [', then it follows that  '], pp_Fml_list(html,N).
 % TODO: [ ] MISSING: types, conflicts, inclusions, p_list!
+% NOTE: might not need the for BRISEprover.
 % clauses for latex:
 pp_Fml(latex,false) --> ['\\bot'].
 pp_Fml(latex,true) --> ['\\top'].
@@ -360,6 +573,7 @@ pp_Seq_arrow(html) --> [' => '].
 
 /* pp_Seq_list//2
    DCG for printing a list of sequents
+   NOTE: might be superfluous now (came from linear nested sequents)
 */
 pp_Seq_list(screen,[]) --> [].
 pp_Seq_list(screen,[Seq|Tail]) -->
@@ -657,7 +871,7 @@ pp_derivation_list(latex,N,[Der1,Der2|Tail]) -->
     pp_derivation(latex,N,Der1),
     pp_nl_tab(N),['&'],
     pp_derivation_list(latex,N,[Der2|Tail]).
-
+pp_derivation_list(html,_,_) --> ['pp_derivation_list(html,_)'].
 
 /************************/
 /* Auxiliary predicates */
@@ -699,11 +913,23 @@ replace_underscores(['_'|List]) --> ['\\_'], replace_underscores(List).
 replace_underscores([X|List]) --> [X],replace_underscores(List).
 */
 replace_underscores(Atom_in,Atom_out) :-
-%    term_string(Term_in,Atom_in),
+%    term_to_atom(Term_in,Atom_in),
     name(Atom_in,List_in),
     replace_underscores_aux(List_in,List_out),
     name(Atom_out,List_out).
 %    term_string(Term_out,Atom_out).
+/*
+replace_underscores(Atom_in,Atom_out) :-
+    atom(Atom_in),
+    name(Atom_in,List_in),
+    replace_underscores_aux(List_in,List_out),
+    name(Atom_out,List_out).
+replace_underscores(Complex_in,Complex_out) :-
+    Complex_in =.. [Op|Args],
+    maplist(replace_underscores,Args,Args_replaced),
+    Complex_aux =.. [Op|Args_replaced],
+    term_string(Complex_aux,Complex_out).
+*/
 
 replace_underscores_aux([],[]).
 replace_underscores_aux([95|Tail_in],[92,95|Tail_out]) :-
@@ -711,6 +937,65 @@ replace_underscores_aux([95|Tail_in],[92,95|Tail_out]) :-
 replace_underscores_aux([X|Tail_in],[X|Tail_out]) :-
     \+ X == 95,
     replace_underscores_aux(Tail_in,Tail_out).
+
+
+/* tree_vs_named_tree
+ * relates a derivation tree with its named version
+ * NOTE: for the new format of derivations
+*/
+tree_vs_named_tree(nonderivable,nonderivable).
+tree_vs_named_tree(Tree,Tree_named) :-
+    tree_vs_named_tree_aux([],0,Tree,Tree_named).
+
+/* tree_vs_named_tree_aux
+ * takes prefix and current number and relates a derivation tree with
+ * its named version.
+*/
+
+tree_vs_named_tree_aux(Prefix,N,node(Rule, PF, Seq, Suc),
+			   node([M|Prefix], Rule, PF, Seq,
+				Suc_Named)) :-
+    M is N+1,
+    treelist_vs_named_treelist([M|Prefix],0,Suc,Suc_Named).
+tree_vs_named_tree_aux(Prefix, N, ndlist(List),
+		       node([M|Prefix], ndlist, List_Named)) :-
+    M is N+1,
+    treelist_vs_named_treelist([M|Prefix],0,List,List_Named).
+tree_vs_named_tree_aux(Prefix, N, standard_block(List),
+		       node([M|Prefix], standard_block, List_Named)) :-
+    M is N+1,
+    treelist_vs_named_treelist([M|Prefix],0,List,List_Named).
+tree_vs_named_tree_aux(Prefix, N, not_excepted_block(List),
+		       node([M|Prefix], not_excepted_block, List_Named)) :-
+    M is N+1,
+    treelist_vs_named_treelist([M|Prefix],0,List,List_Named).
+tree_vs_named_tree_aux(Prefix, N, no_active_conflict_block(List),
+		       node([M|Prefix], no_active_conflict_block, List_Named)) :-
+    M is N+1,
+    treelist_vs_named_treelist([M|Prefix],0,List,List_Named).
+% CONTINUE HERE:
+/* TODO: Extend this to the following:
+   [ ] node(not_overruled(Assumption),Tree_list)
+   [ ] node(notapplicable(Fml,Seq))
+   [ ] node(noconflict(Fml,Seq))
+   [ ] node(notimplied(Fml,Seq))
+   [ ] node(superior(Norm1,Norm2))
+   [ ] node(overrides(Fml1,Fml2),Succ)
+   [ ] node(no_p_conflict(Op,Seq))
+*/
+
+
+/* treelist_vs_named_treelist
+ * takes prefix and current number and relates list of derivation
+ * trees with their named versions.
+*/
+treelist_vs_named_treelist(_,_,[],[]).
+treelist_vs_named_treelist(Name,N,[Tree|Tail],[Tree_Named|Tail_Named]) :-
+    tree_vs_named_tree_aux(Name,N,Tree,Tree_Named),
+    M is N+1,
+    treelist_vs_named_treelist(Name,M,Tail,Tail_Named).
+
+
 
 
 %%% TODO: pretty printing of bb(bla) and b(blub) etc
