@@ -57,7 +57,9 @@ on_location(List,Term1,Term2) :-
     Term1 =.. [_,Name1|_],
     Term2 =.. [_,Name2|_],
     \+ Name1 = Name2,
-    sub_atom(Name1,0,_,_,Name2).
+    term_to_atom(Name1,Name1t),
+    term_to_atom(Name2,Name2t),
+    sub_atom(Name1t,0,_,_,Name2t).
 
 
 /* objects//1
