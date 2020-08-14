@@ -188,6 +188,13 @@ explain_online(Fml, Facts, D_Assumptions, Sup_Relation, Operators,
 			New_Facts, New_D_Assumptions, Sup_Relation,
 			Version, Filename).
 
+/* for testing
+   explain_test
+*/
+explain_test(Fml) :-
+    explain_online(Fml,[e -> f, f -> g, h -> j],[obl(e,j), for(j or e,x), for(neg e, x and y),bb(3:5/3):for(neg e, x and y), for(e, y), obl(max_measure(gebaeude,hoehe,5),bauland(403:3/5) and bb(703:3))],[bb(3:5/3) beats bb(703:3)],[],[],[],[],[plangebiet(7602)],modern,derivability,'test.html'),!.
+
+
 /* apply_op
    (for compliance check)
 */
@@ -271,6 +278,13 @@ explain_with_filename(Fml, Operators, Op_Inclusions, Op_Conflicts,
 
 
 /* TESTING PREDICATES */
+
+test_ass(asmp([seq([at(a)],[at(b)])],[modal(obl,at(a),at(c))],ops([(obl,obl)] ,[] ,[confl(obl,obl)] ,[] ), [])).
+% WARNING: this might interfere with proper examples creating the conflict lists!!
+conflicting_assumptions(modal(obl,at(a),at(c)),[]).
+
+%test_ass(A),prove(modern,A,seq([],[modal(obl,at(a),at(c))]),T),tree_vs_named_tree(T,W), phrase(pp_html_skip_list_new(0,[W]),L), atomic_list_concat(L,L1), open('html_test.html',write,Stream),write(Stream,L1),close(Stream).
+
 
 /* prove_test
    to test the prove predicate

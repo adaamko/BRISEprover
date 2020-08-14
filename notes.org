@@ -28,12 +28,14 @@
    - [X] explain_html_new(File,Sequent,Assumptions,Tree)
      (in deonticProver1.3)
      => explain_with_filename and explain_online in BRISEprover
-   - [ ] tree_vs_named_tree_new(Tree,Tree_named)
+   - [X] tree_vs_named_tree_new(Tree,Tree_named)
      (uses pp_html_DCG_new in deonticProver1.3)
-   - [ ] pp_html_input_DCG(Sequent,Assumption)
+   - [X] pp_html_input_DCG(Sequent,Assumption)
      (in deonticProver1.3; for printing the assumptions)
-   - [ ] pp_html_DCG_new
+     => for BRISEprover it is in pp_header(html,.,.)
+   - [X] pp_html_DCG_new
      (in deonticProver1.3; uses pp_derivation(html,2,Tree))
+     => for BRISEprover it is in pp_output(html,.,.,.)
    - [X] pp_Facts(html,Facts)
      (in deonticProver1.3; from pp_html_input_DCG)
      - [X] pp_fact_list(html,List)
@@ -43,22 +45,56 @@
    - [X] pp_relation(html,Relation)
      (in deonticProver1.3; from pp_html_input_DCG)
      - [X] pp_relation_list(html,list)
-   - [ ] pp_html_deriv?
-   - [ ] pp_html_truncated_new(Depth,Tree)
+   - [X] pp_html_deriv?
+     => for BRISEprover it is in pp_derivation(html,.,.)
+   - [X] pp_html_truncated_new(Depth,Tree)
+     _Watch out_: Change the format of the derivations here!
    - [ ] ( pp_html_truncated_new_prop(Rulename) )
      (for the detailed explanations for the propositional rules)
-   - [ ] pp_html_truncated_new_modal(Name,Seq)
-   - [ ] pp_html_derivable_statement(Name,Seq)
-   - [ ] pp_html_successors_new
-   - [ ] pp_html_truncated_successors_new?
-   - [ ] pp_html_aux_list_new
-   - [ ] pp_html_truncated_list?
-   - [ ] pp_html_skip_list_new
-     - [ ] pp_html_skip_list_aux_new
-   - [ ] format_name(Name)
-   - [ ] tree_vs_named_tree_new
-     - [ ] tree_vs_named_tree_aux_new
-     - [ ] treelist_vs_named_treelist_new
+   - [X] pp_html_truncated_new_modal(Name,Seq)
+   - [X] pp_html_derivable_statement(Name,Seq)
+   - [X] pp_html_successors_new
+   - [X] pp_html_truncated_successors_new?
+   - [X] pp_html_aux_list_new
+   - [X] pp_html_truncated_list?
+   - [X] pp_html_skip_list_new
+     - [X] pp_html_skip_list_aux_new
+   - [X] format_name(Name)
+   - [X] tree_vs_named_tree_new
+     - [X] tree_vs_named_tree_aux_new
+     - [X] treelist_vs_named_treelist_new
+
+** Comparison pp_derivation: latex vs html
+   | latex (brise)                     | html (deontic) |   |
+   |-----------------------------------+----------------+---|
+   | node(init,PF,Seq,_)               |                |   |
+   | node(botl,_,Seq,_)                |                |   |
+   | node(topR,_,Seq,_)                |                |   |
+   | node(fact,_,Seq,_)                |                |   |
+   | node(Prule,PF,Seq,Suc)            |                |   |
+   | node(mon(O1,O2),PF,Seq,Suc)       |                |   |
+   | node(pRule(Op),PF,Seq,Suc)        |                |   |
+   | node(confl(O1,O2),PF,Seq,Suc)     |                |   |
+   | node(asmpR(O1,As),PF,Seq,Suc)     |                |   |
+   | node(asmpL(O1,As),PF,Seq,Suc)     |                |   |
+   | node(no_p_conflict(Op,_))         |                |   |
+   | node(no_p_conflict(na))           |                |   |
+   | node(not_overruled(Asmp),Suc)     |                |   |
+   | node(notapplicable(Fml,_))        |                |   |
+   | node(noconflict(Fml,_))           |                |   |
+   | node(notimplied(Fml,_))           |                |   |
+   | node(superior(N1:Fml1, N2:Fml2))  |                |   |
+   | node(notoverruled(Fml,_,[Suc]))   |                |   |
+   | node(overrides(F1,F2),[T1,T2,T3]) |                |   |
+   |                                   |                |   |
+   |                                   |                |   |
+   |                                   |                |   |
+   |                                   |                |   |
+   |                                   |                |   |
+   |                                   |                |   |
+
+
+
 
     
 ** TODO website: add selector for derivation/explanation
@@ -66,9 +102,19 @@
 ** TODO pass the selector through PhP and script
 
 
-* Formatting/pretty printing
+** TODO strip invisible formulae
+   Strip all invisible formulae from the nodes of a derivation before
+   pretty printing it to avoid commas at the end (for latex and
+   screen), and "or we have a contradiction" (for html).
 
-** TODO underscores in names
+** TODO pretty print bb(3:4/5)
+   Error: in atomic_list_concat: expected 'text', got a compound...
+* Formatting/pretty printing
+    
+** TODO pretty printing for measures
+   add clause for the initial sequents obtained via the measures.
+
+** DONE underscores in names
    Check how to represent names bb(7602.1.4) as bb( <string> ) instead
    of bb( <number> )
 
@@ -99,16 +145,13 @@
    than "/". CON ":": more non-standard than "/"; not so good to type
    on US keyboard.
 
-*** TODO Fix bug for bb(X:Y:Z)
+*** DONE Fix bug for bb(X:Y:Z)
     Problem: get a "syntax error" when trying to input bb(3:4:2) or so
     as norm name. For formulae it seems to work. => pretty printing of
     norms might need an additional clause catching all other
     operators?
-    
-** TODO pretty printing for measures
-   add clause for the initial sequents obtained via the measures.
 
-** TODO make sure it is compatible with location_facts
+** DONE make sure it is compatible with location_facts
    in particular with the structure used in the naming (as tree, with
    subtree meaning "on location").
 
@@ -200,7 +243,7 @@
    Dropbox/papers/2020specificityrevisited/)
    
    
-* loading examples as DCG
+* DONE loading examples as DCG
 
 ** DONE find why we can't have 2 examples
    bug in:
