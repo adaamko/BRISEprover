@@ -1,19 +1,19 @@
 /*
 Copyright 2020 Bjoern Lellmann
 
-    This file is part of deonticProver 2.1.
+    This file is part of BRISEprover.
 
-    deonticProver 2.1 is free software: you can redistribute it and/or modify
+    BRISEprover is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
-    deonticProver 2.1 is distributed in the hope that it will be useful,
+    BRISEprover is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with deonticProver 2.1.  If not, see <http://www.gnu.org/licenses/>.
+    along with BRISEprover.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /* preprocessing.pl
@@ -23,18 +23,16 @@ Copyright 2020 Bjoern Lellmann
 
 /* preprocess /2
    true if second argument is the preprocessed version of first
-   argument.
-   add at(.) around atoms everywhere; converts facts to sequents and
-   saturates under cuts; verifies that the operator types are fine;
-   saturates the operators under inclusions, conflicts, etc; adds
-   nt(.) around operators for nontriviality assumptions; checks
-   that the superiority relation is acyclic.
-   
-   TODO
-   [X] add permissions for every operator with type obligation and
-   conflict only with that operator.
+   argument. In particular:
+   - adds at(.) around atoms everywhere; 
+   - converts facts to sequents;
+   - saturates under cuts; 
+   - verifies that the operator types are fine;
+   - saturates the operators under inclusions, conflicts, etc; 
+   - adds nt(.) around operators for nontriviality assumptions; 
+   - checks that the superiority relation is acyclic.
 */
-preprocess(asmp(Facts,D_Ass, ops(Ops, Op_Incl, Op_Confl, Op_P),
+preprocess(classic,asmp(Facts,D_Ass, ops(Ops, Op_Incl, Op_Confl, Op_P),
 		Sup_Rel), asmp(Facts_new, D_Ass_new,
 			       ops(Ops, Op_Incl1, Op_Confl_new,
 				   Op_P_new), Sup_Rel),[]) :-
@@ -47,49 +45,54 @@ preprocess(asmp(Facts,D_Ass, ops(Ops, Op_Incl, Op_Confl, Op_P),
     verified_op_types(Ops,_),
     verified_assumptions(D_Ass1,Ops,_),
     saturated_inclusions(Op_Incl,Op_Incl1),
-%    add_permissions(ops(Ops,Op_Incl1, Op_Confl, Op_P),
-%		    ops(Ops_new, Op_Incl_new, Op_Confl1, Op_P1)),
     saturated_conflicts(Op_Incl1, Op_Confl, Op_Confl_new),
     saturated_P(Op_Incl1, Op_Confl_new, Op_P1, Op_P_new),
     verified_superiority_relation(Sup_Rel),
     acyclic(D_Ass_new,Sup_Rel).
-% Version where the permissions are automatically added:
-/*
-preprocess(asmp(Facts,D_Ass, ops(Ops, Op_Incl, Op_Confl, Op_P),
+% Modern version (additionally calculates the conflict lists):
+preprocess(modern,asmp(Facts,D_Ass, ops(Ops, Op_Incl, Op_Confl, Op_P),
 		Sup_Rel), asmp(Facts_new, D_Ass_new,
-			       ops(Ops_new, Op_Incl_new, Op_Confl_new,
-				   Op_P_new), Sup_Rel)) :-
+			       ops(Ops, Op_Incl1, Op_Confl_new,
+				   Op_P_new), Sup_Rel),[]) :-
     maplist(modalised,Facts,Facts1),
     maplist(added_at,Facts1,Facts2),
     saturated_facts(Facts2,Facts_new),
     maplist(modalised,D_Ass,D_Ass1),
     maplist(added_at,D_Ass1,D_Ass_new),
-    verified_op_types(Ops),
+    maplist(add_nt,Op_P, Op_P1),
+    verified_op_types(Ops,_),
+    verified_assumptions(D_Ass1,Ops,_),
     saturated_inclusions(Op_Incl,Op_Incl1),
-    add_permissions(ops(Ops,Op_Incl1, Op_Confl, Op_P),
-		    ops(Ops_new, Op_Incl_new, Op_Confl1, Op_P1)),
-    saturated_conflicts(Op_Incl_new, Op_Confl1, Op_Confl_new),
-    saturated_P(Op_Incl_new, Op_Confl_new, Op_P1, Op_P_new),
-    acyclic(D_Ass_new,Sup_Rel).
-*/
+    saturated_conflicts(Op_Incl1, Op_Confl, Op_Confl_new),
+    saturated_P(Op_Incl1, Op_Confl_new, Op_P1, Op_P_new),
+    verified_superiority_relation(Sup_Rel),
+    acyclic(D_Ass_new,Sup_Rel),
+    retractall(conflicting_assumptions(_,_)),
+    make_conflict_lists(asmp(Facts_new, D_Ass_new,
+			       ops(Ops, Op_Incl1, Op_Confl_new,
+				   Op_P_new), Sup_Rel), D_Ass_new).
 
 /* add_permissions /2
    true if adding the permission operators for every operator in Ops
    together with conflict only with the corresponding operator yields
    Ops_new.
 */
+/*
 add_permissions(ops([],Incl,Confl,Rec), ops([],Incl,Confl,Rec)).
 add_permissions(ops([(Op1,Type)|Ops],Incl,Confl,Rec),
 		ops([(Op1,Type),(per(Op1),obl)|Ops_new], Incl_new
 		    , [confl(Op1,per(Op1))|Confl_new], Rec_new)) :-
     add_permissions(ops(Ops,Incl,Confl,Rec),
 		    ops(Ops_new, Incl_new, Confl_new, Rec_new)).
-		    
+*/		    
 					     
 
 /* added_at
  * true if second argument is first argument with at(AT) instead of
  * atom AT
+ * Also converts the content of variables with arguments into a
+ * string, except for the last argument of
+ * measures/max_measures/min_measures.
 */
 added_at(false,false).
 added_at(true,true).
@@ -100,9 +103,24 @@ added_at(->(A,B), ->(C,D)) :- added_at(A,C), added_at(B,D).
 added_at(modal(Op,A,B),modal(Op,C,D)) :- added_at(A,C), added_at(B,D).
 added_at(Norm:modal(Op,A,B),Norm:modal(Op,C,D)) :- added_at(A,C), added_at(B,D).
 added_at(A,at(A)) :- atom(A).
+/*
+added_at(measure(A,B,C),at(measure(D,E,C))) :-
+    atom_string(A,D),
+    atom_string(B,E).
+added_at(max_measure(A,B,C),at(max_measure(D,E,C))) :-
+    atom_string(A,D),
+    atom_string(B,E).
+added_at(min_measure(A,B,C),at(min_measure(D,E,C))) :-
+    atom_string(A,D),
+    atom_string(B,E).
+*/
+added_at(A,at(A)) :-
+    A =.. [Var,_],
+    variable_with_arguments(Var).
 added_at(A,at(A)) :-
     A =.. [Var|_],
     variable_with_arguments(Var).
+/*    \+ member(Var,[measure, max_measure, min_measure]),*/
 added_at(A beats B, C beats D) :- added_at(A,C), added_at(B,D).
 added_at(seq(L,N), seq(Lat,Nat)) :-
     maplist(added_at,L,Lat),
@@ -110,6 +128,7 @@ added_at(seq(L,N), seq(Lat,Nat)) :-
 added_at(Complex,at(Complex)) :-
     Complex =.. [Op|_],
     variable_with_arguments(Op).
+
 
 /* modalised /2
    true if all the non-propositional operators in the first argument
@@ -127,12 +146,6 @@ modalised(Complex,Complex1) :-
     member(Op, [neg,and,or,->]),
     maplist(modalised,Args,Args1),
     Complex1 =.. [Op|Args1].
-/*
-modalised(Complex,Complex1) :-
-    Complex =.. [per,Op|Args],
-    maplist(modalised,Args,Args1),
-    Complex1 =.. [modal,per(Op)|Args1].
-*/
 modalised(Complex,Complex1) :-
     Complex =.. [Op|Args],
     \+ member(Op, [at,neg,:,and,or,->]),
@@ -223,7 +236,6 @@ subsumed(seq(Gamma_Set,Delta_Set),[seq(Sigma,Pi)|Tail]) :-
     subsumed(seq(Gamma_Set,Delta_Set),Tail).
 
 
-
 /* verified_op_types
    TODO [x]
    - check that every operator has only one type
@@ -245,6 +257,7 @@ verified_op_types([(Op,_)|Tail_ops],Bad_ops) :-
     \+ member((Op,_),Tail_ops),
     verified_op_types(Tail_ops,Bad_ops).
 
+
 /* verified_assumptions /3
    true if Bad_Ass contains those assumptions from D_Ass which do not
    have an operator with type in Ops
@@ -258,7 +271,6 @@ verified_assumptions([Ass|D_Ass],Ops,[Op|Bad_Ass]) :-
     modal_arguments(Ass,Op,_,_),
     \+ member((Op,_),Ops),
     verified_assumptions(D_Ass,Ops,Bad_Ass).
-
 
 
 /* saturated_inclusions
@@ -287,14 +299,15 @@ saturated_conflicts(Incl, Confl, Confl_sat) :-
     saturated_conflicts(Incl,[confl(Op3,Op2)|Confl], Confl_sat).
 saturated_conflicts(_,Confl,Confl).
 
+
 /* add_nt
    true for an operator Op and its nontriviality statement nt(Op)
 */
 add_nt(X,nt(X)).
 
+
 /* saturated_P
    true if saturating Op_P under preimages of Op_incl yields Op_P_new
-   TODO [x]
 */
 saturated_P(Op_incl, Op_confl, Op_P, Op_P_new) :-
     member(nt(Op),Op_P),
@@ -302,6 +315,7 @@ saturated_P(Op_incl, Op_confl, Op_P, Op_P_new) :-
     \+ member(nt(Op2), Op_P),
     saturated_P(Op_incl, Op_confl, [nt(Op2)|Op_P], Op_P_new).
 saturated_P(_,_,Op_P,Op_P).
+
 
 /* NOTE: CHANGED THIS HERE
    MAKE SURE EVERYTHING STILL WORKS (NOT YET IN THE ONLINE SYSTEM!)
@@ -313,6 +327,7 @@ saturated_P(_,_,Op_P,Op_P).
 verified_superiority_relation([]).
 verified_superiority_relation([beats(_,_)|Tail]) :-
     verified_superiority_relation(Tail).
+
 
 /* acyclic /2
  * True if a list of srauta and a relation (given as a list) does not
@@ -333,67 +348,21 @@ cyclic_relation(D_Ass,Relation) :-
     beats(asmp([],D_Ass,[],Relation), Fml1, Fml2),
     beats(asmp([],D_Ass,[],Relation), Fml2, Fml1).
 
-/* cycles_in_relation /3
- * true if Cycle_list contains all tuples of normed deontic
- * assumptions creating a cycle.
-*/
-/*
-cycles_in_relation(Relation,Cycle_list) :-
-    findall(cycle(Norm1,Norm2), (member(beats(Norm1, Norm2), Relation),
-				 member(beats(Norm2, Norm1), Relation)
-				), List1),
-    remove_symmetries(List1,[],Cycle_list).
-*/
-/* remove_symmetries /3
- * removes duplicates and symmetric entries
-*/
-/*remove_symmetries([],Cycles,Cycles).
-remove_symmetries([cycle(Norm1,Norm2)|Tail],Reduced_list,Tail2) :-
-    (member(cycle(Norm1,Norm2),Reduced_list)
-    ;
-    member(cycle(Norm2,Norm1),Reduced_list)),
-    remove_symmetries(Tail,Reduced_list,Tail2).
-remove_symmetries([cycle(Norm1,Norm2)|Tail]
-		  , Reduced_tail, Tail2) :-
-    \+ member(cycle(Norm1,Norm2), Reduced_tail),
-    \+ member(cycle(Norm2,Norm1), Reduced_tail),
-    remove_symmetries(Tail,[cycle(Norm1,Norm2)|Reduced_tail], Tail2).
-*/				 
-
 
 /* added_facts
  * DCG for adding facts for a list of examples.
  * facts_plangebiet//1 is specified in assumptionhandler.pl
 */
-/*
-added_facts(Facts,[]) --> Facts.
-added_facts(Facts,[Ex|Tail]) --> {facts(Ex,List)}, List, added(Facts,Tail).
-*/
-% new version:
 added_facts(Facts,List) --> Facts, lift_DCG(facts_plangebiet,List).
+
 
 /* added_assumptions
  * DCG for adding deontic assumptions for a list of examples
  * obligations_plangebiet//1 is specified in assumptionhandler.pl
 */
-/*added_assumptions(D_ass,[]) --> D_ass.
-added_assumptions(D_ass,[Ex|Tail])
---> {obligations_plangebiet(Ex,List)},  List,
-    added_assumptions(D_ass,Tail).
-*/
-% new version:
 added_assumptions(D_ass, List)
 --> D_ass, lift_DCG(obligations_plangebiet,List).
 
-/* NEED:
-   Given a list of examples / plangebiete:
-   - create list of factual assumptions from these => facts_plangebiet_list
-   - create list of deontic assumptions from these => obligations_plangebiet_list
-   append them to Facts and D_assumptions from the input
-   Further: 
-   - add background facts to the factual assumptions
-   - add obligations from Bauordnung to deontic_assumptions
-*/
 
 /* lift_DCG//2
  * lift a DCG body defined on single objects to a list of objects and
@@ -418,9 +387,36 @@ confl_list(Ass1, Assumptions, [Ass2|Tail_ass], [Ass2|Tail_list]) :-
     modal_arguments(Ass2,Op2,C,D),
     conflicts(Assumptions,Op1,Op2),
     confl(Assumptions,Op1,Op2,A,C,Seq),
-    prove(Assumptions,Seq,Tree),
+    prove(modern,Assumptions,Seq,_),
     nbeats(Assumptions,modal(Op1,A,B), modal(Op2,C,D)),
     confl_list(Ass1, Assumptions, Tail_ass, Tail_list).
 confl_list(Ass, Assumptions, [_|Tail_ass], Tail_list) :-
     confl_list(Ass, Assumptions, Tail_ass, Tail_list).
 confl_list(_, _, [], []).					
+
+
+/* confl_list_test
+   for testing
+*/
+confl_list_test(Ass, AsmpList,L) :-
+    confl_list(Ass,asmp([],[],ops([(obl,obl),(per,obl),(for,for)], [], [confl(obl,obl), confl(obl,per), confl(per,obl), confl(obl,for), confl(for,for), confl(per,for)],[]),[]), AsmpList,L).
+
+
+/* make_conflict_lists /2
+   constructs the conflict list for every deontic assumption and adds
+   them to the program
+   ATTENTION: This uses assert!
+*/
+make_conflict_lists(_,[]).
+make_conflict_lists(asmp(Facts,D_Ass,Ops,Sup),[Ass|TailAss]) :-
+    confl_list(Ass,asmp(Facts,D_Ass,Ops,Sup),D_Ass,Confl_list),
+    modal_arguments(Ass,Op,A,B),
+    assertz(conflicting_assumptions(modal(Op,A,B),Confl_list)),
+    make_conflict_lists(asmp(Facts,D_Ass,Ops,Sup),TailAss).
+
+/* mcl_test /1
+   For testing the make_conflict_lists predicate
+*/
+mcl_test(List) :-
+    make_conflict_lists(asmp([],List,ops([(obl,obl),(per,obl),(for,for)], [], [confl(obl,obl), confl(obl,per), confl(per,obl), confl(for,obl), confl(obl,for), confl(for,for), confl(per,for)],[]),[]),List).
+

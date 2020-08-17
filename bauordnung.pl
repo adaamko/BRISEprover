@@ -3,7 +3,7 @@
  * as DCG
 */
 
-bauordnung --> bauordnung(75).
+bauordnung(b) --> bauordnung(75).
 
 /* paragraph 75: Bauklasseneinteilung
 */

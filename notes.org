@@ -1,0 +1,272 @@
+#+TITLE: BRISEprover - notes
+
+
+* explanation output
+  Would be nice flashy output :)
+
+** TODO add prettyprinting(html)
+   - [X] pp_header(html,Assumption,Formula)
+   - [X] pp_footer(html)
+   - [X] pp_result(html,Derivation)
+   - [ ] ( pp_compliance_result(html,Derivation) )
+   - [ ] pp_derivation(html,0,Derivation)
+   - [X] pp_Op(html,Op)
+   - [X] pp_norm(html,Norm)
+   - [X] pp_type(html,Type)
+   - [ ] pp_Fml(html,Fml)
+     - [ ] types
+     - [ ] conflicts
+     - [ ] inclusions
+     - [ ] p_list
+   - [X] pp_Fml_list(html,Side,List)
+   - [X] pp_Seq(html,Seq)
+   - [X] pp_Seq_list(html,List)
+   - [X] pp_assumptions(html,Asmp)?
+     => now contained in pp_header.
+   - [ ] pp_derivation_list(html,List)
+     => CHECK if we even need that for html?
+   - [X] explain_html_new(File,Sequent,Assumptions,Tree)
+     (in deonticProver1.3)
+     => explain_with_filename and explain_online in BRISEprover
+   - [X] tree_vs_named_tree_new(Tree,Tree_named)
+     (uses pp_html_DCG_new in deonticProver1.3)
+   - [X] pp_html_input_DCG(Sequent,Assumption)
+     (in deonticProver1.3; for printing the assumptions)
+     => for BRISEprover it is in pp_header(html,.,.)
+   - [X] pp_html_DCG_new
+     (in deonticProver1.3; uses pp_derivation(html,2,Tree))
+     => for BRISEprover it is in pp_output(html,.,.,.)
+   - [X] pp_Facts(html,Facts)
+     (in deonticProver1.3; from pp_html_input_DCG)
+     - [X] pp_fact_list(html,List)
+   - [X] pp_srauta(html,Srauta)
+     (in deonticProver1.3; from pp_html_input_DCG)
+     - [X] pp_srauta_list(html,List)
+   - [X] pp_relation(html,Relation)
+     (in deonticProver1.3; from pp_html_input_DCG)
+     - [X] pp_relation_list(html,list)
+   - [X] pp_html_deriv?
+     => for BRISEprover it is in pp_derivation(html,.,.)
+   - [X] pp_html_truncated_new(Depth,Tree)
+     _Watch out_: Change the format of the derivations here!
+   - [ ] ( pp_html_truncated_new_prop(Rulename) )
+     (for the detailed explanations for the propositional rules)
+   - [X] pp_html_truncated_new_modal(Name,Seq)
+   - [X] pp_html_derivable_statement(Name,Seq)
+   - [X] pp_html_successors_new
+   - [X] pp_html_truncated_successors_new?
+   - [X] pp_html_aux_list_new
+   - [X] pp_html_truncated_list?
+   - [X] pp_html_skip_list_new
+     - [X] pp_html_skip_list_aux_new
+   - [X] format_name(Name)
+   - [X] tree_vs_named_tree_new
+     - [X] tree_vs_named_tree_aux_new
+     - [X] treelist_vs_named_treelist_new
+
+** Comparison pp_derivation: latex vs html
+   | latex (brise)                     | html (deontic) |   |
+   |-----------------------------------+----------------+---|
+   | node(init,PF,Seq,_)               |                |   |
+   | node(botl,_,Seq,_)                |                |   |
+   | node(topR,_,Seq,_)                |                |   |
+   | node(fact,_,Seq,_)                |                |   |
+   | node(Prule,PF,Seq,Suc)            |                |   |
+   | node(mon(O1,O2),PF,Seq,Suc)       |                |   |
+   | node(pRule(Op),PF,Seq,Suc)        |                |   |
+   | node(confl(O1,O2),PF,Seq,Suc)     |                |   |
+   | node(asmpR(O1,As),PF,Seq,Suc)     |                |   |
+   | node(asmpL(O1,As),PF,Seq,Suc)     |                |   |
+   | node(no_p_conflict(Op,_))         |                |   |
+   | node(no_p_conflict(na))           |                |   |
+   | node(not_overruled(Asmp),Suc)     |                |   |
+   | node(notapplicable(Fml,_))        |                |   |
+   | node(noconflict(Fml,_))           |                |   |
+   | node(notimplied(Fml,_))           |                |   |
+   | node(superior(N1:Fml1, N2:Fml2))  |                |   |
+   | node(notoverruled(Fml,_,[Suc]))   |                |   |
+   | node(overrides(F1,F2),[T1,T2,T3]) |                |   |
+   |                                   |                |   |
+   |                                   |                |   |
+   |                                   |                |   |
+   |                                   |                |   |
+   |                                   |                |   |
+   |                                   |                |   |
+
+
+
+
+    
+** TODO website: add selector for derivation/explanation
+
+** TODO pass the selector through PhP and script
+
+
+** TODO strip invisible formulae
+   Strip all invisible formulae from the nodes of a derivation before
+   pretty printing it to avoid commas at the end (for latex and
+   screen), and "or we have a contradiction" (for html).
+
+** TODO pretty print bb(3:4/5)
+   Error: in atomic_list_concat: expected 'text', got a compound...
+* Formatting/pretty printing
+    
+** TODO pretty printing for measures
+   add clause for the initial sequents obtained via the measures.
+
+** DONE underscores in names
+   Check how to represent names bb(7602.1.4) as bb( <string> ) instead
+   of bb( <number> )
+
+   _Problem_: The underscore is used in Prolog for digit grouping of
+   integers, see [[https://www.swi-prolog.org/pldoc/man?section%3Dsyntax][SWIPL 2.16, Section 2.16.1.5]]. Hence the underscore
+   gets deleted if the rest of the symbols are natural numbers...
+
+   _Problem_: The dot is used as the floating point. Hence things with
+   more than one dot result in a type error, e.g., 3.2.1.
+
+   _Solution 1_: Use a different symbol, e.g., * should work.
+
+   _Solution 2_: give up on having the identifier as a pure string of
+   numbers, and start with a letter instead. E.g., for b_3_2_1 it does
+   work.
+   _Possible solution 3_: Do something with dictionaries? At least
+   there is a "Type error: 'dict' expected, found 'b' (an atom)".
+
+
+   _SUMMARY:_ (After discussion with Martin Riener on 2020-08-05)
+   Either write a parser, or use a different symbol => USE DIFFERENT
+   SYMBOL: "3407/3/4" or "3407:3:4" would work PRO "/": only one
+   keystroke on US keyboard. If shift is forgotten on German keyboard
+   it is more apparent ("/" vs "7" instead of ":" vs "."); maybe
+   clearer than ":". CON "/": two keystrokes on German keyboard; looks
+   perhaps not so nice.
+   PRO ":": Looks a bit sleeker; easier to type on German keyboard
+   than "/". CON ":": more non-standard than "/"; not so good to type
+   on US keyboard.
+
+*** DONE Fix bug for bb(X:Y:Z)
+    Problem: get a "syntax error" when trying to input bb(3:4:2) or so
+    as norm name. For formulae it seems to work. => pretty printing of
+    norms might need an additional clause catching all other
+    operators?
+
+** DONE make sure it is compatible with location_facts
+   in particular with the structure used in the naming (as tree, with
+   subtree meaning "on location").
+
+* Checking consistency of a formalisation
+  => reuse the vikalpa-check?
+
+* Comparing different formalisations / interpretations
+  in particular for comparing different formalisations of the
+  Bauordnung.
+  Could do:
+  - load two different bauordnungen
+  - give each of the bauordnungen their own norm name 'bo1', 'bo2'
+  - do a "vikalpa-check" for every formula in each of the
+    bauordnungen, with 'bo1 beats bo2' and 'bo2 beats bo1' and no
+    superiority
+  - interpret results :)
+
+* Efficiency improvements
+
+** TODO Restricted conflict lists
+   I.e., for hearts(A,B), consider { spades(C,D) : hearts confl
+   spades, confl(A,C), hearts(A,B) nbeats spades(C,D), |- D => B }
+   To cut down the time necessary for checking whether a conflicting
+   obligation is overruled by a more specific one.
+
+** Some form of global caching for modal formulae?
+   Perhaps in particular for nonderivable sequents to prevent having
+   to check all the possibilities again.
+   _BUT_: this would mean we need to adjust the proof search towards
+   what is done in the countermodel construction for BiM
+
+   E.g.: Could have dynamic predicate underivable/1 with clause in the
+   prove predicate
+   prove(Seq) :- member(hearts(A,B),Seq), ( \+
+   underivable(hearts(A,B)), ... ; asserta(underivable(hearts(A,B))), fail).
+   => _Should work!_
+
+** cut after the first premiss in two-premiss rules?
+   To prevent re-checking a derivation for the first one if the second
+   one doesn't have one.
+
+** DONE Cuts after the rules
+   To prevent re-checking for derivations if the sequent is derivable
+   already.
+
+* new specificity rule
+
+** DONE calculate conflict list in preprocessing
+
+** DONE add parameter for the logic to prove predicate
+   Old one: classic
+   New one: modern
+
+*** DONE change the parameter in:
+    - [X] no_conflict_p
+    - [X] overridden
+    - [X] not_overruled
+    - [X] confl_list
+    - [X] prove_online
+    - [X] prove_with_filename
+
+** DONE modify assumption rules with conflict list
+
+** DONE allow for Norm:Fml in the construction of the conflict lists
+   => conflicting_assumptions only defined for modal(Op,A,B), even if
+   the Assumption in the clause for the assumption rule is of the form
+   Norm:modal(Op,A,B).
+
+** DONE adjust pretty printing
+   Was nothing to do in the end.
+
+** TODO compare speed
+
+** DONE website: add selector for logic 
+
+** DONE pass selector through php and script
+
+** DONE check that measures work as they should
+
+
+* Compliance checks
+
+** TODO Check whether it makes sense in our case.
+** Re-activate the compliance check (if it works)
+
+* Measures
+** DONE Write the theory for measures
+   See [[file:~/Dropbox/sketchesdrop/papers/2020specificityrevisited/2020specificityrevisited.pdf][2020specificityrevisited.pdf]] (in
+   Dropbox/papers/2020specificityrevisited/)
+   
+   
+* DONE loading examples as DCG
+
+** DONE find why we can't have 2 examples
+   bug in:
+   phrase(facts_plangebiet(plangebiet(7601)),L)
+   -> phrase(combined_facts(bauland(76011)),L)
+   -> bauland_facts(bauland(76011)) <== _THIS ONE_
+   ==> bauland_facts need to be about the bauland, not about the
+   plangebiet....
+
+** DONE write format for new files
+   I.e., which entries *have* to be there, what is the structure for
+   the data, etc.
+
+** DONE Find out why we can't split the DCG across two files
+   Problematic example: have the clause for bauland(plangebiet(7601))
+   in the additional file pd7601.pl.
+   Then SWIPL complains that it doesn't find it.
+
+   _Problem_: We get a "Redefined static procedure" when we try to
+   load two files with definitions for the same predicate. In
+   particular, the second one overwrites the first one.
+
+   _Solution_: We can use multifile/1 to tell prolog that a predicate
+   is spread out over multiple files to prevent redefining it:
+   E.g.: :- multifile(bauordnung) if the clauses for bauordnung are
+   spread over 2 files.
