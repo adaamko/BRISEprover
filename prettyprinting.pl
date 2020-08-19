@@ -1032,10 +1032,11 @@ it is not the case that two conflicting statements are obligatory under logicall
     pp_nl_tab(N),
     ["</div>"].
 % assumption right rule:
-pp_derivation(html,N,node(Name,asmpR(Op1,Assumption), _, Seq, [T1,T2|Suc])) -->
+pp_derivation(html,N,node(Name,asmpR(Op1,Assumption), PF, Seq, [T1,T2|Suc])) -->
     pp_html_derivable_statement(Name,Seq),
-    ["Because it follows from the following using the deontic
-assumption <code>"],
+    ["Because it follows from immediately from<br /> <code>"],pp_nl_tab(N),
+    pp_Seq(html,PF),["</code>.<br />"],pp_nl_tab(N),
+    ["That statement is derivable from the deontic assumption <code>"],
     pp_Fml(html,Assumption),
     ["</code> and monotonicity of the operator <code>"],pp_Op(html,Op1),["</code>:<br />
     "],
@@ -1049,22 +1050,38 @@ assumption <code>"],
     ["</li>"],pp_nl_tab(N+2),
     pp_html_aux_list_new(N + 2,Suc),
     pp_nl_tab(N),
-    ["</ul>"].
+    ["</ul>"], pp_nl_tab(N),
 %    pp_html_successors_new(N,Suc),
 %    pp_nl_tab(N),
-%    ["</div>"].
+    ["</div>"].
 % assumption left rule:
-pp_derivation(html,N,node(Name,asmpL(Op1,Assumption), _, Seq, Suc)) -->
+pp_derivation(html,N,node(Name,asmpL(Op1,Assumption), PF, Seq, [T1,T2|Suc])) -->
     pp_nl_tab(N),
     pp_html_derivable_statement(Name,Seq),
+    ["Because it follows from immediately from<br/> <code>"],pp_nl_tab(N),
+    pp_Seq(html,PF),["</code>.<br />"],pp_nl_tab(N),
+    ["That statement is derivable from the deontic assumption <code>"],
+/*
     ["Because it follows from the following using the deontic
 assumption <code>"],
+*/
     pp_Fml(html,Assumption),
     ["</code> and the axiom that there are no conflicts between that
 operator and <code>"], pp_Op(html,Op1),["</code>. In particular:<br />
     "],
-    pp_html_successors_new(N,Suc),
     pp_nl_tab(N),
+    ["<ul>"],pp_nl_tab(N+2),
+    ["<li> The assumption is applicable because:<br />"],pp_nl_tab(N+2),
+    pp_derivation(html,N+2,T1),
+    ["</li>"],pp_nl_tab(N+2),
+    ["<li> The conditions are in conflict because:<br />"],pp_nl_tab(N+2),
+    pp_derivation(html,N+2,T2),
+    ["</li>"],pp_nl_tab(N+2),
+    pp_html_aux_list_new(N + 2,Suc),
+    pp_nl_tab(N),
+    ["</ul>"], pp_nl_tab(N),
+%    pp_html_successors_new(N,Suc),
+%    pp_nl_tab(N),
     ["</div>"].
 % clauses for the different blocks in the assumption rules:    
 pp_derivation(html,N,node(Name,no_p_conflict(Op,Seq))) -->
