@@ -452,6 +452,15 @@ pp_Fml(html,at(bauland(X))) -->
 pp_Fml(html,at(grundflaeche(X))) -->
     {term_to_atom(X,Y)},
     ['the Grundfl&auml;che is '],[Y].
+pp_Fml(html,at(baulinie(X))) -->
+    {term_to_atom(X,Y)},
+    ['the Baulinie is '],[Y].
+pp_Fml(html,at(baufluchtlinie(X))) -->
+    {term_to_atom(X,Y)},
+    ['the Baufluchtlinie is '],[Y].
+pp_Fml(html,at(grenzlinie(X))) -->
+    {term_to_atom(X,Y)},
+    ['the Grenzlinie is '],[Y].
 pp_Fml(html,at(widmung(X))) -->
     ['the Widmung is '],[X].
 pp_Fml(html,at(bauklasse(X))) -->
