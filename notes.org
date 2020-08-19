@@ -4,12 +4,12 @@
 * explanation output
   Would be nice flashy output :)
 
-** TODO add prettyprinting(html)
+** DONE add prettyprinting(html)
    - [X] pp_header(html,Assumption,Formula)
    - [X] pp_footer(html)
    - [X] pp_result(html,Derivation)
    - [ ] ( pp_compliance_result(html,Derivation) )
-   - [ ] pp_derivation(html,0,Derivation)
+   - [X] pp_derivation(html,0,Derivation)
    - [X] pp_Op(html,Op)
    - [X] pp_norm(html,Norm)
    - [X] pp_type(html,Type)
@@ -64,42 +64,42 @@
      - [X] tree_vs_named_tree_aux_new
      - [X] treelist_vs_named_treelist_new
 
-** Comparison pp_derivation: latex vs html
-   | latex (brise)                     | html (deontic) |   |
-   |-----------------------------------+----------------+---|
-   | node(init,PF,Seq,_)               |                |   |
-   | node(botl,_,Seq,_)                |                |   |
-   | node(topR,_,Seq,_)                |                |   |
-   | node(fact,_,Seq,_)                |                |   |
-   | node(Prule,PF,Seq,Suc)            |                |   |
-   | node(mon(O1,O2),PF,Seq,Suc)       |                |   |
-   | node(pRule(Op),PF,Seq,Suc)        |                |   |
-   | node(confl(O1,O2),PF,Seq,Suc)     |                |   |
-   | node(asmpR(O1,As),PF,Seq,Suc)     |                |   |
-   | node(asmpL(O1,As),PF,Seq,Suc)     |                |   |
-   | node(no_p_conflict(Op,_))         |                |   |
-   | node(no_p_conflict(na))           |                |   |
-   | node(not_overruled(Asmp),Suc)     |                |   |
-   | node(notapplicable(Fml,_))        |                |   |
-   | node(noconflict(Fml,_))           |                |   |
-   | node(notimplied(Fml,_))           |                |   |
-   | node(superior(N1:Fml1, N2:Fml2))  |                |   |
-   | node(notoverruled(Fml,_,[Suc]))   |                |   |
-   | node(overrides(F1,F2),[T1,T2,T3]) |                |   |
-   |                                   |                |   |
-   |                                   |                |   |
-   |                                   |                |   |
-   |                                   |                |   |
-   |                                   |                |   |
-   |                                   |                |   |
+*** Comparison pp_derivation: latex vs html
+    | latex (brise)                     | html (deontic) |   |
+    |-----------------------------------+----------------+---|
+    | node(init,PF,Seq,_)               |                |   |
+    | node(botl,_,Seq,_)                |                |   |
+    | node(topR,_,Seq,_)                |                |   |
+    | node(fact,_,Seq,_)                |                |   |
+    | node(Prule,PF,Seq,Suc)            |                |   |
+    | node(mon(O1,O2),PF,Seq,Suc)       |                |   |
+    | node(pRule(Op),PF,Seq,Suc)        |                |   |
+    | node(confl(O1,O2),PF,Seq,Suc)     |                |   |
+    | node(asmpR(O1,As),PF,Seq,Suc)     |                |   |
+    | node(asmpL(O1,As),PF,Seq,Suc)     |                |   |
+    | node(no_p_conflict(Op,_))         |                |   |
+    | node(no_p_conflict(na))           |                |   |
+    | node(not_overruled(Asmp),Suc)     |                |   |
+    | node(notapplicable(Fml,_))        |                |   |
+    | node(noconflict(Fml,_))           |                |   |
+    | node(notimplied(Fml,_))           |                |   |
+    | node(superior(N1:Fml1, N2:Fml2))  |                |   |
+    | node(notoverruled(Fml,_,[Suc]))   |                |   |
+    | node(overrides(F1,F2),[T1,T2,T3]) |                |   |
+    |                                   |                |   |
+    |                                   |                |   |
+    |                                   |                |   |
+    |                                   |                |   |
+    |                                   |                |   |
+    |                                   |                |   |
 
 
 
 
-    
-** TODO website: add selector for derivation/explanation
+     
+** DONE website: add selector for derivation/explanation
 
-** TODO pass the selector through PhP and script
+** DONE pass the selector through PhP and script
 
 
 ** TODO strip invisible formulae
@@ -107,7 +107,7 @@
    pretty printing it to avoid commas at the end (for latex and
    screen), and "or we have a contradiction" (for html).
 
-** TODO pretty print bb(3:4/5)
+** DONE pretty print bb(3:4/5)
    Error: in atomic_list_concat: expected 'text', got a compound...
 * Formatting/pretty printing
     
@@ -170,7 +170,7 @@
   - interpret results :)
 
 * Efficiency improvements
-
+  
 ** TODO Restricted conflict lists
    I.e., for hearts(A,B), consider { spades(C,D) : hearts confl
    spades, confl(A,C), hearts(A,B) nbeats spades(C,D), |- D => B }
