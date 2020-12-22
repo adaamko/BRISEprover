@@ -452,12 +452,27 @@ pp_Fml(html,at(bauland(X))) -->
 pp_Fml(html,at(grundflaeche(X))) -->
     {term_to_atom(X,Y)},
     ['the Grundfl&auml;che is '],[Y].
+pp_Fml(html,at(baulinie(X))) -->
+    {term_to_atom(X,Y)},
+    ['the Baulinie is '],[Y].
+pp_Fml(html,at(baufluchtlinie(X))) -->
+    {term_to_atom(X,Y)},
+    ['the Baufluchtlinie is '],[Y].
+pp_Fml(html,at(grenzlinie(X))) -->
+    {term_to_atom(X,Y)},
+    ['the Grenzlinie is '],[Y].
 pp_Fml(html,at(widmung(X))) -->
     ['the Widmung is '],[X].
 pp_Fml(html,at(bauklasse(X))) -->
     ['the Bauklasse is '],[X].
 pp_Fml(html,at(bauweise(X))) -->
     ['the Bauweise is '],[X].
+pp_Fml(html,at(bb(X))) -->
+    {term_to_atom(X,Y)},
+    ['the Besondere Bestimmung '],[Y],[' applies'].
+pp_Fml(html,at(b(X))) -->
+    {term_to_atom(X,Y)},
+    ['the Bestimmung '],[Y],[' applies'].
 /*  atomics with arguments:
     area, plangebiet, bauland, grundflaeche, widmung, bauklasse,
     bauweise, bb, baulinie, baufluchtlinie, grenzlinie
@@ -1017,28 +1032,56 @@ it is not the case that two conflicting statements are obligatory under logicall
     pp_nl_tab(N),
     ["</div>"].
 % assumption right rule:
-pp_derivation(html,N,node(Name,asmpR(Op1,Assumption), _, Seq, Suc)) -->
+pp_derivation(html,N,node(Name,asmpR(Op1,Assumption), PF, Seq, [T1,T2|Suc])) -->
     pp_html_derivable_statement(Name,Seq),
-    ["Because it follows from the following using the deontic
-assumption <code>"],
+    ["Because it follows from immediately from<br /> <code>"],pp_nl_tab(N),
+    pp_Seq(html,PF),["</code>.<br />"],pp_nl_tab(N),
+    ["That statement is derivable from the deontic assumption <code>"],
     pp_Fml(html,Assumption),
     ["</code> and monotonicity of the operator <code>"],pp_Op(html,Op1),["</code>:<br />
     "],
-    pp_html_successors_new(N,Suc),
     pp_nl_tab(N),
+    ["<ul>"],pp_nl_tab(N+2),
+    ["<li> The assumption is applicable because:<br />"],pp_nl_tab(N+2),
+    pp_derivation(html,N+2,T1),
+    ["</li>"],pp_nl_tab(N+2),
+    ["<li> The condition is implied because:<br />"],pp_nl_tab(N+2),
+    pp_derivation(html,N+2,T2),
+    ["</li>"],pp_nl_tab(N+2),
+    pp_html_aux_list_new(N + 2,Suc),
+    pp_nl_tab(N),
+    ["</ul>"], pp_nl_tab(N),
+%    pp_html_successors_new(N,Suc),
+%    pp_nl_tab(N),
     ["</div>"].
 % assumption left rule:
-pp_derivation(html,N,node(Name,asmpL(Op1,Assumption), _, Seq, Suc)) -->
+pp_derivation(html,N,node(Name,asmpL(Op1,Assumption), PF, Seq, [T1,T2|Suc])) -->
     pp_nl_tab(N),
     pp_html_derivable_statement(Name,Seq),
+    ["Because it follows from immediately from<br/> <code>"],pp_nl_tab(N),
+    pp_Seq(html,PF),["</code>.<br />"],pp_nl_tab(N),
+    ["That statement is derivable from the deontic assumption <code>"],
+/*
     ["Because it follows from the following using the deontic
 assumption <code>"],
+*/
     pp_Fml(html,Assumption),
     ["</code> and the axiom that there are no conflicts between that
 operator and <code>"], pp_Op(html,Op1),["</code>. In particular:<br />
     "],
-    pp_html_successors_new(N,Suc),
     pp_nl_tab(N),
+    ["<ul>"],pp_nl_tab(N+2),
+    ["<li> The assumption is applicable because:<br />"],pp_nl_tab(N+2),
+    pp_derivation(html,N+2,T1),
+    ["</li>"],pp_nl_tab(N+2),
+    ["<li> The conditions are in conflict because:<br />"],pp_nl_tab(N+2),
+    pp_derivation(html,N+2,T2),
+    ["</li>"],pp_nl_tab(N+2),
+    pp_html_aux_list_new(N + 2,Suc),
+    pp_nl_tab(N),
+    ["</ul>"], pp_nl_tab(N),
+%    pp_html_successors_new(N,Suc),
+%    pp_nl_tab(N),
     ["</div>"].
 % clauses for the different blocks in the assumption rules:    
 pp_derivation(html,N,node(Name,no_p_conflict(Op,Seq))) -->
@@ -1059,7 +1102,7 @@ pp_derivation(html,N,node(Name,not_overruled(Assumption),[S|Suc]))
 -->
     pp_nl_tab(N),
     ["The deontic assumption <code>"],pp_Fml(html,Assumption),
-    ["</code> is not overruled because of the following: "],
+    ["</code> is not overruled by any conflicting assumption because of the following: "],
     pp_html_successors_new(N + 2, [S|Suc]).
 pp_derivation(html,N,node(Name,notapplicable(Fml,Seq))) -->
     pp_nl_tab(N),
@@ -1100,19 +1143,63 @@ pp_derivation(html,N,node(Name,notoverruled(Fml,Seq,[Suc]))) -->
     ["The deontic assumption <br />"],
     pp_nl_tab(N),["<code>"],
     pp_Fml(html,Fml),["</code>"],pp_nl_tab(N),
+    [" is not overruling, because:"],pp_nl_tab(N),
+    ["<ul>"],pp_nl_tab(N+2),
+    ["<li> it is not more specific since we cannot derive <code>"],
+    pp_Seq(html,Seq),["</code>, and also"],pp_nl_tab(N+2),
+    ["<li>"],
+    pp_derivation(html,N+2,Suc),
+    ["</li>"],pp_nl_tab(N),
+    ["</ul>"].
+%    pp_html_successors_new(N + 2, [Suc]).
+/*
+pp_derivation(html,N,node(Name,notoverruled(Fml,Seq,[Suc]))) -->
+    pp_nl_tab(N),
+    ["The deontic assumption <br />"],
+    pp_nl_tab(N),["<code>"],
+    pp_Fml(html,Fml),["</code>"],pp_nl_tab(N),
     [" is not overruling, because it is not more specific since we cannot derive <code>"],
     pp_Seq(html,Seq),["</code>, and also because of the following:"],
-    pp_html_successors_new(N + 2, [Suc]).
+    pp_derivation(html,N+2,Suc).
+*/
+%    pp_html_successors_new(N + 2, [Suc]).
+pp_derivation(html,N,node(Name,overrides(Fml1, Fml2),[T1,T2,T3])) -->
+    pp_nl_tab(N),
+/*
+    ["The deontic assumption <br />"],
+    pp_nl_tab(N),["<code>"],
+    pp_Fml(html, Fml2),["</code>"],pp_nl_tab(N),
+    [" is overruled by the more specific deontic assumption <br />"],
+*/
+    ["It is overruled by the more specific deontic assumption <br />"],
+    pp_nl_tab(N),["<code>"],
+    pp_Fml(html, Fml1),["</code>"],pp_nl_tab(N),
+    [" because of the following:"],pp_nl_tab(N),
+    ["<ul>"],pp_nl_tab(N+2),
+    ["<li> The assumption is applicable because:<br /> "], pp_nl_tab(N+2),
+    pp_derivation(html,N+2,T1), pp_nl_tab(N+2),
+    ["</li>"],pp_nl_tab(N+2),
+    ["<li> The assumption is more specific because:<br /> "],pp_derivation(html,N+2,T2), pp_nl_tab(N+2),
+    ["</li>"],pp_nl_tab(N+2),
+    ["<li> The assumption <code>"], pp_Fml(html,Fml1),
+    ["</code> is in conflict with the assumption <code>"],
+    pp_Fml(html,Fml2), ["</code> because:<br /> "],
+    pp_derivation(html,N+2,T3),pp_nl_tab(N+2),
+    ["</li>"],pp_nl_tab(N),
+    ["</ul>"].
+%    pp_html_successors_new(N + 2, [T1,T2,T3]).
+/*
 pp_derivation(html,N,node(Name,overrides(Fml1, Fml2),[T1,T2,T3])) -->
     pp_nl_tab(N),
     ["The deontic assumption <br />"],
     pp_nl_tab(N),["<code>"],
     pp_Fml(html, Fml2),["</code>"],pp_nl_tab(N),
-    [" is overuled by the deontic assumption <br />"],
+    [" is overuled by the more specific deontic assumption <br />"],
     pp_nl_tab(N),["<code>"],
     pp_Fml(html, Fml1),["</code>"],pp_nl_tab(N),
     [" because of the following:"],
     pp_html_successors_new(N + 2, [T1,T2,T3]).
+*/
 pp_derivation(html, _,_) --> [].
 
 
@@ -1439,6 +1526,9 @@ tree_vs_named_tree_aux(Prefix,N,node(notapplicable(Fml,Seq)),
 tree_vs_named_tree_aux(Prefix,N,node(no_conflict(Fml,Seq)),
 		       node([M|Prefix],no_conflict(Fml,Seq))) :-
     M is N+1.
+tree_vs_named_tree_aux(Prefix,N,node(noconflict(Fml,Seq)),
+		       node([M|Prefix],noconflict(Fml,Seq))) :-
+    M is N+1.
 tree_vs_named_tree_aux(Prefix,N,node(not_implied(Fml,Seq)),
 		       node([M|Prefix],not_implied(Fml,Seq))) :-
     M is N+1.
@@ -1457,6 +1547,7 @@ tree_vs_named_tree_aux(Prefix, N, node(overrides(Fml1,Fml2),List),
 		       node([M|Prefix], overrides(Fml1,Fml2), List_Named)) :-
     M is N+1,
     treelist_vs_named_treelist([M|Prefix],0,List,List_Named).
+
 % CONTINUE HERE:
 /* TODO: Extend this to the following:
    [X] node(not_overruled(Assumption),Tree_list)
