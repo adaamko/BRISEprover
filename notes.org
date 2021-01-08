@@ -1,5 +1,54 @@
 #+TITLE: BRISEprover - notes
 
+* change atoms to match annotations
+  TO DECIDE:
+  - [X] *measures*: Do I want to add extra clauses for every triple
+    (e.g., gebaeudeHoeheMin, gebaeudeHoeheMax, gebaeudeHoehe) of
+    measures, or do I add an extra _preprocessing step_ which
+    translates these into min_measure(gebaeude,hoehe),
+    max_measure(gebaeude,hoehe), measure(gebaeude,hoehe)?
+    => How many measures do we have?
+
+    | Pro extra clauses                 | Con extra clauses |
+    |-----------------------------------+-------------------|
+    | no systematic naming scheme       | need many clauses |
+    | in the attributes                 |                   |
+    |-----------------------------------+-------------------|
+    | better control over interaction   | more elegant      |
+    |-----------------------------------+-------------------|
+    | directly work with the attributes |                   |
+    |-----------------------------------+-------------------|
+    | better for pretty printing        |                   |
+    | (don't need to translate back)    |                   |
+
+     => _put in extra clauses_!
+
+** assumption files
+   - [ ] bauordnung.pl
+   - [ ] pd7601.pl
+   - [ ] pd7602.pl
+   - [ ] pd6962.pl
+** pretty printing
+   - [ ] add wordings for the atoms
+** main files
+   - [ ] add the atoms with arguments
+   - [ ] add predicate for exact measures (gebaeudeHoehe etc)
+   - [ ] add clauses for exact, minimal, maximal measures
+  
+* non-provable propositional logic via anti-sequents
+  _Idea_: use an anti-sequent calculus / underivability calculus for
+  propositional logic to provide certificates for when a propositional
+  sequent is not derivable.
+
+  Then possibly extend this to sequents with a single deontic formula?
+  => might need to be done explicitly
+  => could be useful for the application ("Why is it not forbidden to
+  have a balcony here?")
+
+  Then possibly extend this to sequents with deontic formulae in
+  general?
+  => probably very annoying to write down the underivability rules for
+  the deontic clauses, though.
 
 * explanation output
   Would be nice flashy output :)
