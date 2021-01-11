@@ -7,7 +7,7 @@ Copyright 2020 Bjoern Lellmann
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
-    deonticProver 2.1 is distributed in the hope that it will be useful,
+    BRISEprover is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
@@ -35,11 +35,151 @@ Copyright 2020 Bjoern Lellmann
 
 /* List of additional variables to be used with arguments
 */
+/*
 variable_with_arguments(Op) :-
     member(Op,[height, width, max_height, max_width, min_height,
 	       min_width, measure, max_measure, min_measure, area,
 	       plangebiet, bauland, grundflaeche, widmung, bauklasse,
-	       bauweise, bb, b, baulinie, baufluchtlinie, grenzlinie]).
+	       bauweise, bb, b, baulinie, baufluchtlinie, grenzlinie,
+	       anteilBaumbepflanzung, errichtungGebaeude, kleinhaeuser
+	       , technischeAufbautenHoeheMax,
+	       technischeAufbautenHoeheMin, technischeAufbautenHoehe,
+	       technischeAufbautenZulaessig,
+	       unterbrechungGeschlosseneBauweise,
+	       unzulaessigkeitUnterirdischeBauwerke, verbotStaffelung,
+	       abschlussDachMax, anteilDachbegruenung,
+	       bbDachneigungMax, bbDachneigungMin, dachflaecheMin,
+	       dachneigungMax,
+	       technischeUndBelichtungsAufbautenZulaessig,
+	       einfriedungHoeheGesamt, einfriedungHoeheSockel,
+	       einfriedungZulaessig, bauplatzUnterirdischeBebauungMax
+	       , bbAusnuetzbarkeitFlaecheBGF,
+	       bbAusnuetzbarkeitFlaecheBGFRelativ,
+	       bbAusnuetzbarkeitFlaecheGrundflaechenbezug,
+	       bbAusnuetzbarkeitFlaecheGrundflaechenbezugRelativ,
+	       bbAusnuetzbarkeitFlaecheNutzflaeche,
+	       bbAusnuetzbarkeitFlaecheNutzflaecheRelativ,
+	       bbAusnuetzbarkeitFlaecheWohnnutzflaeche,
+	       bbAusnuetzbarkeitFlaecheWohnnutzflaecheRelativ,
+	       bbBebaubareFlaecheAbgegrenzt,
+	       bbBebaubareFlaecheGesamterBauplatz,
+	       bbBebaubareFlaecheJeBauplatz,
+	       bbBebaubareFlaecheJeGebaeude,
+	       bbBebaubareFlaechefuerNebengebaeudeJeBauplatzMax,
+	       bbBebaubareFlaechefuerNebengebaeudeJeBaulosMax,
+	       flaecheBebaubar, flaecheBebaut,
+	       maxAnzahlGeschosseOberirdisch,
+	       maxAnzahlGeschosseOberirdischDachgeschoss,
+	       maxAnzahlGeschosseOberirdischOhneDachgeschoss,
+	       stockwerk, unterirdischeBaulichkeiten,
+	       zulaessigeGeschossanzahl, einkaufszentrumMaxFlaeche,
+	       grossbauvorhabenMaxFlaeche,
+	       hochhausUnzulaessigGemaessBB,
+	       hochhausZulaessigGemaessBB, anschlussGebaeudeAnGelaende
+	       , bauklasseID, bbBauklasseMaximum, bbBauklasseMinimum,
+	       fbokMinimumWohnungen, gebaeudeHoeheArt,
+	       gebaeudeHoeheBeschraenkung, gebaeudeHoeheMax,
+	       maxHoeheWohngebaeude, mindestraumhoeheEG, anBaulinie,
+	       anFluchtlinie, anOeffentlichenVerkehrsflaechen,
+	       gelaendeneigungMin, inSchutzzone, plangebietAllgemein,
+	       planzeichenBBID, struktureinheitBebaubar, arkadeHoehe,
+	       arkadeLaenge, durchfahrtBreite, durchfahrtHoehe,
+	       durchgangBreite, durchgangHoehe, laubengangHoehe,
+	       laubengangLaenge, ausnahmePruefungErforderlich, nA,
+	       strittigeBedeutung,
+	       weitereBestimmungPruefungErforderlich,
+	       zuVorherigemSatzGehoerig,
+	       bbAusnuetzbarkeitWidmungskategorieGefoerderterWohnbau,
+	       unzulaessigBueroGeschaeftsgebaeude,
+	       verbotAufenthaltsraum, verbotWohnung, widmungID,
+	       widmungErsteEbene, widmungZweiteEbene,
+	       widmungZweiteEbeneBezugHoehe, widmungDritteEbene,
+	       widmungDritteEbeneBezugHoehe,
+	       anlageZumEinstellenVorhanden,
+	       stellplatzImNiveauZulaessig, stellplatzMax,
+	       stellplatzregulativUmfangMaximumAbsolut,
+	       stellplatzregulativUmfangMaximumRelativ,
+	       stellplatzregulativUmfangMinimumRelativ,
+	       stellplatzregulativVorhanden, gehsteigbreiteMin,
+	       strassenbreiteMax, strassenbreiteMin,
+	       strassenbreiteVonBis, widmungErsteEbeneBezugHoehe,
+	       bbAusnuetzbarkeitVolumenBaumasse,
+	       bbAusnuetzbarkeitVolumenBaumasseRelativ,
+	       bbAusnuetzbarkeitVolumenRelativ,
+	       umbaubarerRaumBauplatzMax, umbaubarerRaumGebaeudeMax,
+	       umbaubarerRaumGebaeudeteilMax,
+	       vorstehendeBauelementeAusladungMax]).
+*/
+/* measuretriple /3
+   for implementing reasoning with measures, min_measures,
+   max_measures, using arbitrary names.
+   Naming scheme: measuretriple(Measure, Min_Measure, Max_Measure).
+   Example: measuretriple(hoehe, hoeheMin, hoeheMax)
+*/
+/*
+measuretriple(anteilBaumbepflanzungGenau,anteilBaumbepflanzung,anteilBaumbepflanzungMax).
+measuretriple(technischeAufbautenHoeheGenau, technischeAufbautenHoeheMin,
+	      technischeAufbautenHoeheMax).
+measuretriple(abschlussDachGenau,abschlussDachMin,abschlussDachMax).
+measuretriple(anteilDachbegruenungGenau,anteilDachbegruenung,anteilDachbegruenungMax).
+measuretriple(bbDachneigungGenau,bbDachneigungMin,bbDachneigungMax).
+measuretriple(dachflaecheGenau,dachflaecheMin,dachflaecheMax).
+measuretriple(dachneigungGenau,dachneigungMin,dachneigungMax).
+measuretriple(einfriedungHoeheGesamtGenau,einfriedungHoeheGesamtMin,einfriedungHOeheGesamt).
+measuretriple(einfriedungHoeheSockelGenau,einfriedungHoeheSockelMin,einfriedungHoeheSockel).
+measuretriple(bauplatzUnterirdischeBebauungGenau,bauplatzUnterirdischeBebauungMin,bauplatzUnterirdischeBebauungMax).
+measuretriple(bbAusnuetzbarkeitFlaecheBGFGenau,bbAusnuetzbarkeitFlaecheMin,bbAusnuetzbarkeitFlaecheBGF).
+measuretriple(bbAusnuetzbarkeitFlaecheBGFRelativGenau,bbAusnuetzbarkeitFlaecheBGFRelativMin,bbAusnuetzbarkeitFlaecheBGFRelativ).
+measuretriple(bbAusnuetzbarkeitFlaecheGrundflaechenbezugGenau,bbAusnuetzbarkeitFlaecheGrundflaechenbezugMin,bbAusnuetzbarkeitFlaecheGrundflaechenbezug).
+measuretriple(bbAusnuetzbarkeitFlaecheGrundflaechenbezugRelativGenau,bbAusnuetzbarkeitFlaecheGrundflaechenbezugRelativMin,bbAusnuetzbarkeitFlaecheGrundflaechenbezugRelativ).
+measuretriple(bbAusnuetzbarkeitFlaecheNutzflaecheGenau,bbAusnuetzbarkeitFlaecheNutzflaecheMin,bbAusnuetzbarkeitFlaecheNutzflaeche).
+measuretriple(bbAusnuetzbarkeitFlaecheNutzflaecheRelativGenau,bbAusnuetzbarkeitFlaecheNutzflaecheRelativMin,bbAusnuetzbarkeitFlaecheNutzflaecheRelativ).
+measuretriple(bbAusnuetzbarkeitFlaecheWohnnutzflaecheGenau,bbAusnuetzbarkeitFlaecheWohnnutzflaecheMin,bbAusnuetzbarkeitFlaecheWohnnutzflaeche).
+measuretriple(bbAusnuetzbarkeitFlaecheWohnnutzflaecheRelativGenau,bbAusnuetzbarkeitFlaecheWohnnutzflaecheRelativMin,bbAusnuetzbarkeitFlaecheWohnnutzflaecheRelativ).
+measuretriple(bbBebaubareFlaecheAbgegrenztGenau,bbBebaubareFlaecheAbgegrenztMin,bbBebaubareFlaecheAbgegrenztMax).
+measuretriple(bbBebaubareFlaecheGesamterBauplatzGenau,bbBebaubareFlaecheGesamterBauplatzMin,bbBebaubareFlaecheGesamterBauplatz).
+measuretriple(bbBebaubareFlaecheJeBauplatzGenau,bbBebaubareFlaecheJeBauplatzMin,bbBebaubareFlaecheJeBauplatzMax).
+measuretriple(bbBebaubareFlaecheJeGebaeudeGenau,bbBebaubareFlaecheJeGebaeudeMin,bbBebaubareFlaecheJeGebaeude).
+measuretriple(bbBebaubareFlaechefuerNebengebaeudeJeBauplatzGenau,bbBebaubareFlaechefuerNebengebaeudeJeBauplatzMin,bbBebaubareFlaechefuerNebengebaeudeJeBauplatzMax).
+measuretriple(bbBebaubareFlaechefuerNebengebaeudeJeBaulosGenau,bbBebaubareFlaechefuerNebengebaeudeJeBaulosMin,bbBebaubareFlaechefuerNebengebaeudeJeBaulosMax).
+measuretriple(anzahlGeschosseOberirdischGenau,anzahlGeschosseOberirdischMin,maxAnzahlGeschosseOberirdisch).
+measuretriple(anzahlGeschosseOberirdischDachgeschossGenau,anzahlGeschosseOberirdischDachgeschossMin,maxAnzahlGeschosseOberirdischDachgeschoss).
+measuretriple(anzahlGeschosseOberirdischOhneDachgeschossGenau,anzahlGeschosseOberirdischOhneDachgeschossMin,maxAnzahlGeschosseOberirdischOhneDachgeschoss).
+measuretriple(geschossanzahlGenau,geschossanzahlMin,zulaessigeGeschossanzahl).
+measuretriple(einkaufszentrumFlaecheGenau,einkaufszentrumFlaecheMin,einkaufszentrumMaxFlaeche).
+measuretriple(grossbauvorhabenFlaecheGenau,grossbauvorhabenFlaecheMin,grossbauvorhabenMaxFlaeche).
+measuretriple(anschlussGebaeudeAnGelaendeGenau,anschlussGebaeudeAnGelaendeMin,anschlussGebaeudeAnGelaende).
+measuretriple(bbBauklasseGenau,bbBauklasseMinimum,bbBauklasseMaximum).
+measuretriple(fbokWohnungenGenau,fbokMinimumWohnungen,fbokWohnungenMax).
+measuretriple(gebaeudeHoeheGenau,gebaeudeHoeheMin,gebaeudeHoeheMax).
+measuretriple(hoeheWohngebaeudeGenau,hoeheWohngebaeudeMin,maxHoeheWohngebaeude).
+measuretriple(raumhoeheEGGenau,mindestraumhoeheEG,raumhoeheEGMax).
+measuretriple(gelaendeneigungGenau,gelaendeneigungMin,gelaendeneigungMax).
+measuretriple(arkadeHoeheGenau,arkadeHoehe,arkadeHoeheMax).
+measuretriple(arkadeLaengeGenau,arkadeLaenge,arkadeLaengeMax).
+measuretriple(durchfahrtBreiteGenau,durchfahrtBreite,durchfahrtBreiteMax).
+measuretriple(durchfahrtHoeheGenau,durchfahrtHoehe,durchfahrtHoeheMax).
+measuretriple(durchgangBreiteGenau,durchgangBreite,durchgangBreiteMax).
+measuretriple(durchgangHoeheGenau,durchgangHoehe,durchgangHoeheMax).
+measuretriple(laubengangHoeheGenau,laubengangHoehe,laubengangHoeheMax).
+measuretriple(laubengangLaengeGenau,laubengangLaenge,laubengangLaengeMax).
+measuretriple(bbAusnuetzbarkeitWidmungskategorieGefoerderterWohnbauGenau,bbAusnuetzbarkeitWidmungskategorieGefoerderterWohnbau,bbAusnuetzbarkeitWidmungskategorieGefoerderterWohnbauMax).
+measuretriple(stellplatzGenau,stellplatzMin,stellplatzMax).
+measuretriple(stellplatzregulativUmfangAbsolutGenau,stellplatzregulativUmfangAbsolutMin,stellplatzregulativUmfangMaximumAbsolut).
+measuretriple(stellplatzregulativUmfangRelativGenau,stellplatzregulativUmfangMinimumRelativ,stellplatzregulativUmfangMaximumRelativ).
+measuretriple(gehsteigbreiteGenau,gehsteigbreiteMin,gehsteigbreiteMax).
+measuretriple(strassenbreiteGenau,strassenbreiteMin,strassenbreiteMax).
+measuretriple(bbAusnuetzbarkeitVolumenBaumasseGenau,bbAusnuetzbarkeitVolumenBaumasseMin,bbAusnuetzbarkeitVolumenBaumasse).
+measuretriple(bbAusnuetzbarkeitVolumenBaumasseRelativGenau,bbAusnuetzbarkeitVolumenBaumasseRelativMin,bbAusnuetzbarkeitVolumenBaumasseRelativ).
+measuretriple(bbAusnuetzbarkeitVolumenRelativGenau,bbAusnuetzbarkeitVolumenRelativMin,bbAusnuetzbarkeitVolumenRelativ).
+measuretriple(umbaubarerRaumBauplatzGenau,umbaubarerRaumBauplatzMin,umbaubarerRaumBauplatzMax).
+measuretriple(umbaubarerRaumGebaeudeGenau,umbaubarerRaumGebaeudeMin,umbaubarerRaumGebaeudeMax).
+measuretriple(umbaubarerRaumGebaeudeteilGenau,umbaubarerRaumGebaeudeteilMin,umbaubarerRaumGebaeudeteilMax).
+measuretriple(vorstehendeBauelementeAusladungGenau,vorstehendeBauelementeAusladungMin,vorstehendeBauelementeAusladungMax).
+*/
+/*
+measuretriple(,,).
+*/
 
 
 /* load parts for prettyprinting and for preprocessing
@@ -49,7 +189,8 @@ variable_with_arguments(Op) :-
 :- ensure_loaded([preprocessing]).
 /* load example formalisation
  * every Plangebiet has its own file
-*/
+*/p
+:- ensure_loaded([attributes]).
 :- multifile(bauland/3).
 :- multifile(bauland_facts/3).
 :- multifile(grundflaechen/3).
@@ -420,7 +561,66 @@ prove(_,_, seq(Gamma,Delta),
     member(at(max_measure(Type,Object,M)),Gamma),
     N > M, !. % cut for efficiency
 
-      
+% assumptions about measures in general
+% measure is not greater than max_measure:
+prove(_,_, seq(Gamma,Delta),
+      node(fact, seq([at(Fml),at(FmlMax)],[]),
+	   seq(Gamma, Delta), [])) :- 
+    member(at(Fml),Gamma),
+    member(at(FmlMax),Gamma),
+    Fml =.. [Measure,N|_],
+    FmlMax =.. [MeasureMax,M|_],
+    measuretriple(Measure,_,MeasureMax),
+    N > M,!.% cut for efficiency
+% measure is not smaller than min_measure:
+prove(_,_, seq(Gamma,Delta),
+      node(fact, seq([at(measure(Type,Object,N)),at(min_measure(Type,Object,M))],[]),
+	   seq(Gamma, Delta), [])) :- 
+    member(at(Fml),Gamma),
+    member(at(FmlMin),Gamma),
+    Fml =.. [Measure,N|_],
+    FmlMin =.. [MeasureMin,M|_],
+    measuretriple(Measure,MeasureMin,_),
+    % member(at(measure(Type,Object,N)),Gamma),
+    % member(at(min_measure(Type,Object,M)),Gamma),
+    N < M,!. % cut for efficiency
+% min_measure is monotone:
+prove(_,_, seq(Gamma,Delta),
+      node(fact, seq([at(min_measure(Type,Object,N))],[at(min_measure(Type,Object,M))]),
+	   seq(Gamma, Delta), [])) :- 
+    member(at(FmlMin1),Gamma),
+    member(at(FmlMin2),Delta),
+    FmlMin1 =.. [MeasureMin,N|_],
+    FmlMin2 =.. [MeasureMin,M|_],
+    measuretriple(_,MeasureMin,_),
+    % member(at(min_measure(Type,Object,N)),Gamma),
+    % member(at(min_measure(Type,Object,M)),Delta),
+    M =< N, !. % cut for efficiency
+% max_measure is monotone:
+prove(_,_, seq(Gamma,Delta),
+      node(fact, seq([at(max_measure(Type,Object,N))],[at(max_measure(Type,Object,M))]),
+	   seq(Gamma, Delta), [])) :- 
+    member(at(FmlMax1),Gamma),
+    member(at(FmlMax2),Delta),
+    FmlMax1 =.. [MeasureMax,N|_],
+    FmlMax2 =.. [MeasureMax,M|_],
+    measuretriple(_,_,MeasureMax),
+    % member(at(max_measure(Type,Object,N)),Gamma),
+    % member(at(max_measure(Type,Object,M)),Delta),
+    N =< M, !. % cut for efficiency
+% min_measure is not larger than max_measure:
+prove(_,_, seq(Gamma,Delta),
+      node(fact, seq([at(min_measure(Type,Object,N)),at(max_measure(Type,Object,M))],[]),
+	   seq(Gamma, Delta), [])) :- 
+    member(at(FmlMin),Gamma),
+    member(at(FmlMax),Delta),
+    FmlMin =.. [MeasureMin,N|_],
+    FmlMax =.. [MeasureMax,M|_],
+    measuretriple(_,MeasureMin,MeasureMax),
+    % member(at(min_measure(Type,Object,N)),Gamma),
+    % member(at(max_measure(Type,Object,M)),Gamma),
+    N > M, !. % cut for efficiency
+
 /* propositional rules */
 /* non-branching rules first for efficiency*/
 /* negation */
