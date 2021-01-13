@@ -158,32 +158,32 @@ textliche_bestimmungen(plangebiet(7602)) -->
 					), 
 			% NOTE: problematic because of buero or
 			% geschaeft vs. unzulaessigBueroGeschaeftsgebaeude:
-			b(7602:3/6):for( buero or geschaeft, widmungID(w)
+			b(7602:3/6):for( buero or geschaeft, plangebiet(7602) and widmungID(w)
 				     ), 
 			b(7602:3/7):obl( abschlussDachMax(450),
 					 plangebiet(7602)),
-			bb(7602:1): obl( vonBebauungFreizuhalten, bb(7602:1) ),
+			bb(7602:1): obl( vonBebauungFreizuhalten, plangebiet(7602) and bb(7602:1) ),
 			bb(7602:2): obl( begruenungDach and dachart(flachdach),
-					bb(7602:2) ), 
+					plangebiet(7602) and bb(7602:2) ), 
 			bb(7602:3): per( staffelgeschoss,
-					 bb(7602:3) and
+					 plangebiet(7602) and bb(7602:3) and
 					 anOeffentlichenVerkehrsflaechen ), 
 			bb(7602:4):
 			% NOTE: replaced
 			% unzulaessigFensterZuOeffentlichenVerkehrsflaechen
 			% with for(fensterZuOeffentlichenVerkehrsflaechen,...)
 			for(fensterZuOeffentlichenVerkehrsflaechen,
-			    bb(7602:4) ), 
+			    plangebiet(7602) and bb(7602:4) ), 
 			% NOTE: replaced the "gebaeude" with "bebauung"
 			bb(7602:5): per(bebauung and
 				       gebaeudeHoeheMax(450) and
 				       bbAusnuetzbarkeitFlaecheGrundflaechenbezugRelativ(10),
-					bb(7602:5) and (widmungID(g) or
+					plangebiet(7602) and bb(7602:5) and (widmungID(g) or
 							widmungID(esp))
 				       ),
 			bb(7602:7):
-			obl( durchfahrtHoehe(300), bb(7602:7) ),
-			bb(7602:8): obl( bbBebaubareFlaecheAbgegrenzt(60), bb(7602:8) ),
+			obl( durchfahrtHoehe(300), plangebiet(7602) and bb(7602:7) ),
+			bb(7602:8): obl( bbBebaubareFlaecheAbgegrenzt(60), plangebiet(7602) and bb(7602:8) ),
 			bb(test): for(a, b),
 			bb(test): per(a, d)
 		       ].
