@@ -436,7 +436,6 @@ pp_type(latex,Type) -->
    format (either 'screen', 'latex' or 'html').
 */
 % clauses for html: 
-pp_Fml(html,at(X)) --> {atom(X)}, [X].
 pp_Fml(html,at(measure(X,Y,N))) -->
     ['the '],[Y],[' of a '],[X],[' is '],[N].
 pp_Fml(html,at(min_measure(X,Y,N))) -->
@@ -473,11 +472,522 @@ pp_Fml(html,at(bb(X))) -->
 pp_Fml(html,at(b(X))) -->
     {term_to_atom(X,Y)},
     ['the Bestimmung '],[Y],[' applies'].
-/*  atomics with arguments:
-    area, plangebiet, bauland, grundflaeche, widmung, bauklasse,
-    bauweise, bb, baulinie, baufluchtlinie, grenzlinie
+/* Proper Merkmale */
+/* NOTE: 
+   Did not add the Merkmale with text as argument, because the meaning
+   is not clear.
+*/
+/* without argument: */
+pp_Fml(html,at(kleinhaeuser)) -->
+    ['the buildings are Kleinh&auml;ser'].
+pp_Fml(html,at(flaecheBebaubar)) -->
+    ['the Fl&auml;che is bebaubar'].
+pp_Fml(html,at(flaecheBebaut)) -->
+    ['the Fl&auml;che is bebaut'].
+pp_Fml(html,at(anBaulinie)) -->
+    ['the location is on a Baulinie'].
+pp_Fml(html,at(anFluchtlinie)) -->
+    ['the location is on a Fluchtlinie'].
+pp_Fml(html,at(anOeffentlichenVerkehrsflaechen)) -->
+    ['the location is an einer &ouml;ffentlichen Verkehrsfl&auml;che'].
+pp_Fml(html,at(inSchutzzone)) -->
+    ['the location is in einer Schutzzone'].
+pp_Fml(html,at(plangebietAllgemein)) -->
+    ['the location is in the Plangebiet allgemein'].
+pp_Fml(html,at(struktureinheitBebaubar)) -->
+    ['the location is in the bebaubare Struktureinheit'].
+pp_Fml(html,at(ausnahmePruefungErforderlich)) -->
+    ['there is an exception (manual check required!)'].
+pp_Fml(html,at(strittigeBedeutung)) -->
+    ['the meaning of this regulation is debated'].
+pp_Fml(html,at(weitereBestimmungPruefungErforderlich)) -->
+    ['there is a regulation requiring a manual check'].
+pp_Fml(html,at(anlageZumEinstellenVorhanden)) -->
+    ['there is a Anlage zum Einstellen von Kraftfahrzeugen'].
+pp_Fml(html,at(stellplatzregulativVorhanden)) -->
+    ['a Stellplatzregulativ applies'].
+pp_Fml(html,at(gaertnerischeAusgestaltung)) -->
+    ['g&auml;rtnerische Ausgestaltung'].
+pp_Fml(html,at(fensterZuOeffentlichenVerkehrsflaechen)) -->
+    ['there are Fenster zu &ouml;ffentlichen Verkehrsfl&auml;chen'].
+pp_Fml(html,at(bebauung)) -->
+    ['there is Bebauung'].
+pp_Fml(html,at(wohnung)) -->
+    ['there is a Wohnung'].
+pp_Fml(html,at(gebaeudeP)) -->
+    ['there is a Geb&auml;ude f&uuml;r Fl&auml;chen zum Abstellen von Kaftfahrzeugen'].
+pp_Fml(html,at(vorbauten)) -->
+    ['there are Vorbauten'].
+pp_Fml(html,at(errichtungGebaeude)) -->
+    ['Errichtung von Geb&auml;uden'].
+pp_Fml(html,at(staffelung)) -->
+    ['there is a Staffelung der Baumasse'].
+pp_Fml(html,at(technischeUndBelichtungsAufbauten)) -->
+    ['there are technische bzw. der Belichtung dienende Aufbauten auf dem Dach im
+   erforderlichen Ausmass'].
+pp_Fml(html,at(technischeAufbauten)) -->
+    ['there are technische Aufbauten'].
+pp_Fml(html,at(unterbrechungGeschlosseneBauweise)) -->
+    ['there is a Unterbrechung der geschlossenen Bauweise'].
+pp_Fml(html,at(unterirdischeBauwerke)) -->
+    ['there are unterirdische Bauwerke'].
+pp_Fml(html,at(unterirdischeBaulichkeiten)) -->
+    ['there are unterirdische Baulichkeiten'].
+pp_Fml(html,at(einfriedung)) -->
+    ['there is an Einfriedung'].
+pp_Fml(html,at(hochhausGemaessBB)) -->
+    ['there is a Hochhaus'].
+pp_Fml(html,at(bueroGeschaeftsgebaeude)) -->
+    ['there is a B&uuml;ro oder Gesch&auml;ftsgeba&auml;ude'].
+pp_Fml(html,at(aufenthaltsraum)) -->
+    ['there is a Aufenthaltsraum'].
+pp_Fml(html,at(wohnung)) -->
+    ['there is a Wohnung'].
+pp_Fml(html,at(stellplatzImNiveau)) -->
+    ['there is a Stellplatz im Niveau'].
+/* with an argument: */
+pp_Fml(html,at(bauweiseID(X))) -->
+    ['the Bauweise is '],[X].
+pp_Fml(html,at(gebaeudeBautyp(X))) -->
+    ['the Bautyp is '],[X].
+pp_Fml(html,at(dachart(X))) -->
+    ['the Dachart is '],[X].
+pp_Fml(html,at(vorkehrungBepflanzungOeffentlicheVerkehrsflaeche(X))) -->
+    ['there is the provision to plant '],[X],[' on a public traffic area'].
+pp_Fml(html,at(stockwerk(X))) -->
+    ['the Stockwerk is '],[X].
+pp_Fml(html,at(bauklasseID(X))) -->
+    ['the Bauklasse is '],[X].
+pp_Fml(html,at(gebaeudeHoeheArt(X))) -->
+    ['the kind of building height is '],[X].
+pp_Fml(html,at(planzeichenBBID(X))) -->
+    ['the Planzeichen is '],[X].
+pp_Fml(html,at(widmungID(X))) -->
+    ['the Widmung is '],[X].
+pp_Fml(html,at(widmungErsteEbene(X))) -->
+    ['the Widmung of the first level is '],[X].
+pp_Fml(html,at(widmungZweiteEbene(X))) -->
+    ['the Widmung of the second level is '],[X].
+pp_Fml(html,at(widmungDritteEbene(X))) -->
+    ['the Widmung of the third level is '],[X].
+pp_Fml(html,at(widmungErsteEbeneBezugHoehe(X))) -->
+    ['the Widmung of the first level starts at a height of '],[X].
+pp_Fml(html,at(widmungZweiteEbeneBezugHoehe(X))) -->
+    ['the Widmung of the second level starts at a height of '],[X].
+pp_Fml(html,at(widmungDritteEbeneBezugHoehe(X))) -->
+    ['the Widmung of the third level starts at a height of '],[X].
+/* measures */
+% anteilBaumbepflanzung
+pp_Fml(html,at(anteilBaumbepflanzungGenau(X))) -->
+    ['the Anteil der Baumbepflanzung is exactly '],[X],[' percent'].
+pp_Fml(html,at(anteilBaumbepflanzung(X))) -->
+    ['the Anteil der Baumbepflanzung is at least '],[X],[' percent'].
+pp_Fml(html,at(anteilBaumbepflanzungMax(X))) -->
+    ['the Anteil der Baumbepflanzung is at most '],[X],[' percent'].
+% technischeAufbautenHoehe
+pp_Fml(html,at(technischeAufbautenHoeheGenau(X))) -->
+    ['the height of technische Aufbauten is exactly '],[X],[' centimeters'].
+pp_Fml(html,at(technischeAufbautenHoeheMin(X))) -->
+    ['the height of technische Aufbauten is at least '],[X],[' centimeters'].
+pp_Fml(html,at(technischeAufbautenHoeheMax(X))) -->
+    ['the height of technische Aufbauten is at most '],[X],[' centimeters'].
+% abschlussDach
+pp_Fml(html,at(abschlussDachGenau(X))) -->
+    ['the height of the Dachabschluss above the building is exactly '],[X],[' centimeters'].
+pp_Fml(html,at(abschlussDachMin(X))) -->
+    ['the height of the Dachabschluss above the building is at least '],[X],[' centimeters'].
+pp_Fml(html,at(abschlussDachMax(X))) -->
+    ['the height of the Dachabschluss above the building is at most '],[X],[' centimeters'].
+% anteilDachbegruenung
+pp_Fml(html,at(anteilDachbegruenungGenau(X))) -->
+    ['the Anteil der Dachbegruenung is exactly '],[X],[' percent'].
+pp_Fml(html,at(anteilDachbegruenung(X))) -->
+    ['the Anteil der Dachbegruenung is at least '],[X],[' percent'].
+pp_Fml(html,at(anteilDachbegruenungMax(X))) -->
+    ['the Anteil der Dachbegruenung is at most '],[X],[' percent'].
+% bbDachneigung
+pp_Fml(html,at(bbDachneigungGenau(X))) -->
+    ['the Dachneigung according to the textual regulation is  exactly '],[X],[' degrees'].
+pp_Fml(html,at(bbDachneigungMin(X))) -->
+    ['the Dachneigung according to the textual regulation is at least '],[X],[' degrees'].
+pp_Fml(html,at(bbDachneigungMax(X))) -->
+    ['the Dachneigung according to the textual regulation is at most '],[X],[' degrees'].
+% dachflaeche
+pp_Fml(html,at(dachflaecheGenau(X))) -->
+    ['the Dachflaeche is exactly '],[X],[' square meters'].
+pp_Fml(html,at(dachflaecheMin(X))) -->
+    ['the Dachflaeche is at least '],[X],[' square meters'].
+pp_Fml(html,at(dachflaecheMax(X))) -->
+    ['the Dachflaeche is at most '],[X],[' square meters'].
+% dachneigung
+pp_Fml(html,at(dachneigungGenau(X))) -->
+    ['the Dachneigung is exactly '],[X],[' degrees'].
+pp_Fml(html,at(dachneigungMin(X))) -->
+    ['the Dachneigung is at least '],[X],[' degrees'].
+pp_Fml(html,at(dachneigungMax(X))) -->
+    ['the Dachneigung is at most '],[X],[' degrees'].
+% einfriedungHoeheGesamt
+pp_Fml(html,at(einfriedungHoeheGesamtGenau(X))) -->
+    ['the total height of the Einfriedung is exactly '],[X],[' centimeters'].
+pp_Fml(html,at(einfriedungHoeheGesamtMin(X))) -->
+    ['the total height of the Einfriedung is at least '],[X],[' centimeters'].
+pp_Fml(html,at(einfriedungHoeheGesamt(X))) -->
+    ['the total height of the Einfriedung is at most '],[X],[' centimeters'].
+% einfriedungHoeheSockel
+pp_Fml(html,at(einfriedungHoeheSockelGenau(X))) -->
+    ['the height of the base of the Einfriedung is exactly '],[X],[' centimeters'].
+pp_Fml(html,at(einfriedungHoeheSockelMin(X))) -->
+    ['the height of the base of the Einfriedung is at least '],[X],[' centimeters'].
+pp_Fml(html,at(einfriedungHoeheSockel(X))) -->
+    ['the height of the base of the Einfriedung is at most '],[X],[' centimeters'].
+% bauplatzUnterirdischeBebauung
+pp_Fml(html,at(bauplatzUnterirdischeBebauungGenau(X))) -->
+    ['the Anteil of the area taken by unterirdische Bauten/Bauteile is exactly '],[X],[' percent'].
+pp_Fml(html,at(bauplatzUnterirdischeBebauungMin(X))) -->
+    ['the Anteil of the area taken by unterirdische Bauten/Bauteile is at least '],[X],[' percent'].
+pp_Fml(html,at(bauplatzUnterirdischeBebauungMax(X))) -->
+    ['the Anteil of the area taken by unterirdische Bauten/Bauteile is at most '],[X],[' percent'].
+% bbAusnuetzbarkeitFlaecheBGF
+pp_Fml(html,at(bbAusnuetzbarkeitFlaecheBGFGenau(X))) -->
+    ['the area taken up by BGF is exactly '],[X],[' square meters'].
+pp_Fml(html,at(bbAusnuetzbarkeitFlaecheMin(X))) -->
+    ['the area taken up by BGF is at least '],[X],[' square meters'].
+pp_Fml(html,at(bbAusnuetzbarkeitFlaecheBGF(X))) -->
+    ['the area taken up by BGF is at most '],[X],[' square meters'].
+% bbAusnuetzbarkeitFlaecheBGFRelativ
+pp_Fml(html,at(bbAusnuetzbarkeitFlaecheBGFRelativGenau(X))) -->
+    ['the percentage of area taken up by BGF is exactly '],[X],[' percent'].
+pp_Fml(html,at(bbAusnuetzbarkeitFlaecheBGFRelativMin(X))) -->
+    ['the percentage of area taken up by BGF is at least '],[X],[' percent'].
+pp_Fml(html,at(bbAusnuetzbarkeitFlaecheBGFRelativ(X))) -->
+    ['the percentage of area taken up by BGF is at most '],[X],[' percent'].
+% bbAusnuetzbarkeitFlaecheGrundflaechenbezug
+pp_Fml(html,at(bbAusnuetzbarkeitFlaecheGrundflaechenbezugGenau(X))) -->
+    ['the ausgenutzte Grundflaeche is exactly '],[X],[' square meters'].
+pp_Fml(html,at(bbAusnuetzbarkeitFlaecheGrundflaechenbezugMin(X))) -->
+    ['the ausgenutzte Grundflaeche is at least '],[X],[' square meters'].
+pp_Fml(html,at(bbAusnuetzbarkeitFlaecheGrundflaechenbezug(X))) -->
+    ['the ausgenutzte Grundflaeche is at most '],[X],[' square meters'].
+% bbAusnuetzbarkeitFlaecheGrundflaechenbezugRelativ
+pp_Fml(html,at(bbAusnuetzbarkeitFlaecheGrundflaechenbezugRelativGenau(X))) -->
+    ['the percentage of ausgenutzte Grundflaeche is exactly '],[X],[' percent'].
+pp_Fml(html,at(bbAusnuetzbarkeitFlaecheGrundflaechenbezugRelativMin(X))) -->
+    ['the percentage of ausgenutzte Grundflaeche is at least '],[X],[' percent'].
+pp_Fml(html,at(bbAusnuetzbarkeitFlaecheGrundflaechenbezugRelativ(X))) -->
+    ['the percentage of ausgenutzte Grundflaeche is at most '],[X],[' percent'].
+% bbAusnuetzbarkeitFlaecheNutzflaeche
+pp_Fml(html,at(bbAusnuetzbarkeitFlaecheNutzflaecheGenau(X))) -->
+    ['the ausgenutzte Nutzflaeche is exactly '],[X],[' square meters'].
+pp_Fml(html,at(bbAusnuetzbarkeitFlaecheNutzflaecheMin(X))) -->
+    ['the ausgenutzte Nutzflaeche is at least '],[X],[' square meters'].
+pp_Fml(html,at(bbAusnuetzbarkeitFlaecheNutzflaeche(X))) -->
+    ['the ausgenutzte Nutzflaeche is at most '],[X],[' square meters'].
+% bbAusnuetzbarkeitFlaecheNutzflaecheRelativ
+pp_Fml(html,at(bbAusnuetzbarkeitFlaecheBGFRelativGenau(X))) -->
+    ['the percentage of ausgenutzte Nutzflaeche is exactly '],[X],[' percent'].
+pp_Fml(html,at(bbAusnuetzbarkeitFlaecheNutzflaecheRelativMin(X))) -->
+    ['the percentage of ausgenutzte Nutzflaeche is at least '],[X],[' percent'].
+pp_Fml(html,at(bbAusnuetzbarkeitFlaecheNutzflaecheRelativ(X))) -->
+    ['the percentage of ausgenutzte Nutzflaeche is at most '],[X],[' percent'].
+% bbAusnuetzbarkeitFlaecheWohnnutzflaeche
+pp_Fml(html,at(bbAusnuetzbarkeitFlaecheWohnnutzflaecheGenau(X))) -->
+    ['the ausgenutzte Wohnnutzflaeche is exactly '],[X],[' square meters'].
+pp_Fml(html,at(bbAusnuetzbarkeitFlaecheWohnnutzflaecheMin(X))) -->
+    ['the ausgenutzte Wohnnutzflaeche is at least '],[X],[' square meters'].
+pp_Fml(html,at(bbAusnuetzbarkeitFlaecheWohnnutzflaeche(X))) -->
+    ['the ausgenutzte Wohnnutzflaeche is at most '],[X],[' square meters'].
+% bbAusnuetzbarkeitFlaecheWohnnutzflaecheRelativ
+pp_Fml(html,at(bbAusnuetzbarkeitFlaecheWohnnutzflaecheRelativGenau(X))) -->
+    ['the percentage of area taken up by Wohnnutzflaeche is exactly '],[X],[' percent'].
+pp_Fml(html,at(bbAusnuetzbarkeitFlaecheWohnnutzflaecheRelativMin(X))) -->
+    ['the percentage of area taken up by Wohnnutzflaeche is at least '],[X],[' percent'].
+pp_Fml(html,at(bbAusnuetzbarkeitFlaecheWohnnutzflaecheRelativ(X))) -->
+    ['the percentage of area taken up by Wohnnutzflaeche is at most '],[X],[' percent'].
+% bbBebaubareFlaecheAbgegrenzt
+pp_Fml(html,at(bbBebaubareFlaecheAbgegrenztGenau(X))) -->
+    ['the bebaubare Flaeche des Bauplatzes is exactly '],[X],[' percent'].
+pp_Fml(html,at(bbBebaubareFlaecheAbgegrenztMin(X))) -->
+    ['the bebaubare Flaeche des Bauplatzes is at least '],[X],[' percent'].
+pp_Fml(html,at(bbBebaubareFlaecheAbgegrenzt(X))) -->
+    ['the bebaubare Flaeche des Bauplatzes is at most '],[X],[' percent'].
+% bbBebaubareFlaecheGesamterBauplatz
+pp_Fml(html,at(bbBebaubareFlaecheGesamterBauplatzGenau(X))) -->
+    ['the percentage of bebaubare Flaeche on the whole Bauplatz is exactly '],[X],[' percent'].
+pp_Fml(html,at(bbBebaubareFlaecheGesamterBauplatzMin(X))) -->
+    ['the percentage of bebaubare Flaeche on the whole Bauplatz is at least '],[X],[' percent'].
+pp_Fml(html,at(bbBebaubareFlaecheGesamterBauplatz(X))) -->
+    ['the percentage of bebaubare Flaeche on the whole Bauplatz is at most '],[X],[' percent'].
+% bbBebaubareFlaecheJeBauplatz
+pp_Fml(html,at(bbBebaubareFlaecheJeBauplatzGenau(X))) -->
+    ['the bebaubare Flaeche per Bauplatz is exactly '],[X],[' square meters'].
+pp_Fml(html,at(bbBebaubareFlaecheJeBauplatzMin(X))) -->
+    ['the bebaubare Flaeche per Bauplatz is at least '],[X],[' square meters'].
+pp_Fml(html,at(bbBebaubareFlaecheJeBauplatzMax(X))) -->
+    ['the bebaubare Flaeche per Bauplatz is at most '],[X],[' square meters'].
+% bbBebaubareFlaecheJeGebaeude
+pp_Fml(html,at(bbBebaubareFlaecheJeGebaeudeGenau(X))) -->
+    ['the bebaubare Flaeche per Gebaeude is exactly '],[X],[' square meters'].
+pp_Fml(html,at(bbBebaubareFlaecheJeGebaeudeMin(X))) -->
+    ['the bebaubare Flaeche per Gebaeude is at least '],[X],[' square meters'].
+pp_Fml(html,at(bbBebaubareFlaecheJeGebaeude(X))) -->
+    ['the bebaubare Flaeche per Gebaeude is at most '],[X],[' square meters'].
+% bbBebaubareFlaechefuerNebengebaeudeJeBauplatz
+pp_Fml(html,at(bbBebaubareFlaechefuerNebengebaeudeJeBauplatzGenau(X))) -->
+    ['the bebaubare Flaeche fuer Nebengebaeude je Bauplatz is exactly '],[X],[' square meters'].
+pp_Fml(html,at(bbBebaubareFlaechefuerNebengebaeudeJeBauplatzMin(X))) -->
+    ['the bebaubare Flaeche fuer Nebengebaeude je Bauplatz is at least '],[X],[' square meters'].
+pp_Fml(html,at(bbBebaubareFlaechefuerNebengebaeudeJeBauplatzMax(X))) -->
+    ['the bebaubare Flaeche fuer Nebengebaeude je Bauplatz is at most '],[X],[' square meters'].
+% bbBebaubareFlaechefuerNebengebaeudeJeBaulos
+pp_Fml(html,at(bbBebaubareFlaechefuerNebengebaeudeJeBaulosGenau(X))) -->
+    ['the bebaubare Flaeche fuer Nebengebaeude je Baulos is exactly '],[X],[' square meters'].
+pp_Fml(html,at(bbBebaubareFlaechefuerNebengebaeudeJeBaulosMin(X))) -->
+    ['the bebaubare Flaeche fuer Nebengebaeude je Baulos is at least '],[X],[' square meters'].
+pp_Fml(html,at(bbBebaubareFlaechefuerNebengebaeudeJeBaulosMax(X))) -->
+    ['the bebaubare Flaeche fuer Nebengebaeude je Baulos is at most '],[X],[' square meters'].
+% anzahlGeschosseOberirdisch
+pp_Fml(html,at(anzahlGeschosseOberirdischGenau(X))) -->
+    ['the number of floors in the whole building is exactly '],[X].
+pp_Fml(html,at(anzahlGeschosseOberirdischMin(X))) -->
+    ['the number of floors in the whole building is at least '],[X].
+pp_Fml(html,at(maxAnzahlGeschosseOberirdisch(X))) -->
+    ['the number of floors in the whole building is at most '],[X].
+% anzahlGeschosseOberirdischDachgeschoss
+pp_Fml(html,at(anzahlGeschosseOberirdischDachgeschossGenau(X))) -->
+    ['the number of Dachgeschosse is exactly '],[X].
+pp_Fml(html,at(anzahlGeschosseOberirdischDachgeschossMin(X))) -->
+    ['the number of Dachgeschosse is at least '],[X].
+pp_Fml(html,at(maxAnzahlGeschosseOberirdischDachgeschoss(X))) -->
+    ['the number of Dachgeschosse is at most '],[X].
+% anzahlGeschosseOberirdischOhneDachgeschoss
+pp_Fml(html,at(anzahlGeschosseOberirdischOhneDachgeschossGenau(X))) -->
+    ['the number of floors without Dachgeschosse is exactly '],[X].
+pp_Fml(html,at(anzahlGeschosseOberirdischOhneDachgeschossMin(X))) -->
+    ['the number of floors without Dachgeschosse is at least '],[X].
+pp_Fml(html,at(maxAnzahlGeschosseOberirdischOhneDachgeschoss(X))) -->
+    ['the number of floors without Dachgeschosse is at most '],[X].
+% geschossanzahl
+pp_Fml(html,at(geschossanzahlGenau(X))) -->
+    ['the number of floors for an Einkaufszentrum is exactly '],[X].
+pp_Fml(html,at(geschossanzahlMin(X))) -->
+    ['the number of floors for an Einkaufszentrum is at least '],[X].
+pp_Fml(html,at(zulaessigeGeschossanzahl(X))) -->
+    ['the number of floors for an Einkaufszentrum is at most '],[X].
+% einkaufszentrumFlaeche
+pp_Fml(html,at(einkaufszentrumFlaecheGenau(X))) -->
+    ['the area of the Einkaufszentrum per Widmungsflaeche is exactly '],[X],[' square meters'].
+pp_Fml(html,at(einkaufszentrumFlaecheMin(X))) -->
+    ['the area of the Einkaufszentrum per Widmungsflaeche is at least '],[X],[' square meters'].
+pp_Fml(html,at(einkaufszentrumMaxFlaeche(X))) -->
+    ['the area of the Einkaufszentrum per Widmungsflaeche is at most '],[X],[' square meters'].
+% grossbauvorhabenFlaeche
+pp_Fml(html,at(grossbauvorhabenFlaecheGenau(X))) -->
+    ['the area of the Grossbauvorhaben per Widmungsflaeche is exactly '],[X],[' square meters'].
+pp_Fml(html,at(grossbauvorhabenFlaecheMin(X))) -->
+    ['the area of the Grossbauvorhaben per Widmungsflaeche is at least '],[X],[' square meters'].
+pp_Fml(html,at(grossbauvorhabenMaxFlaeche(X))) -->
+    ['the area of the Grossbauvorhaben per Widmungsflaeche is at most '],[X],[' square meters'].
+% anschlussGebaeudeAnGelaende
+pp_Fml(html,at(anschlussGebaeudeAnGelaende(X))) -->
+    ['the Hoehenlage der Grundflaeche is exactly '],[X],[' centimeters'].
+pp_Fml(html,at(anschlussGebaeudeAnGelaendeMin(X))) -->
+    ['the Hoehenlage der Grundflaeche is at least '],[X],[' centimeters'].
+pp_Fml(html,at(anschlussGebaeudeAnGelaendeMax(X))) -->
+    ['the Hoehenlage der Grundflaeche is at most '],[X],[' centimeters'].
+% bbBauklasse
+pp_Fml(html,at(bbBauklasseGenau(X))) -->
+    ['the height of the building of Bauklasse vi is exactly '],[X],[' centimeters'].
+pp_Fml(html,at(bbBauklasseMinimum(X))) -->
+    ['the height of the building of Bauklasse vi is at least '],[X],[' centimeters'].
+pp_Fml(html,at(bbBauklasseMaximum(X))) -->
+    ['the height of the building of Bauklasse vi is at most '],[X],[' centimeters'].
+% fbokWohnungen
+pp_Fml(html,at(fbokWohnungenGenau(X))) -->
+    ['the height of the Fussbodenoberkante of the first Wohnungsgeschoss is exactly '],[X],[' centimeters'].
+pp_Fml(html,at(fbokMinimumWohnungen(X))) -->
+    ['the height of the Fussbodenoberkante of the first Wohnungsgeschoss is at least '],[X],[' centimeters'].
+pp_Fml(html,at(fbokWohnungenMax(X))) -->
+    ['the height of the Fussbodenoberkante of the first Wohnungsgeschoss is at most '],[X],[' centimeters'].
+% gebaeudeHoehe
+pp_Fml(html,at(gebaeudeHoeheGenau(X))) -->
+    ['the height of the building is exactly '],[X],[' centimeters'].
+pp_Fml(html,at(gebaeudeHoeheMin(X))) -->
+    ['the height of the building is at least '],[X],[' centimeters'].
+pp_Fml(html,at(gebaeudeHoeheMax(X))) -->
+    ['the height of the building is at most '],[X],[' centimeters'].
+% hoeheWohngebaeude
+pp_Fml(html,at(hoeheWohngebaeudeGenau(X))) -->
+    ['the height of the Kleinhaus is exactly '],[X],[' centimeters'].
+pp_Fml(html,at(hoeheWohngebaeudeMin(X))) -->
+    ['the height of the Kleinhaus is at least '],[X],[' centimeters'].
+pp_Fml(html,at(maxHoeheWohngebaeude(X))) -->
+    ['the height of the Kleinhaus is at most '],[X],[' centimeters'].
+% raumhoeheEG
+pp_Fml(html,at(raumhoeheEGGenau(X))) -->
+    ['the height of the rooms on the ground floor in the Geschaeftsviertel is exactly '],[X],[' centimeters'].
+pp_Fml(html,at(mindestraumhoeheEG(X))) -->
+    ['the height of the rooms on the ground floor in the Geschaeftsviertel is at least '],[X],[' centimeters'].
+pp_Fml(html,at(raumhoeheEGMax(X))) -->
+    ['the height of the rooms on the ground floor in the Geschaeftsviertel is at most '],[X],[' centimeters'].
+% gelaendeneigung
+pp_Fml(html,at(gelaendeneigungGenau(X))) -->
+    ['the Gelaendeneigung is exactly '],[X],[' degrees'].
+pp_Fml(html,at(gelaendeneigungMin(X))) -->
+    ['the Gelaendeneigung is at least '],[X],[' degrees'].
+pp_Fml(html,at(gelaendeneigungMax(X))) -->
+    ['the Gelaendeneigung is at most '],[X],[' degrees'].
+% arkadeHoehe
+pp_Fml(html,at(arkadeHoeheGenau(X))) -->
+    ['the height of the Arkade is exactly '],[X],[' centimeters'].
+pp_Fml(html,at(arkadeHoehe(X))) -->
+    ['the height of the Arkade is at least '],[X],[' centimeters'].
+pp_Fml(html,at(arkadeHoeheMax(X))) -->
+    ['the height of the Arkade is at most '],[X],[' centimeters'].
+% arkadeLaenge
+pp_Fml(html,at(arkadeLaengeGenau(X))) -->
+    ['the length of the Arkade is exactly '],[X],[' centimeters'].
+pp_Fml(html,at(arkadeLaenge(X))) -->
+    ['the length of the Arkade is at least '],[X],[' centimeters'].
+pp_Fml(html,at(arkadeLaengeMax(X))) -->
+    ['the length of the Arkade is at most '],[X],[' centimeters'].
+% durchfahrtBreite
+pp_Fml(html,at(durchfahrtBreiteGenau(X))) -->
+    ['the width of the Durchfahrt is exactly '],[X],[' centimeters'].
+pp_Fml(html,at(durchfahrtBreite(X))) -->
+    ['the width of the Durchfahrt is at least '],[X],[' centimeters'].
+pp_Fml(html,at(durchfahrtBreiteMax(X))) -->
+    ['the width of the Durchfahrt is at most '],[X],[' centimeters'].
+% durchfahrtHoehe
+pp_Fml(html,at(durchfahrtHoeheGenau(X))) -->
+    ['the height of the Durchfahrt is exactly '],[X],[' centimeters'].
+pp_Fml(html,at(durchfahrtHoehe(X))) -->
+    ['the height of the Durchfahrt is at least '],[X],[' centimeters'].
+pp_Fml(html,at(durchfahrtHoeheMax(X))) -->
+    ['the height of the Durchfahrt is at most '],[X],[' centimeters'].
+% durchgangBreite
+pp_Fml(html,at(durchgangBreiteGenau(X))) -->
+    ['the width of the Durchgang is exactly '],[X],[' centimeters'].
+pp_Fml(html,at(durchgangBreite(X))) -->
+    ['the width of the Durchgang is at least '],[X],[' centimeters'].
+pp_Fml(html,at(durchgangBreiteMax(X))) -->
+    ['the width of the Durchgang is at most '],[X],[' centimeters'].
+% durchgangHoehe
+pp_Fml(html,at(durchgangHoeheGenau(X))) -->
+    ['the height of the Durchgang is exactly '],[X],[' centimeters'].
+pp_Fml(html,at(durchgangHoehe(X))) -->
+    ['the height of the Durchgang is at least '],[X],[' centimeters'].
+pp_Fml(html,at(durchgangHoeheMax(X))) -->
+    ['the height of the Durchgang is at most '],[X],[' centimeters'].
+% laubengangHoehe
+pp_Fml(html,at(laubengangHoeheGenau(X))) -->
+    ['the height of the Laubengang is exactly '],[X],[' centimeters'].
+pp_Fml(html,at(laubengangHoehe(X))) -->
+    ['the height of the Laubengang is at least '],[X],[' centimeters'].
+pp_Fml(html,at(laubengangHoeheMax(X))) -->
+    ['the height of the Laubengang is at most '],[X],[' centimeters'].
+% laubengangLaenge
+pp_Fml(html,at(laubengangLaengeGenau(X))) -->
+    ['the length of the Laubengang is exactly '],[X],[' centimeters'].
+pp_Fml(html,at(laubengangLaenge(X))) -->
+    ['the length of the Laubengang is at least '],[X],[' centimeters'].
+pp_Fml(html,at(laubengangLaengeMax(X))) -->
+    ['the length of the Laubengang is at most '],[X],[' centimeters'].
+% bbAusnuetzbarkeitWidmungskategorieGefoerderterWohnbau
+pp_Fml(html,at(bbAusnuetzbarkeitWidmungskategorieGefoerderterWohnbauGenau(X))) -->
+    ['the Ausnuetzbarkeit der Widmungskategorie Gef&ouml;rderter Wohnbau is exactly '],[X],[' percent'].
+pp_Fml(html,at(bbAusnuetzbarkeitWidmungskategorieGefoerderterWohnbau(X))) -->
+    ['the Ausnuetzbarkeit der Widmungskategorie Gef&ouml;rderter Wohnbau is at least '],[X],[' percent'].
+pp_Fml(html,at(bbAusnuetzbarkeitWidmungskategorieGefoerderterWohnbauMax(X))) -->
+    ['the Ausnuetzbarkeit der Widmungskategorie Gef&ouml;rderter Wohnbau is at most '],[X],[' percent'].
+% stellplatz
+pp_Fml(html,at(stellplatzGenau(X))) -->
+    ['the number of Stellpl&auml;tze f&uuml;r Grossbauvorhaben is exactly '],[X].
+pp_Fml(html,at(stellplatzMin(X))) -->
+    ['the number of Stellpl&auml;tze f&uuml;r Grossbauvorhaben is at least '],[X].
+pp_Fml(html,at(stellplatzMax(X))) -->
+    ['the number of Stellpl&auml;tze f&uuml;r Grossbauvorhaben is at most '],[X].
+% stellplatzregulativUmfangAbsolut
+pp_Fml(html,at(stellplatzregulativUmfangAbsolutGenau(X))) -->
+    ['the Stellplatzregulativ is exactly '],[X].
+pp_Fml(html,at(stellplatzregulativUmfangAbsolutMin(X))) -->
+    ['the Stellplatzregulativ is at least '],[X].
+pp_Fml(html,at(stellplatzregulativUmfangMaximumAbsolut(X))) -->
+    ['the Stellplatzregulativ is at most '],[X].
+% stellplatzregulativUmfangRelativ
+pp_Fml(html,at(stellplatzregulativUmfangRelativGenau(X))) -->
+    ['the deviation from the Stellplatzregulativ is exactly '],[X],[' percent'].
+pp_Fml(html,at(stellplatzregulativUmfangMinimumRelativ(X))) -->
+    ['the deviation from the Stellplatzregulativ is at least '],[X],[' percent'].
+pp_Fml(html,at(stellplatzregulativUmfangMaximumRelativ(X))) -->
+    ['the deviation from the Stellplatzregulativ is at most '],[X],['percent'].
+% gehsteigbreite
+pp_Fml(html,at(gehsteigbreiteGenau(X))) -->
+    ['the Gehsteigbreite is exactly '],[X],[' centimeters'].
+pp_Fml(html,at(gehsteigbreiteMin(X))) -->
+    ['the Gehsteigbreite is at least '],[X],[' centimeters'].
+pp_Fml(html,at(gehsteigbreiteMax(X))) -->
+    ['the Gehsteigbreite is at most '],[X],[' centimeters'].
+% strassenbreite
+pp_Fml(html,at(strassenbreiteGenau(X))) -->
+    ['the Strassenbreite is exactly '],[X],[' centimeters'].
+pp_Fml(html,at(strassenbreiteMin(X))) -->
+    ['the Strassenbreite is at least '],[X],[' centimeters'].
+pp_Fml(html,at(strassenbreiteMax(X))) -->
+    ['the Strassenbreite is at most '],[X],[' centimeters'].
+% bbAusnuetzbarkeitVolumenBaumasse
+pp_Fml(html,at(bbAusnuetzbarkeitVolumenBaumasseGenau(X))) -->
+    ['the volumenbezogene Ausn&uuml;tzbarkeit bezogen auf die Baumasse is exactly '],[X],[' cubic meters'].
+pp_Fml(html,at(bbAusnuetzbarkeitVolumenBaumasseMin(X))) -->
+    ['the volumenbezogene Ausn&uuml;tzbarkeit bezogen auf die Baumasse is at least '],[X],[' cubic meters'].
+pp_Fml(html,at(bbAusnuetzbarkeitVolumenBaumasse(X))) -->
+    ['the volumenbezogene Ausn&uuml;tzbarkeit bezogen auf die Baumasse is at most '],[X],[' cubic meters'].
+% bbAusnuetzbarkeitVolumenBaumasseRelativ
+pp_Fml(html,at(bbAusnuetzbarkeitVolumenBaumasseRelativGenau(X))) -->
+    ['the volumenbezogene Ausn&uuml;tzbarkeit bezogen auf die Baumasse is exactly '],[X],[' percent'].
+pp_Fml(html,at(bbAusnuetzbarkeitVolumenBaumasseRelativMin(X))) -->
+    ['the volumenbezogene Ausn&uuml;tzbarkeit bezogen auf die Baumasse is at least '],[X],[' percent'].
+pp_Fml(html,at(bbAusnuetzbarkeitVolumenBaumasseRelativ(X))) -->
+    ['the volumenbezogene Ausn&uuml;tzbarkeit bezogen auf die Baumasse is at most '],[X],[' percent'].
+% bbAusnuetzbarkeitVolumenRelativ
+pp_Fml(html,at(bbAusnuetzbarkeitVolumenRelativGenau(X))) -->
+    ['the volumenbezogene Ausn&uuml;tzbarkeit bezogen auf die Grundfl&auml;che is exactly '],[X],[' percent'].
+pp_Fml(html,at(bbAusnuetzbarkeitVolumenRelativMin(X))) -->
+    ['the volumenbezogene Ausn&uuml;tzbarkeit bezogen auf die Grundfl&auml;che is at least '],[X],[' percent'].
+pp_Fml(html,at(bbAusnuetzbarkeitVolumenRelativ(X))) -->
+    ['the volumenbezogene Ausn&uuml;tzbarkeit bezogen auf die Grundfl&auml;che is at most '],[X],[' percent'].
+% umbaubarerRaumBauplatz
+pp_Fml(html,at(umbaubarerRaumBauplatzGenau(X))) -->
+    ['the umbaubarer Raum on the Bauplatz is exactly '],[X],[' cubic meters'].
+pp_Fml(html,at(umbaubarerRaumBauplatzMin(X))) -->
+    ['the umbaubarer Raum on the Bauplatz is at least '],[X],[' cubic meters'].
+pp_Fml(html,at(umbaubarerRaumBauplatzMax(X))) -->
+    ['the umbaubarer Raum on the Bauplatz is at most '],[X],[' cubic meters'].
+% umbaubarerRaumGebaeude
+pp_Fml(html,at(umbaubarerRaumGebaeudeGenau(X))) -->
+    ['the umbaubarer Raum for Geba&auml;ude is exactly '],[X],[' square meters'].
+pp_Fml(html,at(umbaubarerRaumGebaeudeMin(X))) -->
+    ['the umbaubarer Raum for Geba&auml;ude is at least '],[X],[' square meters'].
+pp_Fml(html,at(umbaubarerRaumGebaeudeMax(X))) -->
+    ['the umbaubarer Raum for Geba&auml;ude is at most '],[X],[' square meters'].
+% umbaubarerRaumGebaeudeteil
+pp_Fml(html,at(umbaubarerRaumGebaeudeteilGenau(X))) -->
+    ['the umbaubarer Raum for Geba&auml;udeteile is exactly '],[X],[' square meters'].
+pp_Fml(html,at(umbaubarerRaumGebaeudeteilMin(X))) -->
+    ['the umbaubarer Raum for Geba&auml;udeteile is at least '],[X],[' square meters'].
+pp_Fml(html,at(umbaubarerRaumGebaeudeteilMax(X))) -->
+    ['the umbaubarer Raum for Geba&auml;udeteile is at most '],[X],[' square meters'].
+% vorstehendeBauelementeAusladung
+pp_Fml(html,at(vorstehendeBauelementeAusladungGenau(X))) -->
+    ['the maximale Ausladung vorstehender Bauteile is exactly '],[X],[' centimeters'].
+pp_Fml(html,at(vorstehendeBauelementeAusladungMin(X))) -->
+    ['the maximale Ausladung vorstehender Bauteile is at least '],[X],[' centimeters'].
+pp_Fml(html,at(vorstehendeBauelementeAusladungMax(X))) -->
+    ['the maximale Ausladung vorstehender Bauteile is at most '],[X],[' centimeters'].
+%
+/*  other atomics with arguments:
 */
 pp_Fml(html,at(X)) --> {\+ atom(X), term_to_atom(X,Y)}, [Y].
+pp_Fml(html,at(X)) --> {atom(X)}, [X].
 pp_Fml(html,true) --> ['true'].
 pp_Fml(html,false) --> ['false'].
 pp_Fml(html,and(A,B)) -->
@@ -1084,27 +1594,27 @@ operator and <code>"], pp_Op(html,Op1),["</code>. In particular:<br />
 %    pp_nl_tab(N),
     ["</div>"].
 % clauses for the different blocks in the assumption rules:    
-pp_derivation(html,N,node(Name,no_p_conflict(Op,Seq))) -->
+pp_derivation(html,N,node(_,no_p_conflict(Op,Seq))) -->
     pp_nl_tab(N),
     ['The operator <code>'],pp_Op(html,Op)
     ,['</code> is nontrivial, but there is no conflict, because we cannot
 derive that'], pp_Seq(html,Seq),
     pp_nl_tab(N),
     ["</div>"].
-pp_derivation(html,_,node(Name,no_p_conflict(na))) -->
+pp_derivation(html,_,node(_,no_p_conflict(na))) -->
     [].
-pp_derivation(html,N,node(Name,not_overruled(Assumption),[]))
+pp_derivation(html,N,node(_,not_overruled(Assumption),[]))
 -->
     pp_nl_tab(N),
     ["The deontic assumption <code>"],pp_Fml(html,Assumption),
     ["</code> is not overruled by any conflicting more specific assumption, because there are no conflicting assumptions."].
-pp_derivation(html,N,node(Name,not_overruled(Assumption),[S|Suc]))
+pp_derivation(html,N,node(_,not_overruled(Assumption),[S|Suc]))
 -->
     pp_nl_tab(N),
     ["The deontic assumption <code>"],pp_Fml(html,Assumption),
     ["</code> is not overruled by any conflicting assumption because of the following: "],
     pp_html_successors_new(N + 2, [S|Suc]).
-pp_derivation(html,N,node(Name,notapplicable(Fml,Seq))) -->
+pp_derivation(html,N,node(_,notapplicable(Fml,Seq))) -->
     pp_nl_tab(N),
     ["The deontic assumption <br />"],
     pp_nl_tab(N),["<code>"],
@@ -1112,7 +1622,7 @@ pp_derivation(html,N,node(Name,notapplicable(Fml,Seq))) -->
     [" is not applicable because we cannot derive <br />"],
     pp_nl_tab(N),["<code>"],
     pp_Seq(html,Seq),["</code>"].
-pp_derivation(html,N,node(Name,noconflict(Fml,Seq))) -->
+pp_derivation(html,N,node(_,noconflict(Fml,Seq))) -->
     pp_nl_tab(N),
     ["The deontic assumption <br />"],
     pp_nl_tab(N),["<code>"],
@@ -1129,7 +1639,7 @@ pp_derivation(html,N,node(notimplied(Fml,Seq))) -->
     ['\\text{no conflict, because}\\\\ \\nentails'],
     pp_Seq(html,Seq),['\\end{array}'].
 
-pp_derivation(html,N,node(Name,superior(Norm1:Fml1, Norm2:Fml2))) -->
+pp_derivation(html,N,node(_,superior(Norm1:Fml1, Norm2:Fml2))) -->
     pp_nl_tab(N),
     ["The deontic assumption <br />"],
     pp_nl_tab(N),["<code>"],
@@ -1138,7 +1648,7 @@ pp_derivation(html,N,node(Name,superior(Norm1:Fml1, Norm2:Fml2))) -->
     pp_nl_tab(N),["<code>"],
     pp_Fml(html,Norm1:Fml1),["</code>, because <code>"],
     pp_norm(html,Norm1),["</code> beats <code>"],pp_norm(html,Norm2),["</code> ."].
-pp_derivation(html,N,node(Name,notoverruled(Fml,Seq,[Suc]))) -->
+pp_derivation(html,N,node(_,notoverruled(Fml,Seq,[Suc]))) -->
     pp_nl_tab(N),
     ["The deontic assumption <br />"],
     pp_nl_tab(N),["<code>"],
@@ -1163,7 +1673,7 @@ pp_derivation(html,N,node(Name,notoverruled(Fml,Seq,[Suc]))) -->
     pp_derivation(html,N+2,Suc).
 */
 %    pp_html_successors_new(N + 2, [Suc]).
-pp_derivation(html,N,node(Name,overrides(Fml1, Fml2),[T1,T2,T3])) -->
+pp_derivation(html,N,node(_,overrides(Fml1, Fml2),[T1,T2,T3])) -->
     pp_nl_tab(N),
 /*
     ["The deontic assumption <br />"],

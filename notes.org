@@ -1,5 +1,7 @@
 #+TITLE: BRISEprover - notes
 
+* Scratchpad
+
 * change atoms to match annotations
   TO DECIDE:
   - [X] *measures*: Do I want to add extra clauses for every triple
@@ -23,17 +25,100 @@
 
      => _put in extra clauses_!
 
+** Convention for renaming attributes
+   _NOTE1_: We omit the text whenever it is not an option
+   (otherwise we have too many possibilities and won't be able to
+   check them)
+
+   _NOTE2_: Convention for naming attributes in case they have the
+   modal operator built in in the WP4 version:
+   Use the attribute without the "unzulaessig"/"verbot" etc.
+   E.g.:
+   unzulaessigFensterZuOeffentlichenVerkehrsflaechen ~> for(
+   fensterZuOeffentlichenVerkehrsflaechen, ... )
+
+   In particular:
+   
+   | original attribute                                      |
+   | ~> new attribute                                        |
+   |---------------------------------------------------------|
+   | anordnungGaertnerischeAusgestaltung(TEXT)               |
+   | ~> obl(gaertnerischeAusgestaltung, . )                  |
+   |---------------------------------------------------------|
+   | ausnahmeGaertnerischAuszugestaltende(TEXT)              |
+   | ~> per( neg gaertnerischeAusgestaltung, . )             |
+   |---------------------------------------------------------|
+   | unzulaessigFensterZuOeffentlichenVerkehrsflaechen(TEXT) |
+   | ~> for(fensterZuOeffentlichenVerkehrsflaechen, . )      |
+   |---------------------------------------------------------|
+   | vonBebauungFreizuhalten(TEXT)                           |
+   | ~> for( bebauung, . )                                   |
+   |---------------------------------------------------------|
+   | vonBebauungFreizuhaltenAusnahme(TEXT)                   |
+   | ~> per( bebauung, . )                                   |
+   |---------------------------------------------------------|
+   | ausnahmeVonWohnungenUnzulaessig(TEXT)                   |
+   | ~> per( wohnung, . )                                    |
+   |---------------------------------------------------------|
+   | gebaeudeVerbotP(TEXT)                                   |
+   | ~> for( gebaeudeP, . )                                  |
+   |---------------------------------------------------------|
+   | vorbautenVerbot(TEXT)                                   |
+   | ~> for( vorbauten, . )                                  |
+   |---------------------------------------------------------|
+   | errichtungGebaeude                                      |
+   | ~> per( errichtungGebaeude, . )                         |
+   |---------------------------------------------------------|
+   | verbotStaffelung                                        |
+   | ~> for( staffelung, . )                                 |
+   |---------------------------------------------------------|
+   | technischeUndBelichtungsAufbautenZulaessig              |
+   | ~> per( technischeUndBelichtungsAufbauten, . )          |
+   |---------------------------------------------------------|
+   | technischeAufbautenZulaessig                            |
+   | ~> per( technischeAufbauten, . )                        |
+   |---------------------------------------------------------|
+   | unterbrechungGeschlosseneBauweise                       |
+   | ~> per( unterbrechungGeschlosseneBauweise               |
+   |---------------------------------------------------------|
+   | unzulaessigkeitUnterirdischeBauwerke                    |
+   | ~> for( unterirdischeBauwerke, . )                      |
+   |---------------------------------------------------------|
+   | einfriedungZulaessig                                    |
+   | ~> per( einfriedung, . )                                |
+   |---------------------------------------------------------|
+   | hochhausUnzulaessigGemaessBB                            |
+   | ~> for( hochhausGemaessBB, . )                          |
+   |---------------------------------------------------------|
+   | hochhausZulaessigGemaessBB                              |
+   | ~> per( hochhausGemaessBB, . )                          |
+   |---------------------------------------------------------|
+   | unzulaessigBueroGeschaeftsgebaeude                      |
+   | ~> for( bueroGeschaeftsgebaeude, . )                    |
+   |---------------------------------------------------------|
+   | verbotAufenthaltsraum                                   |
+   | ~> for( aufenthaltsraum, . )                            |
+   |---------------------------------------------------------|
+   | verbotWohnung                                           |
+   | ~> for( wohnung, . )                                    |
+   |---------------------------------------------------------|
+   | stellplatzImNiveauZulaessig                             |
+   | ~> per( stellplatzImNiveau, . )                         |
+   |---------------------------------------------------------|
+
+
 ** assumption files
-   - [ ] bauordnung.pl
-   - [ ] pd7601.pl
-   - [ ] pd7602.pl
-   - [ ] pd6962.pl
-** pretty printing
-   - [ ] add wordings for the atoms
+   - [X] bauordnung.pl
+   - [X] pd7601.pl
+   - [X] pd7602.pl
+   - [ ] pd6963.pl
+** DONE pretty printing
+   - [X] add wordings for the atoms with arguments
+   - [X] add wordings for the atoms without arguments
 ** main files
-   - [ ] add the atoms with arguments
-   - [ ] add predicate for exact measures (gebaeudeHoehe etc)
-   - [ ] add clauses for exact, minimal, maximal measures
+   - [X] add the atoms with arguments
+   - [X] add predicate for exact measures (gebaeudeHoehe etc)
+   - [X] add clauses for exact, minimal, maximal measures
   
 * non-provable propositional logic via anti-sequents
   _Idea_: use an anti-sequent calculus / underivability calculus for
@@ -52,6 +137,10 @@
 
 * explanation output
   Would be nice flashy output :)
+** TODO small stuff
+   - [ ] monotonicity rule: still only there for obligation, not for
+     prohibition (in explanation html output) -> add explanation for
+     downwards monotonicity or so
 
 ** DONE add prettyprinting(html)
    - [X] pp_header(html,Assumption,Formula)

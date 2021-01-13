@@ -29,7 +29,15 @@ variable_with_arguments(Op) :-
     (member(Op,[height, width, max_height, max_width, min_height,
 	       min_width, measure, max_measure, min_measure, area,
 	       plangebiet, bauland, grundflaeche, widmung, bauklasse,
-	       bauweise, bb, b, baulinie, baufluchtlinie, grenzlinie])
+	       bauweise, bb, b, baulinie, baufluchtlinie, grenzlinie,
+	       bauweiseID, gebaeudeBautyp, dachart,
+	       vorkehrungBepflanzungOeffentlicheVerkehrsflaeche,
+	       stockwerk, bauklasseID, gebaeudeHoeheArt,
+	       planzeichenBBID, widmungID, widmungErsteEbene,
+	       widmungZweiteEbene, widmungDritteEbene,
+	       widmungErsteEbeneBezugHoehe,
+	       widmungZweiteEbeneBezugHoehe,
+	       widmungDritteEbeneBezugHoehe, strassenbreiteVonBis])
     ;
     measuretriple(Op,_,_)
     ;
@@ -40,10 +48,11 @@ variable_with_arguments_old(Op) :-
     member(Op,[height, width, max_height, max_width, min_height,
 	       min_width, measure, max_measure, min_measure, area,
 	       plangebiet, bauland, grundflaeche, widmung, bauklasse,
-	       bauweise, bb, b, baulinie, baufluchtlinie, grenzlinie,
+	       bauweise, bb, b, baulinie, badufluchtlinie, grenzlinie,
 	       anteilBaumbepflanzung, technischeAufbautenHoeheMax,
 	       technischeAufbautenHoeheMin, technischeAufbautenHoehe,
 	       technischeAufbautenZulaessig,
+	       bauweiseID,
 	       unterbrechungGeschlosseneBauweise,
 	       unzulaessigkeitUnterirdischeBauwerke, verbotStaffelung,
 	       abschlussDachMax, anteilDachbegruenung,
@@ -123,7 +132,7 @@ measuretriple(anteilDachbegruenungGenau,anteilDachbegruenung,anteilDachbegruenun
 measuretriple(bbDachneigungGenau,bbDachneigungMin,bbDachneigungMax).
 measuretriple(dachflaecheGenau,dachflaecheMin,dachflaecheMax).
 measuretriple(dachneigungGenau,dachneigungMin,dachneigungMax).
-measuretriple(einfriedungHoeheGesamtGenau,einfriedungHoeheGesamtMin,einfriedungHOeheGesamt).
+measuretriple(einfriedungHoeheGesamtGenau,einfriedungHoeheGesamtMin,einfriedungHoeheGesamt).
 measuretriple(einfriedungHoeheSockelGenau,einfriedungHoeheSockelMin,einfriedungHoeheSockel).
 measuretriple(bauplatzUnterirdischeBebauungGenau,bauplatzUnterirdischeBebauungMin,bauplatzUnterirdischeBebauungMax).
 measuretriple(bbAusnuetzbarkeitFlaecheBGFGenau,bbAusnuetzbarkeitFlaecheMin,bbAusnuetzbarkeitFlaecheBGF).
@@ -134,7 +143,7 @@ measuretriple(bbAusnuetzbarkeitFlaecheNutzflaecheGenau,bbAusnuetzbarkeitFlaecheN
 measuretriple(bbAusnuetzbarkeitFlaecheNutzflaecheRelativGenau,bbAusnuetzbarkeitFlaecheNutzflaecheRelativMin,bbAusnuetzbarkeitFlaecheNutzflaecheRelativ).
 measuretriple(bbAusnuetzbarkeitFlaecheWohnnutzflaecheGenau,bbAusnuetzbarkeitFlaecheWohnnutzflaecheMin,bbAusnuetzbarkeitFlaecheWohnnutzflaeche).
 measuretriple(bbAusnuetzbarkeitFlaecheWohnnutzflaecheRelativGenau,bbAusnuetzbarkeitFlaecheWohnnutzflaecheRelativMin,bbAusnuetzbarkeitFlaecheWohnnutzflaecheRelativ).
-measuretriple(bbBebaubareFlaecheAbgegrenztGenau,bbBebaubareFlaecheAbgegrenztMin,bbBebaubareFlaecheAbgegrenztMax).
+measuretriple(bbBebaubareFlaecheAbgegrenztGenau,bbBebaubareFlaecheAbgegrenztMin,bbBebaubareFlaecheAbgegrenzt).
 measuretriple(bbBebaubareFlaecheGesamterBauplatzGenau,bbBebaubareFlaecheGesamterBauplatzMin,bbBebaubareFlaecheGesamterBauplatz).
 measuretriple(bbBebaubareFlaecheJeBauplatzGenau,bbBebaubareFlaecheJeBauplatzMin,bbBebaubareFlaecheJeBauplatzMax).
 measuretriple(bbBebaubareFlaecheJeGebaeudeGenau,bbBebaubareFlaecheJeGebaeudeMin,bbBebaubareFlaecheJeGebaeude).
@@ -146,7 +155,7 @@ measuretriple(anzahlGeschosseOberirdischOhneDachgeschossGenau,anzahlGeschosseObe
 measuretriple(geschossanzahlGenau,geschossanzahlMin,zulaessigeGeschossanzahl).
 measuretriple(einkaufszentrumFlaecheGenau,einkaufszentrumFlaecheMin,einkaufszentrumMaxFlaeche).
 measuretriple(grossbauvorhabenFlaecheGenau,grossbauvorhabenFlaecheMin,grossbauvorhabenMaxFlaeche).
-measuretriple(anschlussGebaeudeAnGelaendeGenau,anschlussGebaeudeAnGelaendeMin,anschlussGebaeudeAnGelaende).
+measuretriple(anschlussGebaeudeAnGelaende,anschlussGebaeudeAnGelaendeMin,anschlussGebaeudeAnGelaendeMax).
 measuretriple(bbBauklasseGenau,bbBauklasseMinimum,bbBauklasseMaximum).
 measuretriple(fbokWohnungenGenau,fbokMinimumWohnungen,fbokWohnungenMax).
 measuretriple(gebaeudeHoeheGenau,gebaeudeHoeheMin,gebaeudeHoeheMax).
@@ -155,6 +164,7 @@ measuretriple(raumhoeheEGGenau,mindestraumhoeheEG,raumhoeheEGMax).
 measuretriple(gelaendeneigungGenau,gelaendeneigungMin,gelaendeneigungMax).
 measuretriple(arkadeHoeheGenau,arkadeHoehe,arkadeHoeheMax).
 measuretriple(arkadeLaengeGenau,arkadeLaenge,arkadeLaengeMax).
+% BLARGH: got to here.
 measuretriple(durchfahrtBreiteGenau,durchfahrtBreite,durchfahrtBreiteMax).
 measuretriple(durchfahrtHoeheGenau,durchfahrtHoehe,durchfahrtHoeheMax).
 measuretriple(durchgangBreiteGenau,durchgangBreite,durchgangBreiteMax).

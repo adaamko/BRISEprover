@@ -189,7 +189,7 @@ measuretriple(,,).
 :- ensure_loaded([preprocessing]).
 /* load example formalisation
  * every Plangebiet has its own file
-*/p
+*/
 :- ensure_loaded([attributes]).
 :- multifile(bauland/3).
 :- multifile(bauland_facts/3).
@@ -200,7 +200,7 @@ measuretriple(,,).
 :- multifile(fluchtlinien_facts/3).
 :- multifile(textliche_bestimmungen/3).
 :- ensure_loaded([assumptionhandler]).
-:- ensure_loaded([pd7602]).
+:- ensure_loaded([pd7602_new]).
 :- ensure_loaded([pd7601]).
 
 
@@ -334,7 +334,10 @@ explain_online(Fml, Facts, D_Assumptions, Sup_Relation, Operators,
 */
 explain_test(Fml) :-
     explain_online(Fml,[e -> f, f -> g, h -> j],[obl(e,j), for(j or e,x), for(neg e, x and y),bb(3:5/3):for(neg e, x and y), for(e, y), obl(max_measure(gebaeude,hoehe,5),bauland(403:3/5) and bb(703:3))],[bb(3:5/3) beats bb(703:3)],[],[],[],[],[plangebiet(7602)],modern,derivability,'test.html'),!.
-
+/* prove_test
+*/
+prove_test(Fml) :-
+    prove_online(Fml,[e -> f, f -> g, h -> j],[obl(e,j), for(j or e,x), for(neg e, x and y),bb(3:5/3):for(neg e, x and y), for(e, y), obl(max_measure(gebaeude,hoehe,5),bauland(403:3/5) and bb(703:3))],[bb(3:5/3) beats bb(703:3)],[],[],[],[],[plangebiet(7602)],modern,derivability,'test.tex'),!.
 
 /* apply_op
    (for compliance check)
@@ -439,10 +442,10 @@ for(staffelgeschoss, ((plangebiet(7602) and an_oeffentlicher_verkehrsflaeche) an
    etc. Conflict of the new assumption with an assumption on the
    maximal height of buildings of 1200 on grundflaeche 7602_1_1.
 */
-prove_test(Fml, D_ass, Version) :-
+/*prove_test(Fml, D_ass, Version) :-
     prove_online(Fml, [], D_ass, [(n1 beats n2)], [(obl,obl)], [], [confl(obl,obl)], [], [plangebiet(7602),plangebiet(7601)],
 		 Version, derivability, 'test.tex'),!.
-%
+*/%
 
 /*prove_test(Fml) :-
     prove(asmp([],[modal(obl,at(a) and at(c),at(b)), modal(obl, neg at(a),at(c)),
@@ -574,7 +577,7 @@ prove(_,_, seq(Gamma,Delta),
     N > M,!.% cut for efficiency
 % measure is not smaller than min_measure:
 prove(_,_, seq(Gamma,Delta),
-      node(fact, seq([at(measure(Type,Object,N)),at(min_measure(Type,Object,M))],[]),
+      node(fact, seq([at(Fml),at(FmlMin)],[]),
 	   seq(Gamma, Delta), [])) :- 
     member(at(Fml),Gamma),
     member(at(FmlMin),Gamma),
@@ -586,7 +589,7 @@ prove(_,_, seq(Gamma,Delta),
     N < M,!. % cut for efficiency
 % min_measure is monotone:
 prove(_,_, seq(Gamma,Delta),
-      node(fact, seq([at(min_measure(Type,Object,N))],[at(min_measure(Type,Object,M))]),
+      node(fact, seq([at(FmlMin1)],[at(FmlMin2)]),
 	   seq(Gamma, Delta), [])) :- 
     member(at(FmlMin1),Gamma),
     member(at(FmlMin2),Delta),
@@ -598,7 +601,7 @@ prove(_,_, seq(Gamma,Delta),
     M =< N, !. % cut for efficiency
 % max_measure is monotone:
 prove(_,_, seq(Gamma,Delta),
-      node(fact, seq([at(max_measure(Type,Object,N))],[at(max_measure(Type,Object,M))]),
+      node(fact, seq([at(FmlMax1)],[at(FmlMax2)]),
 	   seq(Gamma, Delta), [])) :- 
     member(at(FmlMax1),Gamma),
     member(at(FmlMax2),Delta),
@@ -610,10 +613,10 @@ prove(_,_, seq(Gamma,Delta),
     N =< M, !. % cut for efficiency
 % min_measure is not larger than max_measure:
 prove(_,_, seq(Gamma,Delta),
-      node(fact, seq([at(min_measure(Type,Object,N)),at(max_measure(Type,Object,M))],[]),
+      node(fact, seq([at(FmlMin),at(FmlMax)],[]),
 	   seq(Gamma, Delta), [])) :- 
     member(at(FmlMin),Gamma),
-    member(at(FmlMax),Delta),
+    member(at(FmlMax),Gamma),
     FmlMin =.. [MeasureMin,N|_],
     FmlMax =.. [MeasureMax,M|_],
     measuretriple(_,MeasureMin,MeasureMax),
