@@ -1,6 +1,121 @@
 #+TITLE: BRISEprover - notes
 
 * Scratchpad
+[ modal(obl,e,j),
+  modal(for,j or e,x),
+  modal(for,neg e,x and y),
+  bb(3:5/3):modal(for,neg e,x and y),
+  modal(for,e,y),
+  modal(obl,
+	max_measure(gebaeude,hoehe,5),
+	bauland(403:3/5) and bb(703:3)),
+
+  b(6963:6/1):modal(obl,
+	gehsteigbreiteMin(80),
+	strassenbreiteMax(1000) and anFluchtlinie and plangebiet(6963)),
+
+  b(6963:6/2):modal(obl,
+	gehsteigbreiteMin(150),
+	strassenbreiteVonBis(1000,1600) and anFluchtlinie and plangebiet(6963)),
+
+  b(6963:6/3):modal(obl,
+	gehsteigbreiteMin(200),
+	strassenbreiteMin(1600) and anFluchtlinie and plangebiet(6963)),
+
+  b(6963:7/1):modal(obl,
+	vorkehrungBepflanzungOeffentlicheVerkehrsflaeche(baumreihe),
+	verkehrsflaecheID(in_der_Wiedener_Hauptstrasse_auf_Seite_der_ungeraden_Ordnungsnummern) and plangebiet(6963)),
+
+  b(6963:7/2):modal(obl,
+	vorkehrungBepflanzungOeffentlicheVerkehrsflaeche(baumreihe),
+	verkehrsflaecheID(in_der_Graf_Starhemberg_Gasse_auf_Seite_der_geraden_Ordnungsnummern_zwischen_Waltergasse_und_Rainergasse) and plangebiet(6963)),
+
+  b(6963:7/2):modal(obl,
+	vorkehrungBepflanzungOeffentlicheVerkehrsflaeche(baumreihe),
+	verkehrsflaecheID(in_der_Mayerhofgasse_an_beiden_Strassenseiten) and plangebiet(6963)),
+
+  b(6963:10):modal(for,
+	vorbauten,
+	anOeffentlichenVerkehrsflaechen and plangebiet(6963)),
+
+  b(6963:11/1):modal(per,
+	vorstehendeBauelementeAusladungMax(60),
+	strassenbreiteMax(1600)),
+
+  b(6963:11/2):modal(per,
+	vorstehendeBauelementeAusladungMax(80),
+	strassenbreiteMin(1600)),
+
+  b(6963:12):modal(for,staffelung,anOeffentlichenVerkehrsflaechen),
+
+  b(6963:13):modal(obl,
+	vorkehrungBepflanzung,
+	anordnungGaertnerischeAusgestaltung and unterirdischeBaulichkeiten),
+
+  b(6963:14):modal(obl,
+	modal(bebaubareFlaecheFuerNebengebaeudeJeBauplatzMax,modal(30)),
+	gebaeudeBautyp(nebengebaeude)),
+
+  b(6963:15/1):modal(obl,
+	begruenungDach and dachart(flachdach),
+	gebaeudeBautyp(nebengebaeude) and dachflaecheMin(5)),
+
+  b(6963:15/2):modal(per,
+	technischeUndBelichtungsaufbauten,
+	gebaeudeBautyp(nebengebaeude) and dachflaecheMin(5)),
+
+  b(6963:17):modal(obl,
+	abschlussDachMax(450),
+	gebaeudeHoeheArt(tatsaechlich_errichtet)),
+
+  bb(6963:19/1):modal(obl,begruenungDach,planzeichenBBID(bb1)),
+
+  bb(6963:19/2):modal(per,technischeUndBelichtungsaufbauten,planzeichenBBID(bb1)),
+
+  bb(6963:21/1):modal(obl,anordnungGaertnerischeAusgestaltung,planzeichenBBID(bb1)),
+
+  bb(6963:21/1):modal(per,
+	modal(ausnahmeGaertnerischAuszugestaltende,
+	      manipulations_und_Rangierflaechen),
+	planzeichenBBID(bb1)),
+
+  bb(6963:22):modal(for,
+	fensterZuOeffentlichenVerkehrsflaechen,
+	stockwerk(erdgeschoss) and anOeffentlicheVerkehrsflaechen and planzeichenBBID(bb2) and anBaulinie),
+
+  bb(6963:23):modal(obl,
+	weitereBestimmungPruefungErforderlich,
+	planzeichenBBID(bb3) and gebaeudeBautyp(hauptgebaeude)),
+
+  bb(6963:24):modal(for,
+	errichtungGebaeude,
+	planzeichenBBID(bb3) and gebaeudeBautyp(nebengebaeude)),
+
+  bb(6963:25):modal(obl,anordnungGaertnerischeAusgestaltung,planzeichenBBID(bb3)),
+
+  bb(6963:26):modal(obl,
+	bbAusnuetzbarkeitFlaecheGrundflaechenbezugRelativ(95) and anordnungGaertnerischeAusgestaltung and oberflaecheBestimmungP,
+	planzeichenBBID(bb4) and widmungID(p)),
+
+  bb(6963:27):modal(obl,
+	abschlussDachMax(400),
+	planzeichenBBID(bb6) and gebaeudeHoeheArt(tatsaechlich_ausgefuehrt)),
+
+  bb(6963:28):modal(for,unterirdischeBauwerke,planzeichenBBID(bb7)and widmungID(g)),
+
+  bb(6963:29/1):modal(obl,
+	weitereBestimmungPruefungErforderlich and ausnahmePruefungErforderlich,
+	widmungID(wohnzohne)),
+
+  bb(6963:29/2):modal(per,
+	neg(weitereBestimmungPruefungErforderlich and ausnahmePruefungErforderlich),
+	verkehrsflaecheID(bauplaetze_an_den_Hauptverkehrsstrassen_gemaess_verordnung_38) and stockwerk(erdgeschoss))
+]
+* TODOs
+** on_location for bb / b
+   the on_location predicate seems not to automatically add
+   assumptions bb(7602:2) -> plangebiet(7602)
+   _BUT_: need to check whether we want that automatically!
 
 * change atoms to match annotations
   TO DECIDE:

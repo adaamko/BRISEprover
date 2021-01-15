@@ -37,7 +37,9 @@ variable_with_arguments(Op) :-
 	       widmungZweiteEbene, widmungDritteEbene,
 	       widmungErsteEbeneBezugHoehe,
 	       widmungZweiteEbeneBezugHoehe,
-	       widmungDritteEbeneBezugHoehe, strassenbreiteVonBis])
+	       widmungDritteEbeneBezugHoehe, strassenbreiteVonBis,
+	       verkehrsflaecheID, ausnahmeGaertnerischAuszugestaltende
+	       ])
     ;
     measuretriple(Op,_,_)
     ;
