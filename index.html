@@ -1,0 +1,436 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <title>BRISEprover</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <link rel="stylesheet" href="index.css">
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> -->
+    <script src="jquery.min.js"></script>
+    <!-- <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+    <script src="bootstrap.min.js"></script>
+    <script>
+      function myFunction(currDiv) {
+        var x = document.getElementById(currDiv);
+        if (x.style.display === 'block') {
+            x.style.display = 'none';
+        } else {
+            x.style.display = 'block';
+        }
+      }
+    </script>
+
+  </head>
+  <body>
+    <center><h2>   BRISEprover </h2></center>
+    <br>
+
+    <div class="modal fade" id="myModal" role="dialog">
+      <div class="modal-dialog">
+	<!-- Conteúdo do Modal-->
+	<div class="modal-content">
+	  <div class="modal-header">
+	    <button type="button" class="close" data-dismiss="modal">&times;</button>
+	    <h4 class="modal-title"><kbd>Output</kbd></h4>
+	  </div>
+	  <div class="modal-body">
+	    <iframe name="output_frame" src="" id="output_frame" width="100%" height="600px" frameBorder="0" scrolling="yes">
+	    </iframe>  
+	  </div>
+	  <div class="modal-footer">
+	    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	  </div>
+	</div>
+      </div>
+    </div>
+
+    <div class="container">
+      <ul class="nav nav-tabs">
+	<li class="active tab1"><a data-toggle="tab" href="#home">Prover</a></li>
+	<li><a data-toggle="tab" href="#menu1">About</a></li>
+      </ul>
+
+      <div class="tab-content">
+	<div id="home" class="tab-pane fade in active">          
+	  <div class="row">
+	    <div class="col-sm-6">                  
+	      <form method="post" class="formu" action="form.php" target="output_frame" name="form1">
+		<h4><kbd>Formula to be checked</kbd></h4>
+		<!-- <textarea class="input input-xlarge" name="ncode" id="icode" rows=1 cols=60></textarea> -->
+		<input type="text" class="input input-xlarge" name="ncode" id="icode" size=65></textarea>
+                <h4><kbd>Factual Assumptions</kbd></h4>
+                <input type="text" class="input input-xlarge" name="facts" id="idcode" size=65></textarea>
+                <h4><kbd>Deontic Assumptions</kbd></h4>
+                <input type="text" class="input input-xlarge" name="srauta" id="itcode" size=65></textarea>
+                <h4><kbd>Superiority Relation</kbd></h4>
+                <input type="text" class="input input-xlarge" name="relation" id="iscode" size=65></textarea>
+                <h4><kbd>Operators</kbd></h4>
+                <input type="text" class="input input-xlarge" name="operators" id="opcode" size=65></textarea>
+                <h4><kbd>Operator inclusions</kbd></h4>
+                <input type="text" class="input input-xlarge" name="inclusions" id="inccode" size=65></textarea>
+                <h4><kbd>Operator conflicts</kbd></h4>
+                <input type="text" class="input input-xlarge" name="conflicts" id="conflcode" size=65></textarea>
+                <h4><kbd>Nontrivial operators</kbd></h4>
+                <input type="text" class="input input-xlarge" name="nontrivialities" id="ntrivcode" size=65></textarea>
+                <h4><kbd>Predefined Examples</kbd></h4>
+                <input type="checkbox" name="examples[]" value="plangebiet(7602)"> Plandokument 7602<br />
+                <input type="checkbox" name="examples[]" value="plangebiet(7601)"> Plandokument 7601<br />
+                <h4><kbd>Reasoning mechanism</kbd></h4>
+                <select name="sel_reasoning">
+		  <option value="modern">Modern</option>
+		  <option value="classic">Classic</option>
+		</select><br />
+<!--
+                <h4><kbd>Alternative interpretations</kbd></h4>
+                <input type="checkbox" name="interpretations[]" value="for(int1)"><code>for(a,b)</code> as <code>obl(neg a, b)</code><br />
+                <input type="checkbox" name="interpretations[]" value="for(int2)" ><code>for(a,b)</code> as <code>obl(a, neg b)</code><br />
+                <input type="checkbox" name="interpretations[]" value="for(int3)" ><code>for(a,b)</code> as <code>pero(neg a, b)</code><br />
+                <input type="checkbox" name="interpretations[]" value="obl(int1)" ><code>obl(a,b)</code> as <code>rec(a, b)</code><br />
+                <input type="checkbox" name="interpretations[]" value="obl(int2)" ><code>obl(a,b)</code> as <code>perf(a, b)</code><br />
+-->
+                <h4><kbd>Output format</kbd></h4>
+                <select name="sel_output">
+		  <option value="derivation">Derivation</option>
+		  <option value="explanation">Explanation</option>
+		</select><br /><br />
+<!--
+                <h4><kbd>What do you want to check?</kbd></h4>
+                <select name="sel_output">
+		  <option value="derivability">Derivability</option>
+		  <option value="compliance">Compliance</option>
+		</select>
+-->
+                <br />
+                <br />
+		<input type="submit" class="btn btn-success" value="Prove!" data-toggle="modal" data-target="#myModal">
+              </form>
+            </div>
+            <h4><kbd>Examples</kbd></h4>
+            <button type="button" class="btn btn-default cor" data-toggle="collapse" data-target="#help">Syntax</button>
+            <button type="button" class="btn btn-default cor" data-toggle="collapse" data-target="#examples1">Examples</button>
+<!--            <button type="button" class="btn btn-default cor" data-toggle="collapse" data-target="#examples3">Paradoxa</button>
+            <button type="button" class="btn btn-default cor"
+	data-toggle="collapse" data-target="#examples">Mimamsa Examples</button>
+-->
+<!--            <button type="button" class="btn btn-default cor" data-toggle="collapse" data-target="#examples2">Examples2</button>
+-->
+
+	    <div id="help" class="collapse">
+	      <b>Syntax for formulae</b>
+	      <pre><code>Phi ::= a,b,c,... | false | true | neg Phi | Phi and Phi| Phi or Phi | Phi -> Phi | Op(Phi, Phi)
+	      </code> with <code>a,b,c</code>,... atoms and <code>op</code> an operator</pre>
+	      <b>Syntax for factual assumptions</b>
+	      <pre><code>a1 and a2 and ... and aN -> b1 or ... or bM
+		</code> with <code>a1</code>, ..., <code>aN</code>, <code>b1</code>, ..., <code>bM</code> atoms</pre>
+	      <b>Syntax for deontic assumptions</b>
+	      <pre><code>op(phi,psi) | norm:op(phi,psi) | per(op,phi,psi) | norm:per(op,phi,psi)
+		</code> with <code>op</code> an operator, <code>norm</code> an atom, and <code>phi,psi</code> propositional</pre>
+	      <b>Syntax for superiority relation</b>
+	      <pre><code>norm1 beats norm2</code> with <code>norm1</code>, <code>norm2</code> atoms</pre>
+	      <b>Syntax for operator definitions</b>
+	      <pre><code>(op,type)</code> with <code>op</code> the operator you want to define and
+		<code>type</code> one of <code>obl</code> or <code>for</code></pre>
+	      <b>Syntax for operator inclusions</b>
+	      <pre><code>op1 -> op2</code> with <code>op1</code> and <code>op2</code> operators</pre>
+	      <b>Syntax for operator conflicts</b>
+	      <pre><code>confl(op1,op2)</code> with <code>op1,op2</code> operators</pre>
+	      <b>Syntax for nontrivial operators</b>
+	      <pre><code>op</code> with <code>op</code> operator</pre>
+	    </div>
+
+	    <div id="examples1" class="collapse">
+	      <br />
+	    <div>
+	      <b>Plandokument 7602.</b><br />
+	      <br />
+	      The relevant portion of the Bebauungsplan is <a href="files/pd7602-2.pdf">Plandokument 7602</a> with the corresponding <a href="files/pd7602.pdf">textual regulations</a>. The tentative and partial formalisation is <a href="files/ex-pd7602.pdf">this</a>.<br />
+	      <br />
+	      Tick the box with "Plandokument 7602" to automatically load the facts and deontic assumptions of this formalisation. This also stipulates the operators <code>obl</code> and <code>per</code> of obligation type, as well as the operator <code>for</code> of prohibition type, each of which is in conflict with every operator.<br />
+	      <br />
+	      Possible queries are:<br />
+	      whether it is forbidden to have an Erker with
+	      windows towards the street at a particular Baulinie:
+	      <code>for(fenster_von_wohnung_zu_verkehrsflaeche and
+	      erker, baulinie(7602:1/2))</code><br />
+	      whether flat roofs should be green for a
+	      particular Grundfl&auml;che:
+	      <code>obl(begruentes_flachdach,
+	      grundflaeche(7602:1/5))</code><br />
+	      whether it is permitted to have a Staffelgeschoss facing
+	      the street at a place satisfying a particular Besondere Bestimmung:
+	      <code>per(staffelgeschoss, an_strassenfront and
+	      bb(7602:3))</code>.<br /><br />
+
+	      Example for Workshop:<br />
+	      Deontic assumptions:<br />
+	      <code>obl(fence and gate, c1), obl(neg fence, true),
+	      obl(neg gate, true), obl(neg gate, c2), obl(gate and
+	      window, c3), obl(fence and window, c4), obl(neg window,
+	      c5)</code><br />
+	      Factual assumptions:<br />
+	      <code>c -> c1, c -> c2, c -> c3, c3 -> c2</code><br />
+	      Query:<br />
+	      <code>obl(fence,c)</code>
+
+<!--	      A possible query is whether it is forbidden to have an Erker with windows towards the street at a particular Baulinie: <code>for(fenster_von_wohnung_zu_verkehrsflaeche and erker,baulinie(7602_1_2))</code>.
+-->
+<!--	      <b>Toy example.</b><br />
+	      Deontic assumptions:<br />
+	      <code>obl(neg eat_with_fingers, true), obl(eat_with_fingers, asparagus), obl(neg asparagus, true)</code>.<br >
+	      Operators: <code>(obl,obl)</code>.<br />
+	      Operator conflicts: <code>confl(obl,obl)</code>.<br /> 
+	      Possible questions: <code>obl(neg asparagus, true)</code> or <code>obl(eat_with_fingers, asparagus)</code> or <code>neg obl(neg eat_with_fingers, asparagus)</code>. <button onclick="myFunction('exmplAsparagus')">Details</button>
+	    <div class="abstract" id="exmplAsparagus"> This example illustrates that more specific deontic assumptions like the obligation to eat with your fingers if asparagus is served override more general conflicting ones like the obligation not to eat with your fingers in general, but not more general nonconflicting ones like the general obligation not to serve asparagus.
+	    </div> 
+	    </div>
+	    <br />
+-->
+	    </div>
+
+
+<!--
+	    <div id="examples2" class="collapse">
+	      <div>
+		<br />
+		<b>Studienf&ouml;rderungsgesetz</b><br />
+		The factual assumptions are given by<br />
+		<code>
+		  has_child and between_30_and_35 -> exception, exception and less_than_30 -> false, between_30_and_35 and less_than_30 -> false, over_35 and between_30_and_35 -> false, over_35 and less_than_30 -> false
+		</code>.<br />
+		The deontic assumptions are given by<br />
+		<code>
+		  obl(eligible_for_support, conditions and less_than_30), obl(neg eligible_for_support, neg less_than_30), obl(neg eligible_for_support, neg conditions), obl(eligible_for_support, conditions and exception)
+		</code>.<br />
+		Possible questions are <code>obl(eligible_for_support, conditions and less_than_30 and has_child)</code> or <code>obl(neg eligible_for_support, conditions and over_35 and has_child)</code> or <code>obl(eligible_for_support, conditions and between_30_and_35 and has_child and has_own_business)</code>. <button onclick="myFunction('exmplStudF')">Details</button>
+		<div class="abstract" id="exmplStudF">
+		  This example gives a formalisation of some clauses of Paragraph 6 of the <a href="https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10009824&FassungVom=2014-06-12">Studienbeihilfegesetz</a>, the Austrian law for granting financial support to university students. This illustrates how the prover can be used for legal reasoning.
+		</div>
+	      </div>
+	      <br />
+	      <div>
+		<b>The Kantian Witness Protection Agent</b><br />
+		The factual assumptions are given by<br />
+		<code>
+		  protect_witness -> lie
+		</code>.<br />
+		The deontic assumptions are given by<br />
+		<code>
+		  kant:for(lie, true), law:obl(protect_witness, killer_asks)
+		</code>.<br />
+		Apart from the empty relation, possible relations are given by<br />
+		<code>
+		  kant beats law
+		</code> or
+		<code>
+		  law beats kant
+		</code>.<br />
+		Possible questions are <code>obl(lie, killer_asks)</code> or <code>for(lie, killer_asks)</code>. <button onclick="myFunction('exmplKantWitP')">Details</button>
+		<div class="abstract" id="exmplKantWitP">
+		  This example illustrates how the superiority relation can decide conflicts between norms from different sources. The setting is that a witness protection agent adhering to Kantian philosophy is asked by a killer about the location of the witness, and is torn between the Kantian prohibition to lie and the obligation by law to protect the witness. Without a superiority relation, the obligation to protect the witness is more specific than the general prohibition to lie and hence overrules it.
+		</div>
+	      </div>
+	      <br />
+	      <div>
+		<b>The Self-preserving Kantian Witness Protection Agent</b><br />
+		The factual assumptions are given by<br />
+		<code>
+		  protect_witness -> lie, lie and save_yourself -> false
+		</code>.<br />
+		The deontic assumptions are given by<br />
+		<code>
+		  kant:for(lie, true), law:obl(protect_witness, killer_asks), common_sense:obl(save_yourself, true)
+		</code>.<br />
+		Apart from the empty relation, possible relations are given by<br />
+		<code>
+		  kant beats law, law beats common_sense, common_sense beats kant
+		</code> or
+		<code>
+		  law beats kant, kant beats common_sense, common_sense beats law
+		</code>.<br />
+		Possible questions again are <code>obl(lie, killer_asks)</code> or <code>for(lie, killer_asks)</code>. <button onclick="myFunction('exmplKantWitP2')">Details</button>
+		<div class="abstract" id="exmplKantWitP2">
+		  This example extends the previous one with a third obligation rooted in common sense. The additional assumption is that the killer would notice that the agent is lying and kill both the witness and the agent. The superiority relation could have many different forms, the two suggested ones are interesting in that they show that the relation may contain cycles of length three.
+		</div>
+	      </div>
+	      <br />
+	    </div>
+-->
+	    <div id="examples3" class="collapse">
+	      <div>
+		<br />
+		<b>Some standard paradoxa of deontic logic.</b><br />
+		<br />
+		<b>Good Samaritan Paradox</b><br />
+		The deontic assumptions are given by<br />
+		<code>
+		  obl(help_Smith, mugged_Smith), for(mugged_Smith, true)
+		</code>.<br />
+		Operators: <code>(obl,obl), (for,for)</code>.<br />
+		Operator conflicts: <code>confl(obl,obl), confl(obl,for), confl(for,for)</code>.<br />
+		Possible questions: <code>obl(mugged_Smith, mugged_Smith)</code> or <code>for(mugged_Smith, mugged_Smith) and obl(help_Smith, mugged_Smith)</code>. <button onclick="myFunction('exmplGoodSamaritan')">Details</button>
+		<div class="abstract" id="exmplGoodSamaritan">
+		  This is the standard Good Samaritan Paradox, where the assumptions are that one should help Smith in case he is mugged, and that he should not be mugged in the first place. In Standard Deontic Logic it is possible from the first assumptions to derive that Smith should be mugged. In our setting this would correspond to <code>obl(mugged_Smith, mugged_Smith)</code>, which is not derivable. The fact that this is not derivable here stems from the logic using a dyadic operator to implement obligations, which avoid the inference from "help Smith who is mugged" to "Smith is mugged".
+		</div>
+	      </div>
+	      <br />
+	      <div>
+		<b>Sartre's dilemma</b><br />
+		The factual assumptions are given by<br />
+		<code>care_for_mother and join_resistance -> false</code>.<br />
+		The deontic assumptions are given by<br />
+		<code>family:obl(care_for_mother, mother_depends_on_you), vengeance:obl(join_resistance, brother_was_killed)</code>.<br />
+		Apart from the empty superiority relation, possible relations could be given by <code>family beats vengeance</code> or <code>vengeance beats family</code>.<br />
+		Operators: <code>(obl,obl)</code>.<br />
+		Operator conflicts: <code>confl(obl,obl)</code>.<br />
+		Possible questions are <code>obl(join_resistance, mother_depends_on_you and brother_was_killed)</code> or <code>obl(neg join_resistance, mother_depends_on_you and brother_was_killed)</code>. <button onclick="myFunction('exmplSartre')">Details</button>
+		<div class="abstract" id="exmplSartre">
+		  This is the standard Sartre's dilemma, where a young French person is torn between the obligations to care for his mother who depends on him and to join the resistance agains the occupying Nazi force in order to avenge the death of his brother. The tie between the two obligations can be broken by labelling one of the sources of the two obligations superior to the other one.
+		</div>
+	      </div>
+	      <br />
+<!--
+	      <b>Conflicting obligations</b><br />
+	      The deontic assumptions are
+	      <code>obl(marry_Mary, promised_Mary), obl(neg marry_Marry, promised_Jane)</code>.<br />
+	      There are no factual assumptions.<br />
+	      Possible questions are <code>obl(marry_Mary, promised_Mary and promised_friend)</code> and <code>obl(neg marry_Mary, promised_Mary and promised_friend)</code>.<br />
+	      <br />
+-->
+	      <div>
+		<b>Sophie's Choice</b><br />
+		The factual assumptions are<br />
+		<code>true -> sacrifice_child_1 or sacrifice_child_2</code>.<br />
+		The deontic assumptions are<br />
+		<code>for(sacrifice_child_1, true), for(sacrifice_child_2, true)</code>.<br />
+		Operators: <code>(for,for)</code>.<br />
+		Operator conflicts: <code>confl(for,for)</code>.<br />
+		Possible questions are <code>for(sacrifice_child_1, true)</code> or <code>for(sacrifice_child_1 and sacrifice_child_2, true)</code>. <button onclick="myFunction('exmplSophie')">Details</button>
+		<div class="abstract" id="exmplSophie">
+		  This is the standard analog of the Drowning Twins example in terms of prohibitions: Sophie and her two children are at a concentration camp, and Sophie has to decide which of the two children to sacrifice in order to save the other one. Similarly to the previous example, while the system does not decide which child to sacrifice, it derives that Sophie should not sacrifice both of them.
+		</div>
+	      </div>
+	      <br />
+	      <div>
+		<b>Chisholm's paradox</b><br />
+		The deontic assumptions are<br />
+		<code>obl(assist_neighbours, true), obl(tell_neighbours, assist_neighbours), obl(neg tell_neighbours, neg assist_neighbours)</code>.<br />
+		Operators: <code>(obl,obl)</code>.<br />
+		Operator conflicts: <code>confl(obl,obl)</code>.<br />
+		Possible questions are <code>obl(assist_neighbours, neg assist_neighbours) and obl(neg tell_neighbours, neg assist_neighbours)</code> or <code>obl(tell_neighbours, true)</code>. <button onclick="myFunction('exmplChisholm')">Details</button>
+		<div class="abstract" id="exmplChisholm">
+		  This is the standard Chisholm example, where one should go to the assistance of one's neighbours and one should tell them in case one is coming but not otherwise. The counterintuitive inference that one should not help the neighbours if one does not do so, which is possible in Standard Deontic Logic SDL, is avoided mainly due to the use of a dyadic operator for obligations.
+		</div>
+	      </div>
+	      <br />
+	    </div>
+
+          </div>
+</div>
+	  <hr>
+	  <p>
+	    &copy; 2020, <a href="https://sites.google.com/view/bjoern-lellmann/">Bj&ouml;rn Lellmann</a>
+	  </p>
+        </div>
+
+        <div id="menu1" class="tab-pane fade">
+	  <h4><kbd>Description</kbd></h4>
+	  <p>
+	    BRISEprover is a prototype implementation of a theorem prover for a deontic logic to reason about Viennese building law.
+<!--
+
+	    deonticProver2.0 is a Prolog implementation of a generic theorem prover for Deontic Logic extended with reasoning from factual and deontic assumptions, using the specificity principle and a superiority relation for conflict resolution. It is based on the article <i>Sequent Rules for Reasoning and Conflict Resolution in Conditional Norms</i> (submitted).
+-->
+	  </p>
+
+	  <p>
+	    <i>Formulae</i> are built from the grammar
+	    <center>
+	      <code>Phi ::= atom | false | true  | neg Phi | Phi and Phi | Phi or Phi | Phi -> Phi | Op(Phi, Phi)</code>
+	    </center>
+	    where <code>atom</code> is any Prolog atom, e.g., p, q, r, ..., murder, murder_gently, ... and <code>Op</code> is the name of an operator in the form of a Prolog atom, e.g., obl, for, must, ought, should, ...
+	    The usual conventions about binding strength of the connectives apply, i.e.,
+	    <code>and</code> binds stronger than <code>or</code> binds stronger than <code>-></code>.
+	  </p>
+	  <p> 
+	    <i>Facts</i> are lists of clauses, i.e., lists of formulae of the form <code>atom1 and atom2 and ... -> atomn or atomn+1 or ...</code>
+	  </p>
+	  <p>
+	    <i>Deontic assumptions</i> are lists of non-nested deontic formulae, i.e., formulae of the form <code>Op(A,B)</code> with <code>Op</code> an operator, or labelled non-nested deontic formulae, i.e., formulae of the form <code>Norm:Op(A,B)</code> with <code>Norm</code> the name of a norm in the form of a Prolog atom, e.g., law, common_sense, criminal_law, .... In both cases the formulae <code>A</code> and <code>B</code> must not contain any operators. It is possible to give the same label to multiple formulae.
+	  </p>
+	  <p>
+	    The <i>superiority relation</i> is given as a list of formulae <code>Norm_1 beats Norm_2</code>, where <code>Norm_1</code> and <code>Norm_2</code> are labels of deontic assumptions. The effect is that in presence of <code>Norm_1 beats Norm_2</code> every deontic assumption labelled with <code>Norm_1</code> is stronger than every deontic assumption labelled with <code>Norm_2</code>. The superiority relation must not contain cycles of length at most two, i.e. it must not contain both <code>Norm_1 beats Norm_2</code> and <code>Norm_2 beats Norm_1</code>, and it must not contain <code>Norm beats Norm</code>.
+          </p>
+<p>
+The <i>operators</i> are given as a list of operators with associated type <code>(Op,Type)</code>, where <code>Op</code> is the name of an operator, and <code>Type</code> is either obl (for obligation type operators) or for (for prohibition type operators). An operator can have only one type. The effect is that in presence of <code>(Op,obl)</code> the axiom <code>Op(A and B,C) -> Op(A,C)</code> is assumed, while in presence of <code>(Op,for)</code> the axiom <code>Op(A,C) -> Op(A and B,C)</code> is assumed.
+</p>
+<p>
+<i>Operator inclusions</i> are given as a list of formulae <code>Op_1
+	    -> Op_2</code> with <code>Op_1</code>,<code>Op_2</code>
+	    operators. The effect is that in presence of <code>Op_1 ->
+	    Op_2</code> an inclusion axiom between the two operators
+	    is assumed. This has the form <code>Op_1(A,B) ->
+	    Op_2(A,B)</code> if the operators have the same type, and
+	    <code>Op_1(A,B) -> Op_2(neg A,B)</code> otherwise. The
+	    system automatically closes the inclusions under transitivity.
+</p>
+<p>
+<i>Operator conflicts</i> are given as a list of formulae
+	    <code>confl(Op_1,Op_2)</code> with <code>Op_1</code>,
+	    <code>Op_2</code> operators. The two operators can be the
+	    same. The effect is that in presence of
+	    <code>confl(Op_1,Op_2)</code> the D axiom <code>neg
+	    (Op_1(A,B) and Op_2(neg A,B))</code> is assumed. The
+	    system automatically closes the operators under symmetry and the
+	    preimage of the inclusion relation, i.e., if <code>Op_1 ->
+	    Op_2</code> and <code>confl(Op_2,Op_3)</code>, then the
+	    system adds all of <code>confl(Op_1,Op_3),
+	    confl(Op_3,Op_2), confl(Op_3,Op_1)</code>.
+</p>
+<p>
+The <i>nontrivial operators</i> are given as a list of operators. The
+	    effect is that if <code>Op</code> is in the list of
+	    nontrivial operators, then the P axiom <code>neg
+	    (Op(false,A) and Op(true,A))</code> is assumed. This is
+	    equivalent to the axiom <code>neg Op(false,A)</code> for
+	    obligation type operators and <code>neg (true,A)</code>
+	    for prohibition type operators. The system automatically
+	    closes the set of nontrivial operators under the preimage
+	    of the inclusion relation, i.e., if <code>Op_1 ->
+	    Op_2</code> and <code>Op_2</code> is in the list of
+	    nontrivial operators, then the system also adds
+	    <code>Op_1</code> to the list.
+</p>
+	  <p>
+	    To run the prover, input your data, at the very least your formula and the operators in it with their types, then hit 'Prove'. If the formula is derivable, the derivation is displayed automatically. You might need to zoom in a bit for large derivations.<br />
+	    NOTE: In some cases the derivations might become too large for TeX
+	    to handle (if they are more than about 19 feet). In these cases no
+	    pdf output is produced. However, you may still download the latex
+	    source code and manually split the derivation.
+	  </p>
+
+<!--
+<p>
+The precursor <i>deonticProver</i> can be found <a href="http://subsell.logic.at/bprover/deonticProver/">here</a>.
+</p>
+-->
+<!--
+<p>The source code in <a href="http://www.swi-prolog.org/">SWI-Prolog</a> can be obtained <a href="iiProve.tar.gz">here</a>. To run the prover, follow the instructions in the Readme. In order to typeset the output you will also need <a href="https://www.latex-project.org">LaTeX</a></p>
+-->
+
+	  <p>
+	    For further information, contact <a href="https://sites.google.com/view/bjoern-lellmann/">Bj&ouml;rn Lellmann</a>. We thank <a href="https://sites.google.com/site/carlosolarte/">Carlos Olarte</a> for his help in implementing this site.
+	  </p>
+	  <hr>
+	  <p>
+	    &copy; 2020 <a href="https://sites.google.com/view/bjoern-lellmann/">Bj&ouml;rn Lellmann</a>
+	  </p>
+	</div>
+      </div>
+    </div>
+
+  </body>
+</html>
+
