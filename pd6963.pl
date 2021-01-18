@@ -88,59 +88,59 @@ textliche_bestimmungen(plangebiet(6963)) -->
      b(6963:10):for( vorbauten, anOeffentlichenVerkehrsflaechen and
 				plangebiet(6963)),
      b(6963:11/1): per( vorstehendeBauelementeAusladungMax(60),
-			strassenbreiteMax(1600)),
+			strassenbreiteMax(1600) and plangebiet(6963)),
      b(6963:11/2): per( vorstehendeBauelementeAusladungMax(80),
-			strassenbreiteMin(1600)),
-     b(6963:12) : for( staffelung, anOeffentlichenVerkehrsflaechen),
+			strassenbreiteMin(1600) and plangebiet(6963)),
+     b(6963:12) : for( staffelung, anOeffentlichenVerkehrsflaechen and plangebiet(6963)),
      b(6963:13) : obl( vorkehrungBepflanzung,
 		       anordnungGaertnerischeAusgestaltung and
-		       unterirdischeBaulichkeiten),
+		       unterirdischeBaulichkeiten and plangebiet(6963)),
      b(6963:14) :
      obl( bbBebaubareFlaechefuerNebengebaeudeJeBauplatzMax(30),
-	  gebaeudeBautyp(nebengebaeude) ),
+	  gebaeudeBautyp(nebengebaeude)  and plangebiet(6963)),
      b(6963:15/1) : obl( begruenungDach and dachart(flachdach),
 		       gebaeudeBautyp(nebengebaeude) and
-		       dachflaecheMin(5) ),
+		       dachflaecheMin(5)  and plangebiet(6963)),
      b(6963:15/2) : per( technischeUndBelichtungsaufbauten, 
 		       gebaeudeBautyp(nebengebaeude) and
-		       dachflaecheMin(5) ),
+		       dachflaecheMin(5)  and plangebiet(6963)),
      b(6963:17) : obl( abschlussDachMax(450),
-		       gebaeudeHoeheArt(tatsaechlich_errichtet)),
-     bb(6963:19/1) : obl(begruenungDach, planzeichenBBID(bb1)),
+		       gebaeudeHoeheArt(tatsaechlich_errichtet) and plangebiet(6963)),
+     bb(6963:19/1) : obl(begruenungDach, planzeichenBBID(bb1) and plangebiet(6963)),
      bb(6963:19/2) : per(technischeUndBelichtungsaufbauten,
-			planzeichenBBID(bb1)),
+			planzeichenBBID(bb1) and plangebiet(6963)),
      bb(6963:21/1) : obl( anordnungGaertnerischeAusgestaltung,
-		       planzeichenBBID(bb1) ),
+		       planzeichenBBID(bb1)  and plangebiet(6963)),
      bb(6963:21/1) : per( ausnahmeGaertnerischAuszugestaltende(manipulations_und_Rangierflaechen),
-			 planzeichenBBID(bb1) ),
+			 planzeichenBBID(bb1)  and plangebiet(6963)),
      bb(6963:22) : for( fensterZuOeffentlichenVerkehrsflaechen,
 			stockwerk(erdgeschoss) and
 			anOeffentlicheVerkehrsflaechen and
-			planzeichenBBID(bb2) and anBaulinie),
+			planzeichenBBID(bb2) and anBaulinie and plangebiet(6963)),
      bb(6963:23) : obl( weitereBestimmungPruefungErforderlich,
 			planzeichenBBID(bb3) and
-			gebaeudeBautyp(hauptgebaeude)),
+			gebaeudeBautyp(hauptgebaeude) and plangebiet(6963)),
      bb(6963:24) : for( errichtungGebaeude, planzeichenBBID(bb3) and
-					    gebaeudeBautyp(nebengebaeude)),
+					    gebaeudeBautyp(nebengebaeude) and plangebiet(6963)),
      bb(6963:25) : obl(anordnungGaertnerischeAusgestaltung,
-		       planzeichenBBID(bb3)),
+		       planzeichenBBID(bb3) and plangebiet(6963)),
      bb(6963:26) :
      obl( bbAusnuetzbarkeitFlaecheGrundflaechenbezugRelativ(95) and
 	  anordnungGaertnerischeAusgestaltung and
 	  oberflaecheBestimmungP, planzeichenBBID(bb4) and
-				  widmungID(p)),
+				  widmungID(p) and plangebiet(6963)),
      bb(6963:27) : obl( abschlussDachMax(400),
 			planzeichenBBID(bb6) and
-			gebaeudeHoeheArt(tatsaechlich_ausgefuehrt) ),
+			gebaeudeHoeheArt(tatsaechlich_ausgefuehrt)  and plangebiet(6963)),
      bb(6963:28) : for( unterirdischeBauwerke,
-			planzeichenBBID(bb7) and widmungID(g)),
+			planzeichenBBID(bb7) and widmungID(g) and plangebiet(6963)),
      bb(6963:29/1) : obl( weitereBestimmungPruefungErforderlich and
 			ausnahmePruefungErforderlich,
-			widmungID(wohnzohne)),
+			widmungID(wohnzohne) and plangebiet(6963)),
      bb(6963:29/2) : per( neg (weitereBestimmungPruefungErforderlich
 			       and ausnahmePruefungErforderlich),
 			  verkehrsflaecheID(bauplaetze_an_den_Hauptverkehrsstrassen_gemaess_verordnung_38)
-			  and stockwerk(erdgeschoss))
+			  and stockwerk(erdgeschoss) and plangebiet(6963))
 		      
     ].
 
@@ -149,9 +149,9 @@ textliche_bestimmungen(plangebiet(6963)) -->
  * NOTE: not yet clear how this is implemented!
 */
 constitutional_norms(plangebiet(6963)) -->
-    [bb(6963:31/1) : (planzeichenBBID(bb5)
+    [bb(6963:31/1) : (planzeichenBBID(bb5) and plangebiet(6963)
      -> widmungErsteEbene(oeffentliche_Verkehrsflaeche) and
 	widmungErsteEbeneBezugObjekt(bis_zur_Konstruktionsunterkante_seiner_Ueberbauung)),
-     bb(6963:31/2) : (planzeichenBBID(bb5)
+     bb(6963:31/2) : (planzeichenBBID(bb5) and plangebiet(6963)
 		     -> widmungZweiteEbene(wohngebiet) and bauklasseID(iv))
     ].
