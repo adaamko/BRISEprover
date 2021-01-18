@@ -78,6 +78,7 @@
                 <h4><kbd>Predefined Examples</kbd></h4>
                 <input type="checkbox" name="examples[]" value="plangebiet(7602)"> Plandokument 7602<br />
                 <input type="checkbox" name="examples[]" value="plangebiet(7601)"> Plandokument 7601<br />
+                <input type="checkbox" name="examples[]" value="plangebiet(6962)"> Plandokument 6963<br />
                 <h4><kbd>Reasoning mechanism</kbd></h4>
                 <select name="sel_reasoning">
 		  <option value="modern">Modern</option>
@@ -146,24 +147,24 @@
 	    <div>
 	      <b>Plandokument 7602.</b><br />
 	      <br />
-	      The relevant portion of the Bebauungsplan is <a href="files/pd7602-2.pdf">Plandokument 7602</a> with the corresponding <a href="files/pd7602.pdf">textual regulations</a>. The tentative and partial formalisation is <a href="files/ex-pd7602.pdf">this</a>.<br />
+	      The relevant portion of the Bebauungsplan is <a href="files/pd7602-2.pdf">Plandokument 7602</a> with the corresponding <a href="files/pd7602.pdf">textual regulations</a>. The tentative and partial formalisation is <a href="files/pd7602_assumptions.pdf">this</a>.<br />
 	      <br />
 	      Tick the box with "Plandokument 7602" to automatically load the facts and deontic assumptions of this formalisation. This also stipulates the operators <code>obl</code> and <code>per</code> of obligation type, as well as the operator <code>for</code> of prohibition type, each of which is in conflict with every operator.<br />
 	      <br />
 	      Possible queries are:<br />
 	      whether it is forbidden to have an Erker with
 	      windows towards the street at a particular Baulinie:
-	      <code>for(fenster_von_wohnung_zu_verkehrsflaeche and
+	      <code>for(for(fensterZuOeffentlichenVerkehrsflaechen and
 	      erker, baulinie(7602:1/2))</code><br />
 	      whether flat roofs should be green for a
 	      particular Grundfl&auml;che:
-	      <code>obl(begruentes_flachdach,
-	      grundflaeche(7602:1/5))</code><br />
+	      <code>obl(begruenungDach,
+	      grundflaeche(7602:1/5)  and dachart(flachdach))</code><br />
 	      whether it is permitted to have a Staffelgeschoss facing
-	      the street at a place satisfying a particular Besondere Bestimmung:
-	      <code>per(staffelgeschoss, an_strassenfront and
-	      bb(7602:3))</code>.<br /><br />
+	      the street at a place satisfying a particular Besondere Bestimmung on the plangebiet:
+	      <code>per(staffelgeschoss, anOeffentlichenVerkehrsflaechen  and bb(7602:3) and plangebiet(7602))</code>.<br /><br />
 
+<!--
 	      Example for Workshop:<br />
 	      Deontic assumptions:<br />
 	      <code>obl(fence and gate, c1), obl(neg fence, true),
@@ -174,7 +175,7 @@
 	      <code>c -> c1, c -> c2, c -> c3, c3 -> c2</code><br />
 	      Query:<br />
 	      <code>obl(fence,c)</code>
-
+-->
 <!--	      A possible query is whether it is forbidden to have an Erker with windows towards the street at a particular Baulinie: <code>for(fenster_von_wohnung_zu_verkehrsflaeche and erker,baulinie(7602_1_2))</code>.
 -->
 <!--	      <b>Toy example.</b><br />
