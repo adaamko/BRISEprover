@@ -203,6 +203,7 @@ measuretriple(,,).
 :- ensure_loaded([pd7602_new]).
 :- ensure_loaded([pd7601]).
 :- ensure_loaded([pd6963]).
+:- ensure_loaded([bauordnung_new]).
 
 
 /* DATA STRUCTURE
@@ -284,9 +285,11 @@ prove_online(Fml, Facts, D_Assumptions, Sup_Relation, Operators,
     phrase(added_facts(Facts,Ex_list),New_Facts),
 %    facts(plangebiet(7602),L),
 %    append(Facts,L,Facts1),
-    phrase(added_assumptions(D_Assumptions,Ex_list),New_D_Assumptions),
+    phrase(added_assumptions(D_Assumptions,Ex_list),New_D_Assumptions1),
 %    obligations_plangebiet(plangebiet(7602),O),
 %    append(O,D_Assumptions,D_Assumptions1),
+    phrase(bauordnung(b),Bauordnung_assumptions),
+    append(Bauordnung_assumptions,New_D_Assumptions1,New_D_Assumptions),
     prove_with_filename(Fml, [(obl,obl), (for,for), (per,obl)|Operators], Inclusions, [confl(obl,obl), confl(obl,per), confl(obl,for), confl(for,for), confl(for,per)|Conflicts], P_list,
 			New_Facts, New_D_Assumptions, Sup_Relation,
 			Version, Filename).
@@ -323,9 +326,11 @@ explain_online(Fml, Facts, D_Assumptions, Sup_Relation, Operators,
     phrase(added_facts(Facts,Ex_list),New_Facts),
 %    facts(plangebiet(7602),L),
 %    append(Facts,L,Facts1),
-    phrase(added_assumptions(D_Assumptions,Ex_list),New_D_Assumptions),
+    phrase(added_assumptions(D_Assumptions,Ex_list),New_D_Assumptions1),
 %    obligations_plangebiet(plangebiet(7602),O),
 %    append(O,D_Assumptions,D_Assumptions1),
+    phrase(bauordnung(b),Bauordnung_assumptions),
+    append(Bauordnung_assumptions,New_D_Assumptions1,New_D_Assumptions),
     explain_with_filename(Fml, [(obl,obl), (for,for), (per,obl)|Operators], Inclusions, [confl(obl,obl), confl(obl,per), confl(obl,for), confl(for,for), confl(for,per)|Conflicts], P_list,
 			New_Facts, New_D_Assumptions, Sup_Relation,
 			Version, Filename).
@@ -1137,10 +1142,27 @@ nbeats(Assumptions,F1,F2) :-
    true if the formula F1 beats the formula F2 according to
    Assumptions
 */
+/* NOTE: added here that the textuelle Bestimmungen (i.e., norms of
+ * the form bb(X):F or b(X):F) ALWAYS beat the bauordnung (i.e., norms
+ * of the form bo(X):F)! Change this if this is not correct!
+*/
+/* NOTE: GNARGH: Prolog seems to succeed on the clauses of the example
+ * below, but then backtracks and fails?
+ * Input:
+ * beats(asmp([],[bb(0:2):obl(a,b), bo(3:0):obl(x,y)],[],[]), obl(a,b), obl(x,y)).
+*/
 beats(asmp(_,D_assumptions,_,Sup_rel),F1,F2) :-
     member((Norm1:F1),D_assumptions),
     member((Norm2:F2),D_assumptions),
     member(Norm1 beats Norm2, Sup_rel).
+/*
+beats(asmp(_,D_assumptions,_,Sup_rel),F1,F2) :-
+    member((b(_):F1),D_assumptions),
+    member((bo(_):F2),D_assumptions).
+beats(asmp(_,D_assumptions,_,Sup_rel),F1,F2) :-
+    member((bb(_):F1),D_assumptions),
+    member((bo(_):F2),D_assumptions).
+*/
 
 
 /* merge_sequent

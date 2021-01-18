@@ -3,7 +3,22 @@
  * as DCG
 */
 
-bauordnung(b) --> bauordnung(75).
+bauordnung(b) --> bauordnung(54), bauordnung(75).
+
+/* paragraph 54: Gehsteige
+*/
+bauordnung(54) --> [obl( max_measure(gehsteig, breite, 200), bauklasse(i) ),
+		    obl( max_measure(gehsteig, breite, 200), widmung(gs) ),
+		    obl( max_measure(gehsteig, breite, 200), widmung(gsgm) ),
+		    obl( max_measure(gehsteig, breite, 300), bauklasse(ii) ),
+		    obl( max_measure(gehsteig, breite, 300), widmung(ig) ),
+		    obl( max_measure(gehsteig, breite, 300), widmung(igbs) ),
+		    obl( max_measure(gehsteig, breite, 300), widmung(igsi) ),
+		    obl( max_measure(gehsteig, breite, 400), bauklasse(iii) ),
+		    obl( max_measure(gehsteig, breite, 500), bauklasse(iiv) ),
+		    obl( max_measure(gehsteig, breite, 500), bauklasse(v) ),
+		    obl( max_measure(gehsteig, breite, 500), bauklasse(vi) )].
+
 
 /* paragraph 75: Bauklasseneinteilung
 */

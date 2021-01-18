@@ -10,6 +10,13 @@
    assumptions bb(7602:2) -> plangebiet(7602)
    _BUT_: need to check whether we want that automatically!
 
+** add the bauordnung into the deontic assumptions
+   - [X] add the grammar for bauordnung(b)
+   - [ ] make the textuelle Bestimmungen always overrule the
+     bauordnung
+     => modify the beats predicate
+     (CONTINUE HERE)
+
 * change atoms to match annotations
   TO DECIDE:
   - [X] *measures*: Do I want to add extra clauses for every triple
@@ -115,11 +122,11 @@
    |---------------------------------------------------------|
 
 
-** assumption files
-   - [X] bauordnung.pl
+** DONEassumption files
+   - [X] bauordnung.pl (=> bauordnung_new.pl)
    - [X] pd7601.pl
    - [X] pd7602.pl
-   - [ ] pd6963.pl
+   - [X] pd6963.pl
 ** DONE pretty printing
    - [X] add wordings for the atoms with arguments
    - [X] add wordings for the atoms without arguments

@@ -38,7 +38,7 @@ $output = exec("timeout 15 ./exec.sh $code_escaped $facts_escaped $srauta_escape
 ?></b>   
 
 <?php
-echo $examples;
+//echo $examples;
 //echo "timeout 15 ./exec.sh $code_escaped $facts_escaped $srauta_escaped $relation_escaped $operators_escaped $inclusions_escaped $conflicts_escaped $nontrivialities_escaped \"$examples\" \"$reasoning\" \"$outputformat\" ";
 //echo $output;
 //echo $outputformat;
