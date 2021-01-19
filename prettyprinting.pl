@@ -1850,6 +1850,13 @@ pp_html_skip_list_aux_new(Depth,[node(_,fact,PF,_,_)|Tail]) -->
     pp_nl_tab(Depth),
     ["</li>"],
     pp_html_skip_list_aux_new(Depth,Tail).
+pp_html_skip_list_aux_new(Depth,[node(_,measurefact,PF,_,_)|Tail]) -->
+    pp_nl_tab(Depth),
+    ["<li>The assumed fact about measures <br />"],pp_nl_tab(Depth+2),["<code>"],
+    pp_Seq(html,PF),["</code>"],
+    pp_nl_tab(Depth),
+    ["</li>"],
+    pp_html_skip_list_aux_new(Depth,Tail).
 pp_html_skip_list_aux_new(Depth,[node(Name,Rule,PF,Seq,Suc)|Tail]) -->
     {rule_type(Rule,modal)},
     pp_nl_tab(Depth),
@@ -1886,7 +1893,7 @@ pp_html_skip_list_aux_new(Depth,[node(Name,Rule,Suc)|Tail]) -->
  * html
 */
 pp_html_truncated_new(Depth,node(Name,Rule,PF,Seq,Suc)) -->
-    {member(Rule,[init,botL,topR,fact])},
+    {member(Rule,[init,botL,topR,fact,measurefact])},
     pp_derivation(html,Depth,node([t|Name],Rule,PF,Seq,Suc)).
 pp_html_truncated_new(_, node(Name, Rule, _, Seq, _)) -->
     {rule_type(Rule, modal)},
