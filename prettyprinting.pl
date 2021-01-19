@@ -1226,6 +1226,11 @@ pp_derivation(screen,N,node(fact, PF, Seq, _)) -->
     ['fact['], pp_Seq(screen,PF), [']( '],
     pp_Seq(screen,Seq),
     pp_nl_tab(N+1),[')'].
+pp_derivation(screen,N,node(measurefact, PF, Seq, _)) -->
+    pp_nl_tab(N),
+    ['measurefact['], pp_Seq(screen,PF), [']( '],
+    pp_Seq(screen,Seq),
+    pp_nl_tab(N+1),[')'].
 pp_derivation(screen,N,node(Rule,PF,Seq,Suc)) -->
     {rule_type(Rule,propositional)},
     pp_nl_tab(N),
@@ -1330,6 +1335,11 @@ pp_derivation(latex,N,node(Rule_name, _, Seq, _)) -->
     ['\\infer[\\'],[Rule_name],[']{'],
     pp_Seq(latex,Seq),['}{} '].
 pp_derivation(latex,N,node(fact, PF, Seq, _)) -->
+    pp_nl_tab(N),
+    ['\\infer[\\fact]{'],
+    pp_Seq(latex,Seq), ['}{'],
+    pp_Seq(latex,PF),['}'].
+pp_derivation(latex,N,node(measurefact, PF, Seq, _)) -->
     pp_nl_tab(N),
     ['\\infer[\\fact]{'],
     pp_Seq(latex,Seq), ['}{'],
@@ -1459,6 +1469,15 @@ pp_derivation(html,N,node(Name,fact, PF, Seq, _)) -->
     pp_html_derivable_statement(Name,Seq),
     pp_nl_tab(N),
     ["Because this follows immediately from the assumed fact <br />"],
+    pp_nl_tab(N),
+    ["<code>"],
+    pp_Seq(html,PF),
+    pp_nl_tab(N),
+    ["</code>."],pp_nl_tab(N),["</div>"].
+pp_derivation(html,N,node(Name,measurefact, PF, Seq, _)) -->
+    pp_html_derivable_statement(Name,Seq),
+    pp_nl_tab(N),
+    ["Because this follows immediately from the following fact about the measures involved: <br />"],
     pp_nl_tab(N),
     ["<code>"],
     pp_Seq(html,PF),
@@ -1607,7 +1626,7 @@ pp_derivation(html,N,node(_,not_overruled(Assumption),[]))
 -->
     pp_nl_tab(N),
     ["The deontic assumption <code>"],pp_Fml(html,Assumption),
-    ["</code> is not overruled by any conflicting more specific assumption, because there are no conflicting assumptions."].
+    ["</code> is not overruled by any conflicting more specific assumption, because there are no conflicting (and not inferior) assumptions."].
 pp_derivation(html,N,node(_,not_overruled(Assumption),[S|Suc]))
 -->
     pp_nl_tab(N),

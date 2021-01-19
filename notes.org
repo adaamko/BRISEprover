@@ -10,12 +10,11 @@
    assumptions bb(7602:2) -> plangebiet(7602)
    _BUT_: need to check whether we want that automatically!
 
-** add the bauordnung into the deontic assumptions
+** DONE add the bauordnung into the deontic assumptions
    - [X] add the grammar for bauordnung(b)
-   - [ ] make the textuelle Bestimmungen always overrule the
+   - [X] make the textuelle Bestimmungen always overrule the
      bauordnung
-     => modify the beats predicate
-     (CONTINUE HERE)
+     => modified the beats predicate
 
 * change atoms to match annotations
   TO DECIDE:
@@ -264,7 +263,7 @@
    Error: in atomic_list_concat: expected 'text', got a compound...
 * Formatting/pretty printing
     
-** TODO pretty printing for measures
+** DONE pretty printing for measures
    add clause for the initial sequents obtained via the measures.
 
 ** DONE underscores in names
@@ -390,7 +389,7 @@
 ** TODO Check whether it makes sense in our case.
 ** Re-activate the compliance check (if it works)
 
-* Measures
+* DONE Measures
 ** DONE Write the theory for measures
    See [[file:~/Dropbox/sketchesdrop/papers/2020specificityrevisited/2020specificityrevisited.pdf][2020specificityrevisited.pdf]] (in
    Dropbox/papers/2020specificityrevisited/)
