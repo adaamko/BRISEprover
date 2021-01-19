@@ -1155,14 +1155,13 @@ beats(asmp(_,D_assumptions,_,Sup_rel),F1,F2) :-
     member((Norm1:F1),D_assumptions),
     member((Norm2:F2),D_assumptions),
     member(Norm1 beats Norm2, Sup_rel).
-/*
 beats(asmp(_,D_assumptions,_,Sup_rel),F1,F2) :-
     member((b(_):F1),D_assumptions),
     member((bo(_):F2),D_assumptions).
 beats(asmp(_,D_assumptions,_,Sup_rel),F1,F2) :-
     member((bb(_):F1),D_assumptions),
     member((bo(_):F2),D_assumptions).
-*/
+
 
 
 /* merge_sequent
