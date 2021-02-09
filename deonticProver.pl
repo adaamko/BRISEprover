@@ -56,7 +56,7 @@ Copyright 2020 Bjoern Lellmann
 :- ensure_loaded([pd7601]).
 :- ensure_loaded([pd6963]).
 :- ensure_loaded([bauordnung_new]).
-
+:- ensure_loaded([icailexample]).
 
 /* DATA STRUCTURE
    We're working on sequents.
@@ -191,11 +191,11 @@ explain_online(Fml, Facts, D_Assumptions, Sup_Relation, Operators,
    explain_test
 */
 explain_test(Fml) :-
-    explain_online(Fml,[e -> f, f -> g, h -> j],[obl(e,j), for(j or e,x), for(neg e, x and y),bb(3:5/3):for(neg e, x and y), for(e, y), obl(max_measure(gebaeude,hoehe,5),bauland(403:3/5) and bb(703:3))],[bb(3:5/3) beats bb(703:3)],[],[],[],[],[plangebiet(6963)],modern,derivability,'test.html'),!.
+    explain_online(Fml,[e -> f, f -> g, h -> j],[obl(e,j), for(j or e,x), for(neg e, x and y),bb(3:5/3):for(neg e, x and y), for(e, y), obl(max_measure(gebaeude,hoehe,5),bauland(403:3/5) and bb(703:3))],[bb(3:5/3) beats bb(703:3)],[],[],[],[],[plangebiet(6963),plangebiet(icail)],modern,derivability,'test.html'),!.
 /* prove_test
 */
 prove_test(Fml) :-
-    prove_online(Fml,[e -> f, f -> g, h -> j],[obl(e,j), for(j or e,x), for(neg e, x and y),bb(3:5/3):for(neg e, x and y), for(e, y), obl(max_measure(gebaeude,hoehe,5),bauland(403:3/5) and bb(703:3))],[bb(3:5/3) beats bb(703:3)],[],[],[],[],[plangebiet(7602)],modern,derivability,'test.tex'),!.
+    prove_online(Fml,[e -> f, f -> g, h -> j],[obl(e,j), for(j or e,x), for(neg e, x and y),bb(3:5/3):for(neg e, x and y), for(e, y), obl(max_measure(gebaeude,hoehe,5),bauland(403:3/5) and bb(703:3))],[bb(3:5/3) beats bb(703:3)],[],[],[],[],[plangebiet(7602),plangebiet(icail)],modern,derivability,'test.tex'),!.
 
 /* apply_op
    (for compliance check)
