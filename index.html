@@ -153,11 +153,19 @@
 	      <b>ICAIL examples.</b><br />
 	      <br />
 	      A sample of interesting examples obtained by rule-based methods from various documents. The tentative formalisation is <a href="files/icail_assumptions.pdf">this</a>. Ticking the box automatically loads some parts of the Bauordnung as well.<br />
-	      Possible queries are: <code>obl(neg
+	      Possible queries are:<br />
+	      whether a building height of 11 metres is compliant under various conditions: 
+	      <code>obl(neg
 	      gebaeudeHoeheGenau(1100), bauklasseID(v) and
 	      planzeichenBBID(bb10))</code> and  <code>obl(neg
 	      gebaeudeHoeheGenau(1100), bauklasseID(v) and
-	      planzeichenBBID(bb10) and widmungID(esp))</code>.<br />
+	      planzeichenBBID(bb10) and widmungID(esp))</code>;<br />
+	      whether a pavement with width 1.5 metres is compliant under certain conditions:
+	      <code>obl( neg gehsteigbreiteGenau(150), strassenbreiteGenau(1243) and anFluchtlinie and planzeichenBBID(bb2) )</code>;<br />
+	      whether a building needs to have a flat roof under various conditions:
+	      <code>obl( dachart(flachdach), gebaeudeBautyp(nebengebaeude) and dachflaecheGenau(17) and gebaeudeHoeheGenau(900) )</code> and <code>obl( dachart(flachdach), gebaeudeBautyp(nebengebaeude) and dachflaecheGenau(17) and gebaeudeHoeheGenau(900) and dachart(glasdach) )</code>;<br />
+	      whether a building may have a roof which is not a green flat roof:
+	      <code>per( neg (dachart(flachdach) and begruenungDach), gebaeudeBautyp(nebengebaeude) and dachflaecheGenau(17) and gebaeudeHoeheGenau(900) )</code> and <code>per( neg (dachart(flachdach) and begruenungDach), gebaeudeBautyp(nebengebaeude) and dachflaecheGenau(17) and gebaeudeHoeheGenau(900) and dachart(glasdach) )</code>.<br />
 	      <br />
 	      <b>Plandokument 7602.</b><br />
 	      <br />
