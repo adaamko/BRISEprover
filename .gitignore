@@ -1,2 +1,13 @@
 output/
 !output/header.sty
+test*
+website/
+*local*
+*.aux
+*.log
+*.synctex.gz
+*.rel
+files/header.sty
+*.swp
+files/auto/
+supportfiles/
