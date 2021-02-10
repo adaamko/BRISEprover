@@ -78,13 +78,13 @@ textliche_bestimmungen(plangebiet(icail)) -->
      per( neg( begruenungDach and dachart(flachdach)),
 	  gebaeudeBautyp(nebengebaeude) and dachflaecheMin(5) and
 	  dachart(glasdach) ),
-     b(icail:7774/18/0): per( gebaeudeHoeheMax(1100),
+     b(icail:7774/18/0): obl( gebaeudeHoeheMax(1100),
 			      planzeichenBBID(bb10) and widmungID(esp)
 			    ),
      b(icail:7774/18/1): obl( abschlussDachMax(300),
 			      gebaeudeHoeheArt(tatsaechlichErrichtet)
 			    ),
-     b(icail:8159/21/0): per( gebaeudeHoeheMax(800),
+     b(icail:8159/21/0): obl( gebaeudeHoeheMax(800),
 			      planzeichenBBID(bb4) )
     ].
 
