@@ -191,11 +191,11 @@ explain_online(Fml, Facts, D_Assumptions, Sup_Relation, Operators,
    explain_test
 */
 explain_test(Fml) :-
-    explain_online(Fml,[e -> f, f -> g, h -> j],[obl(e,j), for(j or e,x), for(neg e, x and y),bb(3:5/3):for(neg e, x and y), for(e, y), obl(max_measure(gebaeude,hoehe,5),bauland(403:3/5) and bb(703:3))],[bb(3:5/3) beats bb(703:3)],[],[],[],[],[plangebiet(6963),plangebiet(icail)],modern,derivability,'test.html'),!.
+    explain_online(Fml,[],[],[],[],[],[],[],[plangebiet(icail)],modern,derivability,'test.html'),!.
 /* prove_test
 */
 prove_test(Fml) :-
-    prove_online(Fml,[e -> f, f -> g, h -> j],[obl(e,j), for(j or e,x), for(neg e, x and y),bb(3:5/3):for(neg e, x and y), for(e, y), obl(max_measure(gebaeude,hoehe,5),bauland(403:3/5) and bb(703:3))],[bb(3:5/3) beats bb(703:3)],[],[],[],[],[plangebiet(7602),plangebiet(icail)],modern,derivability,'test.tex'),!.
+    prove_online(Fml,[],[],[],[],[],[],[],[plangebiet(icail)],modern,derivability,'test.tex'),!.
 
 /* apply_op
    (for compliance check)
@@ -421,6 +421,27 @@ prove(_,_, seq(Gamma,Delta),
     member(at(min_measure(Type,Object,N)),Gamma),
     member(at(max_measure(Type,Object,M)),Gamma),
     N > M, !. % cut for efficiency
+% measure implies max_measure:
+prove(_,_, seq(Gamma,Delta),
+      node(measurefact, seq([at(measure(Type,Object,N))],[at(max_measure(Type,Object,M))]),
+	   seq(Gamma, Delta), [])) :- 
+    member(at(measure(Type,Object,N)),Gamma),
+    member(at(max_measure(Type,Object,M)),Delta),
+    N =< M, !. % cut for efficiency
+% measure implies min_measure:
+prove(_,_, seq(Gamma,Delta),
+      node(measurefact, seq([at(measure(Type,Object,N))],[at(min_measure(Type,Object,M))]),
+	   seq(Gamma, Delta), [])) :- 
+    member(at(measure(Type,Object,N)),Gamma),
+    member(at(min_measure(Type,Object,M)),Delta),
+    M =< N, !. % cut for efficiency
+% measure is unique:
+prove(_,_, seq(Gamma,Delta),
+      node(measurefact, seq([at(measure(Type,Object,N)),at(measure(Type,Object,M))],[]),
+	   seq(Gamma, Delta), [])) :- 
+    member(at(measure(Type,Object,N)),Gamma),
+    member(at(measure(Type,Object,M)),Gamma),
+    N > M, !. % cut for efficiency
 
 % assumptions about measures in general
 % measure is not greater than max_measure:
@@ -480,6 +501,38 @@ prove(_,_, seq(Gamma,Delta),
     measuretriple(_,MeasureMin,MeasureMax),
     % member(at(min_measure(Type,Object,N)),Gamma),
     % member(at(max_measure(Type,Object,M)),Gamma),
+    N > M, !. % cut for efficiency
+% measure implies max_measure:
+prove(_,_, seq(Gamma,Delta),
+      node(measurefact, seq([at(Fml)],[at(FmlMax)]),
+	   seq(Gamma, Delta), [])) :- 
+    member(at(Fml),Gamma),
+    member(at(FmlMax),Delta),
+    Fml =.. [Measure,N|_],
+    FmlMax =.. [MeasureMax,M|_],
+    measuretriple(Measure,_,MeasureMax),
+    N =< M, !. % cut for efficiency
+% measure implies min_measure:
+prove(_,_, seq(Gamma,Delta),
+      node(measurefact, seq([at(Fml)],[at(FmlMin)]),
+	   seq(Gamma, Delta), [])) :- 
+    member(at(Fml),Gamma),
+    member(at(FmlMin),Delta),
+    Fml =.. [Measure,N|_],
+    FmlMin =.. [MeasureMin,M|_],
+    measuretriple(Measure,MeasureMin,_),
+    % member(at(min_measure(Type,Object,N)),Gamma),
+    % member(at(min_measure(Type,Object,M)),Delta),
+    M =< N, !. % cut for efficiency
+% measure is unique:
+prove(_,_, seq(Gamma,Delta),
+      node(measurefact, seq([at(Fml1),at(Fml2)],[]),
+	   seq(Gamma, Delta), [])) :- 
+    member(at(Fml1),Gamma),
+    member(at(Fml2),Gamma),
+    Fml1 =.. [Measure,N|_],
+    Fml2 =.. [Measure,M|_],
+    measuretriple(Measure,_,_),
     N > M, !. % cut for efficiency
 
 /* propositional rules */
