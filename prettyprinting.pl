@@ -469,6 +469,9 @@ pp_Fml(html,at(bauweise(X))) -->
 pp_Fml(html,at(bb(X))) -->
     {term_to_atom(X,Y)},
     ['the Besondere Bestimmung '],[Y],[' applies'].
+pp_Fml(html,at(bB(X))) -->
+    {term_to_atom(X,Y)},
+    ['the Besondere Bestimmung '],[Y],[' applies'].
 pp_Fml(html,at(b(X))) -->
     {term_to_atom(X,Y)},
     ['the Bestimmung '],[Y],[' applies'].
