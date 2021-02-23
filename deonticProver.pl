@@ -123,6 +123,18 @@ Input:
 */
 
 
+/* briseprover_local
+   for running the prover locally
+*/
+briseprover_local(Fml, Facts, D_Assumptions, Sup_Relation, Ex_list, derivation) :-
+    subtract(Ex_list,[standardoperators],Ex_list1),
+    prove_online(Fml, Facts, D_Assumptions, Sup_Relation, [], [], []
+		 , [], [standardoperators|Ex_list1], modern, derivability, 'output.tex'),!.
+briseprover_local(Fml, Facts, D_Assumptions, Sup_Relation, Ex_list, explanation) :-
+    subtract(Ex_list,[standardoperators],Ex_list1),
+    explain_online(Fml, Facts, D_Assumptions, Sup_Relation, [], [], []
+		 , [], [standardoperators|Ex_list1], modern, derivability, 'output.html'),!.
+
 /* prove_online
    predicate to be called from the web interface
 */
@@ -180,14 +192,20 @@ prove_online(Fml, Facts, D_Assumptions, Sup_Relation, Operators,
    TODO: [ ] merge this with prove_online using a parameter for output format.
 */
 explain_online(Fml, Facts, D_Assumptions, Sup_Relation, Operators,
+	     Inclusions, Conflicts, P_list, [], Version, derivability, Filename) :-
+    explain_with_filename(Fml, Operators, Inclusions, Conflicts, P_list,
+			Facts, D_Assumptions, Sup_Relation,
+			Version, Filename).
+explain_online(Fml, Facts, D_Assumptions, Sup_Relation, Operators,
+	     Inclusions, Conflicts, P_list, [standardoperators], Version, derivability, Filename) :-
+    explain_with_filename(Fml, [(obl,obl), (for,for), (per,obl)|Operators], Inclusions, [confl(obl,obl), confl(obl,per), confl(obl,for), confl(for,for), confl(for,per)|Conflicts], P_list,
+			Facts, D_Assumptions, Sup_Relation,
+			Version, Filename).
+explain_online(Fml, Facts, D_Assumptions, Sup_Relation, Operators,
 	     Inclusions, Conflicts, P_list, Ex_list, Version, derivability, Filename) :-
     subtract(Ex_list,[standardoperators],Ex_list1),
     phrase(added_facts(Facts,Ex_list1),New_Facts),
-%    facts(plangebiet(7602),L),
-%    append(Facts,L,Facts1),
     phrase(added_assumptions(D_Assumptions,Ex_list1),New_D_Assumptions1),
-%    obligations_plangebiet(plangebiet(7602),O),
-%    append(O,D_Assumptions,D_Assumptions1),
     phrase(bauordnung(b),Bauordnung_assumptions),
     append(Bauordnung_assumptions,New_D_Assumptions1,New_D_Assumptions),
     explain_with_filename(Fml, [(obl,obl), (for,for), (per,obl)|Operators], Inclusions, [confl(obl,obl), confl(obl,per), confl(obl,for), confl(for,for), confl(for,per)|Conflicts], P_list,
