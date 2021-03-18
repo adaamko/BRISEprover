@@ -146,7 +146,7 @@ textliche_bestimmungen(plangebiet(6963)) -->
 
 
 /* additional constitutional norms from the textuelle Bestimmungen:
- * NOTE: not yet clear how this is implemented!
+ * NOTE: Constitutional norms are not yet implemented!
 */
 constitutional_norms(plangebiet(6963)) -->
     [bb(6963:31/1) : (planzeichenBBID(bb5) and plangebiet(6963)

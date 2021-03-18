@@ -15,7 +15,7 @@ bauland(test(1)) --> [p(test_1)].
 
 /* bauland_facts//1
  * Facts about Bauland
- * Every bauland is in the plangebiet NOTE: should be covered by location_facts?
+ * Every bauland is in the plangebiet 
 */
 bauland_facts(plangebiet(7602)) --> [bauland(7602:1) -> plangebiet(7602)].
 bauland_facts(bauland(7602:1)) --> [].
@@ -58,7 +58,7 @@ grundflaechen_facts(bauland(7602:1)) -->
 /* grundflaechen_obligations//1
  * obligations about the grundflaechen on the bauland
 */
-grundflaechen_obligations(bauland(7602:1)) --> %[].
+grundflaechen_obligations(bauland(7602:1)) --> 
 [
 			      obl( max_measure(gebaeude,hoehe,1200),
 				   grundflaeche(7602:1/1) ),
@@ -103,7 +103,7 @@ fluchtlinien_facts(bauland(7602:1)) --> [baulinie(7602:1/2) -> bb(7602:4),
 /* Textliche Bestimmungen (Auswahl):
 */
 %% NOTE: "Baulinien begrenzen das Bauland gegenueber oeffentlichen Verkehrsflaechen"
-%% also: an_oeffentlicher_Verkehrsflaeche <-> an_baulinie?
+%% so: an_oeffentlicher_Verkehrsflaeche <-> an_baulinie?
 textliche_bestimmungen(plangebiet(7602)) --> 
 		       [b(7602:3/4):for( staffelgeschoss,
 				       plangebiet(7602) and
@@ -115,7 +115,6 @@ textliche_bestimmungen(plangebiet(7602)) -->
 						   baulinienabstand,
 						   1600)
 				     ), 
-			%% NOTE: this is going to be rubbish...
 			b(7602:3/5): per( vorstehende_bauelemente and
 				       max_measure(vorstehende_bauelemente,
 						   ausladung, 60),
@@ -185,42 +184,4 @@ obligations_plangebiet_list([Plangebiet|Tail])
 --> obligations_plangebiet(Plangebiet), obligations_plangebiet_list(Tail).
 
 
-% for testing: pretty print a list of terms
-/*
-pp([]).
-pp([Term|List]) :-
-    write(Term), nl, pp(List).
-*/
-
-
-/* For testing: imaginary plangebiet(7601)
-*/
-
-/*
-bauland(plangebiet(7601)) --> [bauland(7601_1)].
-
-%bauland_facts(plangebiet(7601)) --> [].
-bauland_facts(bauland(7601_1)) --> [].
-
-grundflaechen(bauland(7601_1))
---> [grundflaeche(7601_1_1), grundflaeche(7601_1_2)].
-
-grundflaechen_facts(bauland(7601_1))
---> [grundflaeche(7602_1_1) -> widmung(test), grundflaeche(7602_1_2)
-     -> widmung(test)].
-
-grundflaechen_obligations(bauland(7601_1))
---> [obl( test1, grundflaeche(7602_1_1)),
-     obl( test2, grundflaeche(7602_1_2))].
-
-fluchtlinien(bauland(7601_1)) --> [baulinie(7601_1_1),
-				   baulinie(7601_1_2)].
-
-fluchtlinien_facts(bauland(7601_1)) --> [].
-
-textliche_bestimmungen(plangebiet(7601))
---> [obl( test_text_best, plangebiet(7601))]. 
-
-
-
-*/
+ 

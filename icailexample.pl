@@ -1,4 +1,5 @@
 /* Plangebiet icail
+ * Example for the ICAIL 2021 article
  * Main object: plangebiet(icail)
 */
 

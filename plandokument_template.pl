@@ -11,7 +11,7 @@ bauland(plangebiet(X)) --> [bauland(X_1),...].
 
 /* bauland_facts//1
  * Facts about Bauland
- * Every bauland is in the plangebiet NOTE: should be covered by location_facts?
+ * Every bauland is in the plangebiet
 */
 bauland_facts(plangebiet(X)) --> [bauland(X_1) -> plangebiet(X)].
 bauland_facts(bauland(X_1)) --> [...].

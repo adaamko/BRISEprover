@@ -33,28 +33,6 @@ Copyright 2019 Bjoern Lellmann
    takes Facts and Srauta, produces the scored alternatives and prints
    everything on the screen
 */
-/*
-alternativesOld(Facts,Srauta, Relation) :-
-    alternative(Facts, Srauta, Relation, ScoredList),
-    nl,write('possible interpretations:'),nl,nl,
-    maplist(ppScoredList,ScoredList),!.
-*/
-/*
-alternatives(Ints,Facts,Srauta, Relation, Input) :-
-    alternativeN(Ints,Facts, Srauta, Relation, Input, ScoredList),
-    nl,write('possible interpretations:'),nl,nl,
-    maplist(ppScoredList,ScoredList),!.
-*/
-/*
-alternativesWriteOld(StreamName,Facts,Srauta, Relation) :-
-    alternative(Facts, Srauta, Relation, ScoredList),
-    nl,write('possible interpretations of the deontic assumptions:'),nl,nl,
-    maplist(ppScoredList,ScoredList),
-    open(StreamName, append, Stream2),
-    write(Stream2,'Possible alternative interpretations of the deontic assumptions: \\medskip'),nl(Stream2),nl(Stream2),
-    maplist(ppwriteScoredList(Stream2),ScoredList),
-    close(Stream2),!.
-*/
 /* old version, still used in the online prover producing the latex
  * file
 */
@@ -85,53 +63,10 @@ alternative_interpretations(StreamName,Ints,Facts,Srauta, Relation, Input) :-
    interpretation, and Score is the resulting Score
 */
 
-/*
-alternative(Facts,Srauta,Relation,ScoredVikInt) :-
-    splitProh(Srauta, split(Proh,Rest)),
-    findall(splitProh(X,Y), part(Proh,X,Y), SplitProhList),
-    maplist(changeProh, SplitProhList, NewSplitProhList),
-    maplist(calculateScore,NewSplitProhList,ScoredProhList),
-    splitObl(Rest,split(Obl,Rest2)),
-    findall(splitObl(Z,W), part(Obl,Z,W), SplitOblList),
-    maplist(changeObl, SplitOblList, NewSplitOblList),
-    maplist(calculateOblScore,NewSplitOblList,ScoredOblList),
-    findall(tuple(PX,OX), (member(PX,ScoredProhList),
-			   member(OX,ScoredOblList)), CombinationList),
-    maplist(combineSplits,CombinationList,ScoredList),
-    maplist(addRest(Rest2),ScoredList,ScoredInt),
-    maplist(addVikalpaScore(Facts,Relation),ScoredInt,ScoredVikInt).
-*/
 alternativeN(IntIn,Facts,Srauta,Relation,Input,ScoredVikInt) :-
     list_to_set(IntIn,Ints),
     splitProh(Srauta, split(Proh,Rest1)), % split off prohibitions
     splitObl(Rest1,split(Obl,Rest2)), % split off obligations
-%    include(isFor,Ints,IntsFor), % split off Prohibition interpretations
-%    length(IntsFor,NFor), % get number of prohibition interpretations
-%    include(isObl,Ints,IntsObl), % split off obl interpretations
-%    length(IntsObl,NObl), % get number of obl interpretations
-%    findall(PartProh, partitions_parameterised(Proh,NFor,PartProh),
-%	    PartProhList), % find all partitions of prohibitions
-%    findall(PartObl, partitions_parameterised(Obl,NObl,PartObl),
-%	    PartOblList), % find all partitions of obligations
-%    maplist(altify(IntsFor),PartProhList,AltPartProhList), % combine
-                                                           % partition
-                                                           % with
-                                                           % interpretations
-%    maplist(altify(InstObl),PartOblList,AltPartOblList), % same for
-                                                         % obl
-%    maplist(changeListN,AltPartProhList,ChangedPartProhList), % change
-                                                              % according
-                                                              % to
-                                                              % interpretation 
-%    maplist(changeListN,AltPartOblList,ChangedPartOblList), % same for obl
-    /* Now we have two lists [[alt(for(int1),PartFor11),...], ... ] and
-     * [[alt(obl(int1),PartObl11)], ... ] containing the changed
-     * formulae with their interpretations
-     */
-    /* dont need that one:
-    maplist(score,ChangedPartProhList,ScoredPartProhList), 
-    maplist(score,ChangedPartOblList,ScoredPartOblList),
-    */
     calculateProhLists(Ints,Proh,ChangedPartProhList),
     calculateOblLists(Ints,Obl,ChangedPartOblList),
     findall(tuple(FX,OX), (member(FX, ChangedPartProhList),
@@ -238,6 +173,7 @@ changeListN([alt(Type,List)|Rest],[alt(Type,NewList)|NewRest]) :-
     maplist(changeN(Type),List,NewList),
     changeListN(Rest,NewRest).
 
+
 /* changeN(Int,Fml,NewFml):
  * reinterprets Fml according to Int, resulting in NewFml
  * ADD NEW INTERPRETATIONS HERE.
@@ -257,6 +193,7 @@ changeN(obl(int1),obl(X,Y),rec(X,Y)).
 changeN(obl(int1),N:obl(X,Y),N:rec(X,Y)).
 changeN(obl(int2),obl(X,Y),perf(X,Y)).
 changeN(obl(int2),N:obl(X,Y),N:perf(X,Y)).
+
 
 /* changeProh /2:
    takes list of tuples splitProh(X,Y) and changes every prohibition
@@ -320,11 +257,11 @@ calculateOblScore(splitObl(X,Y),scoreOblList(List,Score)) :-
 calculateScoreN(List,ScoredList) :-
     maplist(List,score,ScoredList).
 
+
 /* score /2: change alt(Int,FmlList) to scr(Int,#FmlList).
 */
 score(alt(X,Y),scr(X,Z)) :-
     length(Y,Z).
-
 
 
 /* combineSplits /3:
@@ -336,11 +273,13 @@ combineSplits(tuple(scoreList(ProhList,ProhScore),
     append(ProhList,OblList,Result),
     append(ProhScore,OblScore,Score).
 
+
 /* addRest /3:
    adds the rest to a scored list
 */
 addRest(Rest,scoreList(List,Score),scoreList(Result,Score)) :-
     append(Rest,List,Result).
+
 
 /* vikalpaScore
    Calculates the number of vikalpas
@@ -348,6 +287,7 @@ addRest(Rest,scoreList(List,Score),scoreList(Result,Score)) :-
 addVikalpaScore(Facts,Relation,scoreList(List,Score),scoreList(List,[vik(VkScore,Vikalpas)|Score])) :-
     vikalpaCheck(Facts,List,Relation,Vikalpas),
     length(Vikalpas,VkScore).
+
 
 /* add_input_derivability
  * adds inp(T) to a scoreList, where T is the result of trying to
@@ -359,6 +299,7 @@ add_input_derivability(Facts, Relation, Input, scoreList(List,Score),
     (prove([],asmp(Facts,List,Relation), [Input], T)
     ;
      nonderivable_statement(T)),!.
+
 
 /* pretty printing */
 
@@ -380,45 +321,24 @@ ppScoredList(scoreList(List,Score)) :-
     ppIntScore(obl(int1),Score),
     ppIntScore(obl(int2),Score),
     nl.
-/*    write('most natural prohibitions: '),
-    member(nat1(M),Score),
-    write(M),nl,
-    tab(2),
-    write('second most natural prohibitions: '),
-    member(nat2(L),Score),
-    write(L),nl,
-    tab(2),
-    write('most natural obligations: '),
-    member(natObl1(O),Score),
-    write(O),nl,
-    tab(2),
-    write('second most natural obligations: '),
-    member(natObl2(P),Score),
-    write(P),nl,
-    nl.
-*/
+
+
 /* ppInt: pretty print the intepretation */
 ppInt(for(int0)) :-
-%    tab(2),
     write('Most natural prohibitions (as for(.,.)): ').
 ppInt(for(int1)) :-
-%    tab(2),
     write('Next most natural prohibitions (as obl(neg .,.)): ').
 ppInt(for(int2)) :-
-%    tab(2),
     write('Next most natural prohibitions (as obl(.,neg .)): ').
 ppInt(for(int3)) :-
-%    tab(2),
     write('Least natural prohibitions (as pero(neg .,.)): ').
 ppInt(obl(int0)) :-
-%    tab(2),
     write('Most natural obligations (as obl(.,.)): ').
 ppInt(obl(int1)) :-
-%    tab(2),
     write('Next most natural obligations (as rec(.,.)): ').
 ppInt(obl(int2)) :-
-%    tab(2),
     write('Least natural obligations (as perf(.,.)): ').
+
 
 ppIntScore(_,[]).
 ppIntScore(Int,[scr(Int,N)|_]) :-
@@ -426,6 +346,7 @@ ppIntScore(Int,[scr(Int,N)|_]) :-
     write(N),nl,tab(2),!.
 ppIntScore(Int,[_|Rest]) :-
     ppIntScore(Int,Rest).
+
 
 /* for latexing: */
 ppwriteScoredList(Stream,scoreList(List,Score)) :-
@@ -460,45 +381,26 @@ ppwriteScoredList(Stream,scoreList(List,Score)) :-
     ppwriteIntScore(Stream,obl(int1),Score),
     ppwriteIntScore(Stream,obl(int2),Score),
     nl(Stream),
-%    nl.
-/*    write(Stream,'\\item most natural prohibitions: '),
-    member(nat1(M),Score),
-    write(Stream,M),nl(Stream),
-    write(Stream,'\\item second most natural prohibitions: '),
-    member(nat2(L),Score),
-    write(Stream,L),nl(Stream),
-    write(Stream,'\\item most natural obligations: '),
-    member(natObl1(O),Score),
-    write(Stream,O),nl(Stream),
-    write(Stream,'\\item second most natural obligations: '),
-    member(natObl2(P),Score),
-    write(Stream,P),nl(Stream),
-*/
     write(Stream,'\\end{itemize} \\medskip'),
     nl(Stream), nl(Stream).
 
+
 /* ppwriteInt: pretty print the intepretation in latex*/
 ppwriteInt(Stream,for(int0)) :-
-%    tab(2),
     write(Stream,'\\item Most natural prohibitions (as $\\for(.,.)$): ').
 ppwriteInt(Stream,for(int1)) :-
-%    tab(2),
     write(Stream,'\\item Next most natural prohibitions (as $\\obl(\\neg .,.)$): ').
 ppwriteInt(Stream,for(int2)) :-
-%    tab(2),
     write(Stream,'\\item Next most natural prohibitions (as $\\obl(.,\\neg .)$): ').
 ppwriteInt(Stream,for(int3)) :-
-%    tab(2),
     write(Stream,'\\item Least natural prohibitions (as $\\pero(\\neg .,.)$): ').
 ppwriteInt(Stream,obl(int0)) :-
-%    tab(2),
     write(Stream,'\\item Most natural obligations (as $\\obl(.,.)$): ').
 ppwriteInt(Stream,obl(int1)) :-
-%    tab(2),
     write(Stream,'\\item Next most natural obligations (as $\\rec(.,.)$): ').
 ppwriteInt(Stream,obl(int2)) :-
-%    tab(2),
     write(Stream,'\\item Least natural obligations (as $\\perf(.,.)$): ').
+
 
 ppwriteIntScore(_,_,[]).
 ppwriteIntScore(Stream,Int,[scr(Int,N)|_]) :-
