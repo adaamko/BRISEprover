@@ -1,5 +1,15 @@
 #+TITLE: BRISEprover - notes
 
+* Clean up code
+  - [X] deonticprover.pl
+  - [X] prettyprinting.pl
+  - [X] attributes.pl
+  - [X] preprocessing.pl
+  - [X] assumptionhandler.pl
+  - [ ] Change license everywhere
+
+
+
 * Scratchpad
 
   obl(gehsteigbreiteMin(80), strassenbreiteMax(1000)and anFluchtlinie and plangebiet(6963))

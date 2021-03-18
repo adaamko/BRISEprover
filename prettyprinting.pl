@@ -24,26 +24,6 @@ Copyright 2020 Bjoern Lellmann
   :- use_module(library(lists)).
 
 
-/* for testing
-*/
-html_test(Fml,Deriv) :-
-    phrase(pp_output(html,asmp([seq([at(a)],[at(b)])], [bb(2/3):modal(obl,at(c),at(d)), modal(for,at(d), at(e))], ops([], [], [], []),
-		     [bb(2/3) beats b(3:3)]),Fml,Deriv),L),
-    atomic_list_concat(L,L1),
-    open('test.html',write,Stream),
-    write(Stream,L1),
-    close(Stream),!.
-/*Reminder:
-    asmp(Facts, Deontic_assumptions, Op_characterisation, Relation)
-   where Op_characterisation has the form
-     ops(Operator_list, Inclusion_relation, Conflict_relation, P_relation)
-*/
-
-/* Test query for pasting into the terminal:
-test_ass(A),prove(modern,A,seq([],[modal(obl,at(b),at(c))]),T),tree_vs_named_tree(T,W), phrase(pp_derivation(html,0,W),L), atomic_list_concat(L,L1), open('html_test.html',write,Stream),write(Stream,L1),close(Stream).
-*/
-
-
 /* nonderivable_statement
 */
 nonderivable_statement(nonderivable).
@@ -101,7 +81,6 @@ pp_compliance_result(latex,_,node(Rule,PF,Seq,Suc)) -->
    DCG for pretty printing the result of a derivability check
 */
 pp_result(screen,Derivation) --> pp_derivation(screen,0,Derivation).
-%pp_result(html,Derivation) --> pp_derivation(html,0,Derivation).
 pp_result(html,nonderivable) -->
     ["<div>"], pp_nl_tab(0),
     ["<kbd>Result</kbd>"],pp_nl_tab(0),
@@ -131,9 +110,6 @@ pp_result(latex,node(Rule,PF,Seq,Suc)) -->
 
 /* pp_header//3
    DCG for producing the header depending on the format
-*/
-/* TODO:
-   [ ] add clause for html
 */
 pp_header(screen,Assumptions, Fml) -->
     pp_nl_tab(0),
@@ -172,7 +148,7 @@ pp_header(latex,asmp(Facts, D_ass, ops(Op_list, Incl, Confl, P_list),
     pp_Fml(latex,Fml),
     ['$'], pp_nl_tab(0),
     ['\\end{center}'].
-pp_header(html,asmp(Facts, D_ass, ops(Op_list, Incl, Confl, P_list), Relation),Fml) -->
+pp_header(html,asmp(Facts, D_ass, _, Relation),Fml) -->
     ["<!DOCTYPE html>
 
 <head>
@@ -236,10 +212,6 @@ factual assumptions</button>"],
     pp_Facts(html,Facts), pp_nl_tab(2),
     ["</div>"],pp_nl_tab(2),
     ["<br />"],pp_nl_tab(2),
-/*
-    ["<p>The saturated factual assumptions are: <br />"], pp_nl_tab(2),
-    pp_Facts(html,Facts), ["</p>"], pp_nl_tab(2),
-*/
     ["<button class=\"button\" onclick=\"myFunction('deonticassumptions')\">Show
 deontic assumptions</button>"],
     pp_nl_tab(2),
@@ -248,10 +220,6 @@ deontic assumptions</button>"],
     pp_srauta(html,D_ass), pp_nl_tab(2),
     ["</div>"],pp_nl_tab(2),
     ["<br />"],pp_nl_tab(2),
-/*
-    ["<p>The deontic assumptions are: <br />"], pp_nl_tab(2),
-    pp_srauta(html,D_ass), ["</p>"], pp_nl_tab(2),
-*/
     ["<button class=\"button\" onclick=\"myFunction('superiorityrelation')\">Show
 superiority relation</button>"],
     pp_nl_tab(2),
@@ -259,25 +227,7 @@ superiority relation</button>"],
     ["<div class=\"abstract\" id=\"superiorityrelation\">"],pp_nl_tab(2),
     pp_relation(html,Relation), pp_nl_tab(2),
     ["</div>"],pp_nl_tab(2),
-/*
-    ["<p>The superiority relation is given by: <br />"], pp_nl_tab(2),
-    pp_relation(html,Relation), ["</p>"], pp_nl_tab(2),
-    ["</div>"], pp_nl_tab(0), pp_nl_tab(0),
-*/
     ["<hr>"], pp_nl_tab(0), pp_nl_tab(0).
-
-/*
-<button class=\"button\" onclick=\"myFunction('fct"],
-    format_name(Name),["_trunc')\">Why does it follow from the above?</button>"],
-    pp_nl_tab(N),
-    pp_nl_tab(N),
-    ["<div class=\"abstract\" id=\"fct"],format_name(Name),["_trunc\">"],
-    ['The detailed explanation of the statement above is the following:<br />'],
-    pp_html_truncated_new(N + 2,node(Name, Rule, PF, Seq, Suc)),
-    pp_nl_tab(N),
-    ["</div>"],
-*/
-
 
 
 /* pp_Facts
@@ -307,7 +257,6 @@ pp_srauta(html,[Srauta|List]) -->
     ["<ul>"],pp_nl_tab(0),
     pp_srauta_list(html,[Srauta|List]),
     ["</ul>"].
-% pp_Fml_list_DCG(html,l,A)
 
 pp_srauta_list(html,[]) --> [].
 pp_srauta_list(html,[Srauta|List]) -->
@@ -336,12 +285,8 @@ pp_relation_list(html,[Relation|List]) -->
     pp_relation_list(html,List).
 
 
-
 /* pp_footer//1
    DCG for producing the footer depending on the format
-*/
-/* TODO
-   [x] add clause for html
 */
 pp_footer(screen) --> [].
 pp_footer(latex) --> pp_nl_tab(0), ['\\end{document}'].
@@ -399,9 +344,6 @@ pp_Op(html,Op) -->
    DCG for pretty printing a norm statement
 */
 pp_norm(screen,Norm) --> [Norm].
-/*
-pp_norm(html,Norm) --> [Norm].
-*/
 pp_norm(html,Norm) -->
     {atom(Norm)},[Norm].
 pp_norm(html,Norm) -->
@@ -414,11 +356,7 @@ pp_norm(latex,Norm) -->
     {\+ atom(Norm), term_to_atom(Norm,Norm1),
      replace_underscores(Norm1,Norm_new)}, 
     ['\\texttt{'],[Norm_new],['}'].
-/*
-pp_norm(latex,bb(A)) -->
-    {replace_underscores(A,A_new)},
-    ['\\texttt{bb('],[A_new],[')}'].
-*/
+
 
 /* pp_type//2
    DCG for pretty printing an operator type
@@ -477,7 +415,7 @@ pp_Fml(html,at(b(X))) -->
     ['the Bestimmung '],[Y],[' applies'].
 /* Proper Merkmale */
 /* NOTE: 
-   Did not add the Merkmale with text as argument, because the meaning
+   We did not add the Merkmale with text as argument, because the meaning
    is not clear.
 */
 /* without argument: */
@@ -1033,8 +971,6 @@ pp_Fml(html,(Norm1 beats Norm2)) -->
 pp_Fml(html,seq(L,N)) -->
     ['It we assume that '], pp_Fml_list(html,L), 
     [', then it follows that  '], pp_Fml_list(html,N).
-% TODO: [ ] MISSING: types, conflicts, inclusions, p_list!
-% NOTE: might not need the for BRISEprover.
 % clauses for latex:
 pp_Fml(latex,false) --> ['\\bot'].
 pp_Fml(latex,true) --> ['\\top'].
@@ -1583,8 +1519,6 @@ pp_derivation(html,N,node(Name,asmpR(Op1,Assumption), PF, Seq, [T1,T2|Suc])) -->
     pp_html_aux_list_new(N + 2,Suc),
     pp_nl_tab(N),
     ["</ul>"], pp_nl_tab(N),
-%    pp_html_successors_new(N,Suc),
-%    pp_nl_tab(N),
     ["</div>"].
 % assumption left rule:
 pp_derivation(html,N,node(Name,asmpL(Op1,Assumption), PF, Seq, [T1,T2|Suc])) -->
@@ -1593,10 +1527,6 @@ pp_derivation(html,N,node(Name,asmpL(Op1,Assumption), PF, Seq, [T1,T2|Suc])) -->
     ["Because it follows from immediately from<br/> <code>"],pp_nl_tab(N),
     pp_Seq(html,PF),["</code>.<br />"],pp_nl_tab(N),
     ["That statement is derivable from the deontic assumption <code>"],
-/*
-    ["Because it follows from the following using the deontic
-assumption <code>"],
-*/
     pp_Fml(html,Assumption),
     ["</code> and the axiom that there are no conflicts between that
 operator and <code>"], pp_Op(html,Op1),["</code>. In particular:<br />
@@ -1612,8 +1542,6 @@ operator and <code>"], pp_Op(html,Op1),["</code>. In particular:<br />
     pp_html_aux_list_new(N + 2,Suc),
     pp_nl_tab(N),
     ["</ul>"], pp_nl_tab(N),
-%    pp_html_successors_new(N,Suc),
-%    pp_nl_tab(N),
     ["</div>"].
 % clauses for the different blocks in the assumption rules:    
 pp_derivation(html,N,node(_,no_p_conflict(Op,Seq))) -->
@@ -1653,7 +1581,6 @@ pp_derivation(html,N,node(_,noconflict(Fml,Seq))) -->
     pp_nl_tab(N),["<code>"],
     pp_Seq(html,Seq),["</code>"].
 
-% TODO: CHECK WHAT THIS DOES!
 pp_derivation(html,N,node(notimplied(Fml,Seq))) -->
     pp_nl_tab(N),
     ['\\begin{array}[b]{l}\\text{For }'],
@@ -1683,26 +1610,8 @@ pp_derivation(html,N,node(_,notoverruled(Fml,Seq,[Suc]))) -->
     pp_derivation(html,N+2,Suc),
     ["</li>"],pp_nl_tab(N),
     ["</ul>"].
-%    pp_html_successors_new(N + 2, [Suc]).
-/*
-pp_derivation(html,N,node(Name,notoverruled(Fml,Seq,[Suc]))) -->
-    pp_nl_tab(N),
-    ["The deontic assumption <br />"],
-    pp_nl_tab(N),["<code>"],
-    pp_Fml(html,Fml),["</code>"],pp_nl_tab(N),
-    [" is not overruling, because it is not more specific since we cannot derive <code>"],
-    pp_Seq(html,Seq),["</code>, and also because of the following:"],
-    pp_derivation(html,N+2,Suc).
-*/
-%    pp_html_successors_new(N + 2, [Suc]).
 pp_derivation(html,N,node(_,overrides(Fml1, Fml2),[T1,T2,T3])) -->
     pp_nl_tab(N),
-/*
-    ["The deontic assumption <br />"],
-    pp_nl_tab(N),["<code>"],
-    pp_Fml(html, Fml2),["</code>"],pp_nl_tab(N),
-    [" is overruled by the more specific deontic assumption <br />"],
-*/
     ["It is overruled by the more specific deontic assumption <br />"],
     pp_nl_tab(N),["<code>"],
     pp_Fml(html, Fml1),["</code>"],pp_nl_tab(N),
@@ -1719,26 +1628,12 @@ pp_derivation(html,N,node(_,overrides(Fml1, Fml2),[T1,T2,T3])) -->
     pp_derivation(html,N+2,T3),pp_nl_tab(N+2),
     ["</li>"],pp_nl_tab(N),
     ["</ul>"].
-%    pp_html_successors_new(N + 2, [T1,T2,T3]).
-/*
-pp_derivation(html,N,node(Name,overrides(Fml1, Fml2),[T1,T2,T3])) -->
-    pp_nl_tab(N),
-    ["The deontic assumption <br />"],
-    pp_nl_tab(N),["<code>"],
-    pp_Fml(html, Fml2),["</code>"],pp_nl_tab(N),
-    [" is overuled by the more specific deontic assumption <br />"],
-    pp_nl_tab(N),["<code>"],
-    pp_Fml(html, Fml1),["</code>"],pp_nl_tab(N),
-    [" because of the following:"],
-    pp_html_successors_new(N + 2, [T1,T2,T3]).
-*/
 pp_derivation(html, _,_) --> [].
 
 
 /* pp_derivation_list//3
    DCG for pretty printing a list of derivations
 */
-% TODO: [ ] add this for html.
 pp_derivation_list(screen,_,[]) --> [].
 pp_derivation_list(screen,N,[Der|[]]) -->
     pp_derivation(screen,N,Der).
@@ -1816,33 +1711,6 @@ pp_html_skip_list_new(Depth,[Node|Tail]) -->
  * auxiliary predicate for pp_html_skip_list_new.
 */
 pp_html_skip_list_aux_new(_,[]) --> [].
-/*
-pp_html_skip_list_aux_new(Depth,[node(_,l,fact,PF,_,_)|Tail])
--->
-    pp_nl_tab(Depth),
-    ["<li>The assumed fact<br />"],pp_nl_tab(Depth+2),["<code>"],
-    pp_Seq_DCG(html,PF),["</code>"],
-    pp_nl_tab(Depth),
-    ["</li>"],
-    pp_html_skip_list_aux_new(Depth,Tail).
-*/
-/*
-pp_html_skip_list_aux_new(Depth,[node(_,l,_,_,_,_)|Tail]) -->
-    pp_html_skip_list_aux_new(Depth,Tail).
-*/
-/*
-pp_html_skip_list_aux_new(Depth,[node(Name, p, Modal, PF, Seq, Suc)|Tail]) -->
-    {rule_type(Modal,modal)},
-    pp_nl_tab(Depth),
-    ["<li>"],
-    pp_derivation(html,Depth + 2,node(Name, p, Modal, PF, Seq, Suc)),
-    pp_nl_tab(Depth),
-    ["</li>"],
-    pp_html_skip_list_aux_new(Depth,Tail).
-pp_html_skip_list_aux_new(Depth,[node(_,p,_,_,_,Suc)|Tail]) -->
-    pp_html_skip_list_aux_new(Depth,Suc),
-    pp_html_skip_list_aux_new(Depth,Tail).
-*/
 pp_html_skip_list_aux_new(Depth,[node(_,Rule,_,_,_)|Tail]) -->
     {member(Rule,[init,botL,topR])},
     pp_html_skip_list_aux_new(Depth,Tail).
@@ -1950,8 +1818,6 @@ pp_html_truncated_list_new(Depth,[Tree|Tail]) -->
 
 
 
-% node(Rule, PF, Seq, Suc)
-
 /************************/
 /* Auxiliary predicates */
 /************************/
@@ -1959,7 +1825,6 @@ pp_html_truncated_list_new(Depth,[Tree|Tail]) -->
 /* rule_type /2
    true if Rule is of the type given by the second argument
 */
-% TODO: [ ] add the P rule
 rule_type(Rule, propositional) :-
     member(Rule, [negL, negR, disjL, disjR, conjL, conjR, implL, implR]).
 rule_type(mon(_,_), modal).
@@ -1984,32 +1849,12 @@ pp_nl_tab(N) --> ['
 
 
 /* replace_underscores /2
-   For replacing prefixing underscores with the escape character.
-*/
-/*
-replace_underscores([]) --> [].
-replace_underscores([\u0x5f|List]) --> ['\\_'], replace_underscores(List).
-replace_underscores(['_'|List]) --> ['\\_'], replace_underscores(List).
-replace_underscores([X|List]) --> [X],replace_underscores(List).
+   For prefixing underscores with the escape character.
 */
 replace_underscores(Atom_in,Atom_out) :-
-%    term_to_atom(Term_in,Atom_in),
     name(Atom_in,List_in),
     replace_underscores_aux(List_in,List_out),
     name(Atom_out,List_out).
-%    term_string(Term_out,Atom_out).
-/*
-replace_underscores(Atom_in,Atom_out) :-
-    atom(Atom_in),
-    name(Atom_in,List_in),
-    replace_underscores_aux(List_in,List_out),
-    name(Atom_out,List_out).
-replace_underscores(Complex_in,Complex_out) :-
-    Complex_in =.. [Op|Args],
-    maplist(replace_underscores,Args,Args_replaced),
-    Complex_aux =.. [Op|Args_replaced],
-    term_string(Complex_aux,Complex_out).
-*/
 
 replace_underscores_aux([],[]).
 replace_underscores_aux([95|Tail_in],[92,95|Tail_out]) :-
@@ -2087,18 +1932,6 @@ tree_vs_named_tree_aux(Prefix, N, node(overrides(Fml1,Fml2),List),
     M is N+1,
     treelist_vs_named_treelist([M|Prefix],0,List,List_Named).
 
-% CONTINUE HERE:
-/* TODO: Extend this to the following:
-   [X] node(not_overruled(Assumption),Tree_list)
-   [X] node(notapplicable(Fml,Seq))
-   [X] node(noconflict(Fml,Seq))
-   [X] node(notimplied(Fml,Seq))
-   [X] node(superior(Norm1,Norm2))
-   [X] node(overrides(Fml1,Fml2),Succ)
-   [X] node(no_p_conflict(Op,Seq))
-   [X] node(no_p_conflict(na))
-*/
-
 
 /* treelist_vs_named_treelist
  * takes prefix and current number and relates list of derivation
@@ -2117,7 +1950,6 @@ treelist_vs_named_treelist(Name,N,[Tree|Tail],[Tree_Named|Tail_Named]) :-
  * For skipping the propositional steps in printing the explanation in
  * html in pp_html_skip_list_new
 */
-% TODO: Check the format of the node!
 propositional_derivations([]).
 propositional_derivations([node(_,Rule,_,_,Suc)|Tail]) :-
     (rule_type(Rule, propositional)
@@ -2126,17 +1958,3 @@ propositional_derivations([node(_,Rule,_,_,Suc)|Tail]) :-
     propositional_derivations(Suc),
     propositional_derivations(Tail).
 
-/*
- [ node( [1, 1],
-           negR, 
-             seq([], [neg at(a)]), 
-                seq([], [at(a), neg at(a)]), 
-		   [ node([1, 1, 1], init, seq([at(a)], [at(a)]),
-		   seq([at(a)], [inv(at(a)), at(a)]), [])
-                   ]
-   )
- ]
-*/
-
-%%% TODO: pretty printing of bb(bla) and b(blub) etc
-%%% perhaps even max_measure(.,.,.)

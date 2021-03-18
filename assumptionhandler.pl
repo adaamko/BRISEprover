@@ -3,6 +3,12 @@
  * deontic assumptions from the Bebauungsplan.
 */
 
+/* NOTE: This uses the naming convention that objects are named by
+ * following the scheme Plangebiet_Bauland_Object, hence "being located
+ * on" is checked using the syntactic prefix relation on the names of
+ * objects (e.g., in "on_location").
+*/
+
 
 /* facts_plangebiet//1
  * generates all the factual assumptions about a Plangebiet, including
@@ -46,7 +52,7 @@ obligations_plangebiet(Plangebiet)
  * true if Term1 and Term2 are objects in a location in List and Term1
  * is located on Term2
  * NOTE: this uses the naming convention that objects are named by
- * following the schem Plangebiet_Bauland_Object, hence "being located
+ * following the scheme Plangebiet_Bauland_Object, hence "being located
  * on" is checked using the syntactic prefix relation on the names of
  * objects.
 */

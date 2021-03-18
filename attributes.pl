@@ -166,7 +166,6 @@ measuretriple(raumhoeheEGGenau,mindestraumhoeheEG,raumhoeheEGMax).
 measuretriple(gelaendeneigungGenau,gelaendeneigungMin,gelaendeneigungMax).
 measuretriple(arkadeHoeheGenau,arkadeHoehe,arkadeHoeheMax).
 measuretriple(arkadeLaengeGenau,arkadeLaenge,arkadeLaengeMax).
-% BLARGH: got to here.
 measuretriple(durchfahrtBreiteGenau,durchfahrtBreite,durchfahrtBreiteMax).
 measuretriple(durchfahrtHoeheGenau,durchfahrtHoehe,durchfahrtHoeheMax).
 measuretriple(durchgangBreiteGenau,durchgangBreite,durchgangBreiteMax).
@@ -186,6 +185,3 @@ measuretriple(umbaubarerRaumBauplatzGenau,umbaubarerRaumBauplatzMin,umbaubarerRa
 measuretriple(umbaubarerRaumGebaeudeGenau,umbaubarerRaumGebaeudeMin,umbaubarerRaumGebaeudeMax).
 measuretriple(umbaubarerRaumGebaeudeteilGenau,umbaubarerRaumGebaeudeteilMin,umbaubarerRaumGebaeudeteilMax).
 measuretriple(vorstehendeBauelementeAusladungGenau,vorstehendeBauelementeAusladungMin,vorstehendeBauelementeAusladungMax).
-/*
-measuretriple(,,).
-*/

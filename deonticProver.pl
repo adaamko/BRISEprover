@@ -36,7 +36,7 @@ Copyright 2020 Bjoern Lellmann
 
 /* load parts for prettyprinting and for preprocessing
 */
-:- dynamic(conflicting_assumptions/2). % is asserted in preprocessing
+:- dynamic(conflicting_assumptions/2). % the predicate is asserted in preprocessing.pl
 :- ensure_loaded([prettyprinting]).
 :- ensure_loaded([preprocessing]).
 :- ensure_loaded([attributes]).
@@ -153,11 +153,7 @@ prove_online(Fml, Facts, D_Assumptions, Sup_Relation, Operators,
 	     Inclusions, Conflicts, P_list, Ex_list, Version, derivability, Filename) :-
     subtract(Ex_list,[standardoperators],Ex_list1),
     phrase(added_facts(Facts,Ex_list1),New_Facts),
-%    facts(plangebiet(7602),L),
-%    append(Facts,L,Facts1),
     phrase(added_assumptions(D_Assumptions,Ex_list1),New_D_Assumptions1),
-%    obligations_plangebiet(plangebiet(7602),O),
-%    append(O,D_Assumptions,D_Assumptions1),
     phrase(bauordnung(b),Bauordnung_assumptions),
     append(Bauordnung_assumptions,New_D_Assumptions1,New_D_Assumptions),
     prove_with_filename(Fml, [(obl,obl), (for,for), (per,obl)|Operators], Inclusions, [confl(obl,obl), confl(obl,per), confl(obl,for), confl(for,for), confl(for,per)|Conflicts], P_list,
@@ -170,7 +166,7 @@ prove_online(Fml, Facts, D_Assumptions, Sup_Relation, Operators,
     include_type(for,Operators,Prohibitions),
     preprocess(Version,asmp(Facts, D_Assumptions, ops(Operators, Inclusions
 					      , Conflicts, P_list),
-		    Sup_Relation), Ass_Processed,Output),
+		    Sup_Relation), Ass_Processed,_),
     modalised(Fml,Fml1),
     added_at(Fml1,Fml2),
     maplist(apply_op(Fml2,Fml2), Prohibitions, Proh_list),
@@ -188,8 +184,7 @@ prove_online(Fml, Facts, D_Assumptions, Sup_Relation, Operators,
 
 
 /* explain_online
-   for outputting explanation.
-   TODO: [ ] merge this with prove_online using a parameter for output format.
+   for outputting an html explanation.
 */
 explain_online(Fml, Facts, D_Assumptions, Sup_Relation, Operators,
 	     Inclusions, Conflicts, P_list, [], Version, derivability, Filename) :-
@@ -221,6 +216,7 @@ explain_test(Fml) :-
 */
 prove_test(Fml) :-
     prove_online(Fml,[],[],[],[],[],[],[],[plangebiet(icail)],modern,derivability,'test.tex'),!.
+
 
 /* apply_op
    (for compliance check)
@@ -280,9 +276,10 @@ prove_with_filename(Fml, Operators, Op_Inclusions, Op_Conflicts,
     open(Filename,write,Stream),
     write(Stream,L1),
     close(Stream),!.
+
+
 /* explain_with_filename
    For outputting explanation
-   TODO [ ] merge this with prove_with_filename using a parameter for the output.
 */
 explain_with_filename(Fml, Operators, Op_Inclusions, Op_Conflicts,
 		    Op_P, Facts, D_Assumptions, Sup_Relation, Version,
@@ -306,38 +303,8 @@ explain_with_filename(Fml, Operators, Op_Inclusions, Op_Conflicts,
 
 /* TESTING PREDICATES */
 
-test_ass(asmp([seq([at(a)],[at(b)])],[modal(obl,at(a),at(c))],ops([(obl,obl)] ,[] ,[confl(obl,obl)] ,[] ), [])).
-% WARNING: this might interfere with proper examples creating the conflict lists!!
-conflicting_assumptions(modal(obl,at(a),at(c)),[]).
-
-%test_ass(A),prove(modern,A,seq([],[modal(obl,at(a),at(c))]),T),tree_vs_named_tree(T,W), phrase(pp_html_skip_list_new(0,[W]),L), atomic_list_concat(L,L1), open('html_test.html',write,Stream),write(Stream,L1),close(Stream).
-
-
 /* prove_test
    to test the prove predicate
-*/
-/* problematic example:
-for(staffelgeschoss, ((plangebiet(7602) and an_oeffentlicher_verkehrsflaeche) and an_strassenfront) and bb(76023))
-*/
-/* interesting example for checking behaviour on measures:
-     ?- time(prove_test(obl(neg measure(gebaeude,hoehe,1100),grundflaeche(7602_1_1) and bb),[obl(min_measure(gebaeude,hoehe,1400),grundflaeche(7602_1_1) and bb)],modern)).
-   possibly also change the measure of 1100 in the input to 1500
-   etc. Conflict of the new assumption with an assumption on the
-   maximal height of buildings of 1200 on grundflaeche 7602_1_1.
-*/
-/*prove_test(Fml, D_ass, Version) :-
-    prove_online(Fml, [], D_ass, [(n1 beats n2)], [(obl,obl)], [], [confl(obl,obl)], [], [plangebiet(7602),plangebiet(7601)],
-		 Version, derivability, 'test.tex'),!.
-*/%
-
-/*prove_test(Fml) :-
-    prove(asmp([],[modal(obl,at(a) and at(c),at(b)), modal(obl, neg at(a),at(c)),
-		   modal(obl,at(a) and at(d), at(c) and at(d))],
-	       ops([(obl,obl)],[obl -> obl],[confl(obl,obl)],[]),[]),
-	  seq([],[Fml]),T),
-    phrase(pp_output(screen,T),L),
-    atomic_list_concat(L,L1),
-    write(L1).
 */
 prove_test1(Fml,Version) :-
     modalised(Fml,Fml1),
@@ -345,13 +312,6 @@ prove_test1(Fml,Version) :-
     prove(Version,asmp([],[],
 	       ops([(obl,obl)],[obl -> obl],[confl(obl,obl)],[]),[]),
 	  seq([],[Fml2]),T),
-/*    phrase(pp_assumptions(screen,asmp([],[],ops([(obl,obl)]
-						,[obl -> obl]
-						,[confl(obl,obl)],[])
-				      ,[])),W),
-    atomic_list_concat(W,W1),
-    write(W1),
-*/
     phrase(pp_output(screen,asmp([],[],
 	       ops([(obl,obl)],[obl -> obl],[confl(obl,obl)],[]),[]),Fml2,T),L),
     atomic_list_concat(L,L1),
@@ -367,21 +327,10 @@ prove_test2(Fml,Dass) :-
     prove(modern,asmp([],Dass2,
 	       ops([(obl,obl)],[obl -> obl],[confl(obl,obl)],[]),[]),
 	  seq([],[Fml2]),T),
-/*    phrase(pp_assumptions(screen,asmp([],[],ops([(obl,obl)]
-						,[obl -> obl]
-						,[confl(obl,obl)],[])
-				      ,[])),W),
-    atomic_list_concat(W,W1),
-    write(W1),
-*/
     phrase(pp_output(screen,asmp([],Dass2,
 	       ops([(obl,obl)],[obl -> obl],[confl(obl,obl)],[]),[]),Fml2,T),L),
     atomic_list_concat(L,L1),
     write(L1),!.
-
-/*    
-    prove(asmp([],[norm1:modal(obl,a,b), modal(obl, neg a,c), modal(obl,a, c and d)],ops([(obl,obl)],[obl -> obl],[confl(obl,obl)],[]),[]), seq([],[neg modal(obl,neg a,b and c and d)]),T)
-*/
 
 /*  END OF TESTING PREDICATES */
 
@@ -411,6 +360,10 @@ prove(_,asmp(Facts,_,_,_), seq(Gamma,Delta), node(fact, seq(Sigma, Pi),
     subset(Pi,Delta),!. % cut for efficiency
 
 /* Assumptions about measures */
+/* For the general representation of measures as
+ * measure(Type,Object,Value) with the corresponding
+ * min_measure(Type,Object,Value) and max_measure(Type,Object,Value).
+*/
 % measure is not greater than max_measure:
 prove(_,_, seq(Gamma,Delta),
       node(measurefact, seq([at(measure(Type,Object,N)),at(max_measure(Type,Object,M))],[]),
@@ -468,7 +421,10 @@ prove(_,_, seq(Gamma,Delta),
     member(at(measure(Type,Object,M)),Gamma),
     N > M, !. % cut for efficiency
 
-% assumptions about measures in general
+% assumptions about measuretriples in general
+/* measure triples are defined in attributes.pl and consist of a
+ * triple with names for measure, min_measure and max_measure
+*/
 % measure is not greater than max_measure:
 prove(_,_, seq(Gamma,Delta),
       node(measurefact, seq([at(Fml),at(FmlMax)],[]),
@@ -488,8 +444,6 @@ prove(_,_, seq(Gamma,Delta),
     Fml =.. [Measure,N|_],
     FmlMin =.. [MeasureMin,M|_],
     measuretriple(Measure,MeasureMin,_),
-    % member(at(measure(Type,Object,N)),Gamma),
-    % member(at(min_measure(Type,Object,M)),Gamma),
     N < M,!. % cut for efficiency
 % min_measure is monotone:
 prove(_,_, seq(Gamma,Delta),
@@ -500,8 +454,6 @@ prove(_,_, seq(Gamma,Delta),
     FmlMin1 =.. [MeasureMin,N|_],
     FmlMin2 =.. [MeasureMin,M|_],
     measuretriple(_,MeasureMin,_),
-    % member(at(min_measure(Type,Object,N)),Gamma),
-    % member(at(min_measure(Type,Object,M)),Delta),
     M =< N, !. % cut for efficiency
 % max_measure is monotone:
 prove(_,_, seq(Gamma,Delta),
@@ -512,8 +464,6 @@ prove(_,_, seq(Gamma,Delta),
     FmlMax1 =.. [MeasureMax,N|_],
     FmlMax2 =.. [MeasureMax,M|_],
     measuretriple(_,_,MeasureMax),
-    % member(at(max_measure(Type,Object,N)),Gamma),
-    % member(at(max_measure(Type,Object,M)),Delta),
     N =< M, !. % cut for efficiency
 % min_measure is not larger than max_measure:
 prove(_,_, seq(Gamma,Delta),
@@ -524,8 +474,6 @@ prove(_,_, seq(Gamma,Delta),
     FmlMin =.. [MeasureMin,N|_],
     FmlMax =.. [MeasureMax,M|_],
     measuretriple(_,MeasureMin,MeasureMax),
-    % member(at(min_measure(Type,Object,N)),Gamma),
-    % member(at(max_measure(Type,Object,M)),Gamma),
     N > M, !. % cut for efficiency
 % measure implies max_measure:
 prove(_,_, seq(Gamma,Delta),
@@ -546,8 +494,6 @@ prove(_,_, seq(Gamma,Delta),
     Fml =.. [Measure,N|_],
     FmlMin =.. [MeasureMin,M|_],
     measuretriple(Measure,MeasureMin,_),
-    % member(at(min_measure(Type,Object,N)),Gamma),
-    % member(at(min_measure(Type,Object,M)),Delta),
     M =< N, !. % cut for efficiency
 % measure is unique:
 prove(_,_, seq(Gamma,Delta),
@@ -567,14 +513,14 @@ prove(L,Assumptions, seq(Gamma,Delta),
       node(negL, seq([neg A],[]), seq(Gamma,Delta), [T])) :-
     select(neg A, Gamma, Sigma),
     \+ member(A, Delta),
-    \+ member(inv(A), Delta),!, % green cut for invertibility
-    prove(L,Assumptions, seq([inv(A)|Sigma], [A|Delta]), T),!.% green cut for efficiency
+    \+ member(inv(A), Delta),!, % cut for invertibility
+    prove(L,Assumptions, seq([inv(A)|Sigma], [A|Delta]), T),!.% cut for efficiency
 prove(L,Assumptions, seq(Gamma,Delta),
       node(negR, seq([],[neg A]), seq(Gamma,Delta), [T])) :-
     select(neg A, Delta, Pi),
     \+ member(A, Gamma),
-    \+ member(inv(A), Gamma),!, % green cut for invertibility
-    prove(L,Assumptions, seq([A|Gamma], [inv(A)|Pi]), T),!.% green cut for efficiency
+    \+ member(inv(A), Gamma),!, % cut for invertibility
+    prove(L,Assumptions, seq([A|Gamma], [inv(A)|Pi]), T),!.% cut for efficiency
 
 /* conjunction left */
 prove(L,Assumptions, seq(Gamma, Delta),
@@ -582,23 +528,23 @@ prove(L,Assumptions, seq(Gamma, Delta),
     select(A and B, Gamma, Sigma),
     ((\+ member(A,Gamma), \+ member(inv(A),Gamma))
     ;(\+ member(B,Gamma), \+ member(inv(B),Gamma))),
-    prove(L,Assumptions, seq([A,B|Sigma],Delta), T),!.% green cut for efficiency
+    prove(L,Assumptions, seq([A,B|Sigma],Delta), T),!.% cut for efficiency
 
 /* disjunction right */
 prove(L,Assumptions, seq(Gamma, Delta),
       node(disjR, seq([],[A or B]), seq(Gamma,Delta), [T])) :-
     select(A or B, Delta, Pi),
     ((\+ member(A,Delta), \+ member(inv(A),Delta))
-    ;(\+ member(B,Delta), \+ member(inv(B),Delta))),!, % green cut for invertibility
-    prove(L,Assumptions, seq(Gamma,[A,B|Pi]), T),!.% green cut for efficiency
+    ;(\+ member(B,Delta), \+ member(inv(B),Delta))),!, % cut for invertibility
+    prove(L,Assumptions, seq(Gamma,[A,B|Pi]), T),!.% cut for efficiency
 
 /* implication right */
 prove(L,Assumptions, seq(Gamma, Delta),
       node(implR, seq([],[A -> B]), seq(Gamma,Delta), [T])) :-
     select(A -> B, Delta, Pi),
     ((\+ member(A,Gamma), \+ member(inv(A),Gamma))
-    ;(\+ member(B,Delta), \+ member(inv(B),Delta))),!, % green cut for invertibility
-    prove(L,Assumptions, seq([A|Gamma],[B|Pi]), T),!.% green cut for efficiency
+    ;(\+ member(B,Delta), \+ member(inv(B),Delta))),!, % cut for invertibility
+    prove(L,Assumptions, seq([A|Gamma],[B|Pi]), T),!.% cut for efficiency
 
 /* branching rules */
 /* conjunction right */
@@ -606,27 +552,27 @@ prove(L,Assumptions, seq(Gamma, Delta),
       node(conjR, seq([],[A and B]), seq(Gamma, Delta), [T1,T2])) :-
     select(A and B, Delta, Pi),
     \+ member(A, Delta), \+ member(inv(A), Delta),
-    \+ member(B, Delta), \+ member(inv(B), Delta),!, % green cut for invertibility
+    \+ member(B, Delta), \+ member(inv(B), Delta),!, % cut for invertibility
     prove(L,Assumptions, seq(Gamma, [A|Pi]), T1),
-    prove(L,Assumptions, seq(Gamma, [B|Pi]), T2),!.% green cut for efficiency
+    prove(L,Assumptions, seq(Gamma, [B|Pi]), T2),!.% cut for efficiency
 
 /* disjunction left */
 prove(L,Assumptions, seq(Gamma, Delta),
       node(disjL, seq([A or B],[]), seq(Gamma, Delta), [T1,T2])) :-
     select(A or B, Gamma, Sigma),
     \+ member(A, Gamma), \+ member(inv(A), Gamma),
-    \+ member(B, Gamma), \+ member(inv(B), Gamma),!, % green cut for invertibility
+    \+ member(B, Gamma), \+ member(inv(B), Gamma),!, % cut for invertibility
     prove(L,Assumptions, seq([A|Sigma], Delta), T1),
-    prove(L,Assumptions, seq([B|Sigma], Delta), T2),!.% green cut for efficiency
+    prove(L,Assumptions, seq([B|Sigma], Delta), T2),!.% cut for efficiency
 
 /* implication left */
 prove(L,Assumptions, seq(Gamma, Delta),
       node(implL, seq([A -> B],[]), seq(Gamma, Delta), [T1,T2])) :-
     select(A -> B, Gamma, Sigma),
     \+ member(A, Delta), \+ member(inv(A), Delta),
-    \+ member(B, Gamma), \+ member(inv(B), Gamma),!, % green cut for invertibility
+    \+ member(B, Gamma), \+ member(inv(B), Gamma),!, % cut for invertibility
     prove(L,Assumptions, seq([B|Sigma], Delta), T1),
-    prove(L,Assumptions, seq(Sigma, [A|Delta]), T2),!.% green cut for efficiency
+    prove(L,Assumptions, seq(Sigma, [A|Delta]), T2),!.% cut for efficiency
 
 
 /* deontic/modal rules */
@@ -640,7 +586,7 @@ prove(L,Assumptions, seq(Gamma,Delta),
     impl(Assumptions, Op1, Op2, A, C, Seq),
     prove(L,Assumptions, Seq, T1),
     prove(L,Assumptions, seq([B],[D]), T2),
-    prove(L,Assumptions, seq([D],[B]), T3),!. % green cut for efficiency
+    prove(L,Assumptions, seq([D],[B]), T3),!. % cut for efficiency
 
 /* D rule */
 prove(L,Assumptions, seq(Gamma,Delta),
@@ -652,7 +598,7 @@ prove(L,Assumptions, seq(Gamma,Delta),
     confl(Assumptions, Op1, Op2, A, C, Seq),
     prove(L,Assumptions, Seq, T1),
     prove(L,Assumptions, seq([B],[D]), T2),
-    prove(L,Assumptions, seq([D],[B]), T3),!. % green cut for efficiency
+    prove(L,Assumptions, seq([D],[B]), T3),!. % cut for efficiency
 
 /* P rule */
 /* NOTE: for operators with Op confl Op this already is covered by the
@@ -663,10 +609,10 @@ prove(L,Assumptions, seq(Gamma,Delta),
     member(modal(Op,A,B), Gamma),
     nontrivial(Assumptions, Op),
     confl(Assumptions, Op, Op, A, A, Seq),
-    prove(L,Assumptions, Seq, T),!. % green cut for efficiency
+    prove(L,Assumptions, Seq, T),!. % cut for efficiency
 
 /* assumption right rule */
-/* classic version (for the specificity handling as in the DEON papers */
+/* classic version (for the specificity handling as in the DEON 2020 paper) */
 prove(classic,asmp(Facts,D_ass_list,Op_char,Rel), seq(Gamma,Delta),
       node(asmpR(Op1,Assumption), seq([],[modal(Op1,A,B)]),
 	   seq(Gamma,Delta), [T1,T2,T3,node(not_overruled(Assumption),Tree_list)]))
@@ -688,9 +634,9 @@ prove(classic,asmp(Facts,D_ass_list,Op_char,Rel), seq(Gamma,Delta),
 	    D_ass_list, Outer_list),
     not_overruled(r,asmp(Facts,D_ass_list,Op_char,Rel),
 			  modal(Op1,A,B), Assumption, Outer_list,
-	    Tree_list),!. % green cut for efficiency
+	    Tree_list),!. % cut for efficiency
 
-/* modern version (for the new way of specificity handling */
+/* modern version (for the new way of specificity handling) */
 prove(modern,asmp(Facts,D_ass_list,Op_char,Rel), seq(Gamma,Delta),
       node(asmpR(Op1,Assumption), seq([],[modal(Op1,A,B)]),
 	   seq(Gamma,Delta), [T1,T2,T3,node(not_overruled(Assumption),Tree_list)]))
@@ -711,10 +657,10 @@ prove(modern,asmp(Facts,D_ass_list,Op_char,Rel), seq(Gamma,Delta),
     conflicting_assumptions(modal(Op2,C,D),Outer_list),
     not_overruled_modern(r,asmp(Facts,D_ass_list,Op_char,Rel),
 			  modal(Op1,A,B), Assumption, Outer_list,
-	    Tree_list),!. % green cut for efficiency
+	    Tree_list),!. % cut for efficiency
 	    
 /* assumption left rule */
-/* classic version (for the specificit handling as in the DEON papers */
+/* classic version (for the specificity handling as in the DEON 2020 paper) */
 prove(classic,asmp(Facts,D_ass_list,Op_char,Rel), seq(Gamma,Delta),
       node(asmpL(Op1,Assumption), seq([modal(Op1,A,B)],[]),
 	   seq(Gamma,Delta), [T1,T2,node(not_overruled(Assumption),Tree_list)]))
@@ -733,7 +679,7 @@ prove(classic,asmp(Facts,D_ass_list,Op_char,Rel), seq(Gamma,Delta),
 	    Outer_list),
     not_overruled(l,asmp(Facts,D_ass_list,Op_char,Rel),
 			  modal(Op1,A,B), Assumption, Outer_list,
-	    Tree_list),!. % green cut for efficiency
+	    Tree_list),!. % cut for efficiency
 /* modern version (for the new way of specificity handling) */
 prove(modern,asmp(Facts,D_ass_list,Op_char,Rel), seq(Gamma,Delta),
       node(asmpL(Op1,Assumption), seq([modal(Op1,A,B)],[]),
@@ -752,7 +698,7 @@ prove(modern,asmp(Facts,D_ass_list,Op_char,Rel), seq(Gamma,Delta),
     conflicting_assumptions(modal(Op2,C,D),Outer_list),
     not_overruled_modern(l,asmp(Facts,D_ass_list,Op_char,Rel),
 			  modal(Op1,A,B), Assumption, Outer_list,
-	    Tree_list),!. % green cut for efficiency
+	    Tree_list),!. % cut for efficiency
 	    
 
 /* not_overruled
@@ -761,7 +707,7 @@ prove(modern,asmp(Facts,D_ass_list,Op_char,Rel), seq(Gamma,Delta),
    possibly conflicting assumptions.
    Takes the side of the assumption rule as the first argument.
 */
-/* classic version (for specificity handling as in the DEON papers) */
+/* classic version (for specificity handling as in the DEON 2020 paper) */
 not_overruled(_,_,_,_,[],[]).
 % clause for not applicable (condition of the possibly conflicting
 % modal(Op3,E,F) is not implied by B)
@@ -835,7 +781,6 @@ not_overruled_modern(_,_,_,_,[],[]).
 
 % clause for not applicable (condition of the possibly conflicting
 % modal(Op3,E,F) is not implied by B)
-% NOTE_TMP: same condition as in the classic version
 not_overruled_modern(Side,Asmp, modal(Op1,A,B), Assumption
 	      , [Fml3|Tail_ass], [node(notapplicable(Fml3,seq([B],[F])
 						    ))|Tail_tree]) :-
@@ -843,31 +788,15 @@ not_overruled_modern(Side,Asmp, modal(Op1,A,B), Assumption
     \+ prove(modern,Asmp, seq([B],[F]), _),
     not_overruled_modern(Side,Asmp, modal(Op1,A,B), Assumption, Tail_ass, Tail_tree).
 
-% clause for no conflict (no conflict between the possibly conflicting
-% modal(Op3,E,F) and A
-/* NOTE_TMP: This clause is obsolete because we only look at the
- * conflict list anyways, and also because we consider conflicts with
- * Assumption and not with modal(Op1,A,B).
-not_overruled_modern(r,Asmp, modal(Op1,A,B), Assumption
-	      , [Fml3|Tail_ass], [node(noconflict(Fml3,Seq))|
-	      Tail_tree]) :-
-    modal_arguments(Fml3,Op3,E,_),
-    confl(Asmp,Op3,Op1,E,A,Seq),
-    \+ prove(modern,Asmp, Seq, _),
-    not_overruled_modern(r,Asmp, modal(Op1,A,B), Assumption,Tail_ass, Tail_tree).
-
-not_overruled_modern(l,Asmp, modal(Op1,A,B), Assumption
-	      , [Fml3|Tail_ass], [node(notimplied(Fml3,Seq))|
-	      Tail_tree]) :-
-    modal_arguments(Fml3,Op3,E,_),
-    impl(Asmp,Op3,Op1,E,A,Seq),
-    \+ prove(modern,Asmp, Seq, _),
-    not_overruled_modern(l,Asmp, modal(Op1,A,B), Assumption,Tail_ass, Tail_tree).
+/* The clause for no conflict (no conflict between the possibly
+ * conflicting modal(Op3,E,F) and A) is obsolete for the "modern"
+ * reasoning, since we only look at the conflict list anyways, and
+ * also because we consider conflicts with Assumption and not with
+ * modal(Op1,A,B).
 */
 
 % clause for superiority: the assumption modal(Op2,C,D) is superior to
 % modal(Op3,E,F)
-% NOTE_TMP: Same as in classic version
 not_overruled_modern(Side, asmp(Facts,D_ass,Ops,Sup_rel), modal(Op1,A,B)
 	      , (Norm1:Assumption1), [(Norm3:Fml3)|Tail_ass]
 	      , [node(superior(Norm1:Assumption1, Norm3:Fml3))|
@@ -879,10 +808,6 @@ not_overruled_modern(Side, asmp(Facts,D_ass,Ops,Sup_rel), modal(Op1,A,B)
 % clause for not more specific than the original Assumption = modal(Op2,C,D) and
 % also there is another more specific one which overrules the possibly
 % conflicting modal(Op3,E,F) again.
-/* NOTE_TMP:
-   - the more specific assumption is then from the conflict list of
-   modal(Op3,E,F)
-*/
 not_overruled_modern(Side,asmp(Facts,D_ass,Op_char,Rel), modal(Op1,A,B), Assumption
 	      , [Fml3|Tail_ass]
 	      , [node(notoverruled(Fml3,seq([F],[D]),[T]))| Tail_tree]) :-
@@ -905,7 +830,7 @@ not_overruled_modern(Side,asmp(Facts,D_ass,Op_char,Rel), modal(Op1,A,B), Assumpt
    the list of relevant deontic assumptions.
    Takes the side of the assumption rule as the first argument
 */
-/* classic version (for specificity handling as in the DEON papers) */
+/* classic version (for specificity handling as in the DEON 2020 paper) */
 overridden(r,Asmp,  modal(Op1,A,B), _, Fml3
 	   , [Fml4|_],
 	   node(overrides(Fml4, Fml3),[T1,T2,T3]))
@@ -967,13 +892,12 @@ overridden_modern(Side,Asmp, F1, F2, F3, [_|Tail_list], Tree) :-
 applicable_assumption(Assumptions,modal(Op,_,_), Fml) :-
     modal_arguments(Fml,Op2,_,_),
     conflicts(Assumptions,Op2,Op).
-%    nbeats(Assumptions,modal(Op,A,B),modal(Op2,C,D)).
 
 
 /* no_conflict_p
    true if there is no conflict wrt the P axiom
 */
-/* classic version (for specificity handling as in the DEON papers) */
+/* classic version (for specificity handling as in the DEON 2020 paper) */
 no_conflict_p(Asmp,Op,A,node(no_p_conflict(Op,Seq))) :-
     nontrivial(Asmp,Op),
     confl(Asmp,Op,Op,A,A,Seq),
@@ -1074,7 +998,8 @@ nbeats(Assumptions,F1,F2) :-
 */
 /* NOTE: added here that the textuelle Bestimmungen (i.e., norms of
  * the form bb(X):F or b(X):F) ALWAYS beat the bauordnung (i.e., norms
- * of the form bo(X):F)! Change this if this is not correct!
+ * of the form bo(X):F)! Change the last two clauses is if this is not
+ * desired!
 */
 beats(asmp(_,D_assumptions,_,Sup_rel),F1,F2) :-
     member((Norm1:F1),D_assumptions),
@@ -1086,7 +1011,6 @@ beats(asmp(_,D_assumptions,_,_),F1,F2) :-
 beats(asmp(_,D_assumptions,_,_),F1,F2) :-
     member((bb(_):F1),D_assumptions),
     member((bo(_):F2),D_assumptions).
-
 
 
 /* merge_sequent
@@ -1115,15 +1039,3 @@ modal_arguments(modal(Op,A,B),Op,A,B).
 modal_arguments((_:modal(Op,A,B)),Op,A,B).
 
 
-/* For testing: create assumptions.
-*/
-make_assumptions(asmp(A,B,C,D)) :-
-    phrase(added_facts([],[plangebiet(7602)]),New_Facts),
-    phrase(added_assumptions([],[plangebiet(7602)]),New_D_Assumptions),
-    preprocess(classic,asmp(New_Facts, New_D_Assumptions,
-		    ops([(obl,obl), (per,obl), (for,for)], []
-			, [confl(obl,obl), confl(obl,per),
-			   confl(obl,for), confl(for,for),
-			   confl(for,per)], []), []), asmp(A,B,C,D), _
-	      ),!. 
-    

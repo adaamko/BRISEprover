@@ -72,21 +72,7 @@ preprocess(modern,asmp(Facts,D_Ass, ops(Ops, Op_Incl, Op_Confl, Op_P),
 			       ops(Ops, Op_Incl1, Op_Confl_new,
 				   Op_P_new), Sup_Rel), D_Ass_new).
 
-/* add_permissions /2
-   true if adding the permission operators for every operator in Ops
-   together with conflict only with the corresponding operator yields
-   Ops_new.
-*/
-/*
-add_permissions(ops([],Incl,Confl,Rec), ops([],Incl,Confl,Rec)).
-add_permissions(ops([(Op1,Type)|Ops],Incl,Confl,Rec),
-		ops([(Op1,Type),(per(Op1),obl)|Ops_new], Incl_new
-		    , [confl(Op1,per(Op1))|Confl_new], Rec_new)) :-
-    add_permissions(ops(Ops,Incl,Confl,Rec),
-		    ops(Ops_new, Incl_new, Confl_new, Rec_new)).
-*/		    
 					     
-
 /* added_at
  * true if second argument is first argument with at(AT) instead of
  * atom AT
@@ -103,24 +89,12 @@ added_at(->(A,B), ->(C,D)) :- added_at(A,C), added_at(B,D).
 added_at(modal(Op,A,B),modal(Op,C,D)) :- added_at(A,C), added_at(B,D).
 added_at(Norm:modal(Op,A,B),Norm:modal(Op,C,D)) :- added_at(A,C), added_at(B,D).
 added_at(A,at(A)) :- atom(A).
-/*
-added_at(measure(A,B,C),at(measure(D,E,C))) :-
-    atom_string(A,D),
-    atom_string(B,E).
-added_at(max_measure(A,B,C),at(max_measure(D,E,C))) :-
-    atom_string(A,D),
-    atom_string(B,E).
-added_at(min_measure(A,B,C),at(min_measure(D,E,C))) :-
-    atom_string(A,D),
-    atom_string(B,E).
-*/
 added_at(A,at(A)) :-
     A =.. [Var,_],
     variable_with_arguments(Var).
 added_at(A,at(A)) :-
     A =.. [Var|_],
     variable_with_arguments(Var).
-/*    \+ member(Var,[measure, max_measure, min_measure]),*/
 added_at(A beats B, C beats D) :- added_at(A,C), added_at(B,D).
 added_at(seq(L,N), seq(Lat,Nat)) :-
     maplist(added_at,L,Lat),
@@ -236,15 +210,6 @@ subsumed(seq(Gamma_Set,Delta_Set),[seq(Sigma,Pi)|Tail]) :-
     subsumed(seq(Gamma_Set,Delta_Set),Tail).
 
 
-/* verified_op_types
-   TODO [x]
-   - check that every operator has only one type
-   - check that every formula in the assumptions has an operator with
-   a type
-   - check that all operators in the inclusion, conflict,
-   nontriviality statements have a type
-*/
-
 /* verified_op_types /2
    true if Bad_ops contains those operators which are mentioned at
    least twice in Ops, possibly with repetitions
@@ -317,10 +282,6 @@ saturated_P(Op_incl, Op_confl, Op_P, Op_P_new) :-
 saturated_P(_,_,Op_P,Op_P).
 
 
-/* NOTE: CHANGED THIS HERE
-   MAKE SURE EVERYTHING STILL WORKS (NOT YET IN THE ONLINE SYSTEM!)
-   TODO []check this!
-*/
 /* verified_superiority_relation /1
    true if the superiority relation is a list of formulae beats(Ass_1,Ass_2).
 */
@@ -378,9 +339,9 @@ lift_DCG(Body,[A|Tail]) -->
  * formula, i.e., the list of deontic assumptions for which the
  * content is in conflict and which are not inferior.
 */
-% NOTE: possibly scope for more efficency: assume that Ass1 is of the
+% NOTE to afterworld: possibly scope for more efficency: assume that Ass1 is of the
 % form modal(Op1,A,B) from the beginning.
-% NOTE2: possibly scope for making things nicer: store the derivation
+% NOTE2 to afterworld: possibly scope for making things nicer: store the derivation
 % of Confl(A,C) together with the formula Ass2.
 confl_list(Ass1, Assumptions, [Ass2|Tail_ass], [Ass2|Tail_list]) :-
     modal_arguments(Ass1,Op1,A,B),
