@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
   <head>
     <title>BRISEprover</title>
     <meta charset="utf-8">
@@ -86,26 +86,11 @@
 		  <option value="modern">Modern</option>
 		  <option value="classic">Classic</option>
 		</select><br />
-<!--
-                <h4><kbd>Alternative interpretations</kbd></h4>
-                <input type="checkbox" name="interpretations[]" value="for(int1)"><code>for(a,b)</code> as <code>obl(neg a, b)</code><br />
-                <input type="checkbox" name="interpretations[]" value="for(int2)" ><code>for(a,b)</code> as <code>obl(a, neg b)</code><br />
-                <input type="checkbox" name="interpretations[]" value="for(int3)" ><code>for(a,b)</code> as <code>pero(neg a, b)</code><br />
-                <input type="checkbox" name="interpretations[]" value="obl(int1)" ><code>obl(a,b)</code> as <code>rec(a, b)</code><br />
-                <input type="checkbox" name="interpretations[]" value="obl(int2)" ><code>obl(a,b)</code> as <code>perf(a, b)</code><br />
--->
                 <h4><kbd>Output format</kbd></h4>
                 <select name="sel_output">
 		  <option value="derivation">Derivation</option>
 		  <option value="explanation">Explanation</option>
 		</select><br /><br />
-<!--
-                <h4><kbd>What do you want to check?</kbd></h4>
-                <select name="sel_output">
-		  <option value="derivability">Derivability</option>
-		  <option value="compliance">Compliance</option>
-		</select>
--->
                 <br />
                 <br />
 		<input type="submit" class="btn btn-success" value="Prove!" data-toggle="modal" data-target="#myModal">
@@ -114,12 +99,6 @@
             <h4><kbd>Examples</kbd></h4>
             <button type="button" class="btn btn-default cor" data-toggle="collapse" data-target="#help">Syntax</button>
             <button type="button" class="btn btn-default cor" data-toggle="collapse" data-target="#examples1">Examples</button>
-<!--            <button type="button" class="btn btn-default cor" data-toggle="collapse" data-target="#examples3">Paradoxa</button>
-            <button type="button" class="btn btn-default cor"
-	data-toggle="collapse" data-target="#examples">Mimamsa Examples</button>
--->
-<!--            <button type="button" class="btn btn-default cor" data-toggle="collapse" data-target="#examples2">Examples2</button>
--->
 
 	    <div id="help" class="collapse">
 	      <b>Syntax for formulae</b>
@@ -219,87 +198,9 @@ The relevant portion of the Bebauungsplan is <a href="files/pd6963.pdf">Plandoku
 -->
 <!--	      A possible query is whether it is forbidden to have an Erker with windows towards the street at a particular Baulinie: <code>for(fenster_von_wohnung_zu_verkehrsflaeche and erker,baulinie(7602_1_2))</code>.
 -->
-<!--	      <b>Toy example.</b><br />
-	      Deontic assumptions:<br />
-	      <code>obl(neg eat_with_fingers, true), obl(eat_with_fingers, asparagus), obl(neg asparagus, true)</code>.<br >
-	      Operators: <code>(obl,obl)</code>.<br />
-	      Operator conflicts: <code>confl(obl,obl)</code>.<br /> 
-	      Possible questions: <code>obl(neg asparagus, true)</code> or <code>obl(eat_with_fingers, asparagus)</code> or <code>neg obl(neg eat_with_fingers, asparagus)</code>. <button onclick="myFunction('exmplAsparagus')">Details</button>
-	    <div class="abstract" id="exmplAsparagus"> This example illustrates that more specific deontic assumptions like the obligation to eat with your fingers if asparagus is served override more general conflicting ones like the obligation not to eat with your fingers in general, but not more general nonconflicting ones like the general obligation not to serve asparagus.
-	    </div> 
-	    </div>
-	    <br />
--->
 	    </div>
 
 
-<!--
-	    <div id="examples2" class="collapse">
-	      <div>
-		<br />
-		<b>Studienf&ouml;rderungsgesetz</b><br />
-		The factual assumptions are given by<br />
-		<code>
-		  has_child and between_30_and_35 -> exception, exception and less_than_30 -> false, between_30_and_35 and less_than_30 -> false, over_35 and between_30_and_35 -> false, over_35 and less_than_30 -> false
-		</code>.<br />
-		The deontic assumptions are given by<br />
-		<code>
-		  obl(eligible_for_support, conditions and less_than_30), obl(neg eligible_for_support, neg less_than_30), obl(neg eligible_for_support, neg conditions), obl(eligible_for_support, conditions and exception)
-		</code>.<br />
-		Possible questions are <code>obl(eligible_for_support, conditions and less_than_30 and has_child)</code> or <code>obl(neg eligible_for_support, conditions and over_35 and has_child)</code> or <code>obl(eligible_for_support, conditions and between_30_and_35 and has_child and has_own_business)</code>. <button onclick="myFunction('exmplStudF')">Details</button>
-		<div class="abstract" id="exmplStudF">
-		  This example gives a formalisation of some clauses of Paragraph 6 of the <a href="https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10009824&FassungVom=2014-06-12">Studienbeihilfegesetz</a>, the Austrian law for granting financial support to university students. This illustrates how the prover can be used for legal reasoning.
-		</div>
-	      </div>
-	      <br />
-	      <div>
-		<b>The Kantian Witness Protection Agent</b><br />
-		The factual assumptions are given by<br />
-		<code>
-		  protect_witness -> lie
-		</code>.<br />
-		The deontic assumptions are given by<br />
-		<code>
-		  kant:for(lie, true), law:obl(protect_witness, killer_asks)
-		</code>.<br />
-		Apart from the empty relation, possible relations are given by<br />
-		<code>
-		  kant beats law
-		</code> or
-		<code>
-		  law beats kant
-		</code>.<br />
-		Possible questions are <code>obl(lie, killer_asks)</code> or <code>for(lie, killer_asks)</code>. <button onclick="myFunction('exmplKantWitP')">Details</button>
-		<div class="abstract" id="exmplKantWitP">
-		  This example illustrates how the superiority relation can decide conflicts between norms from different sources. The setting is that a witness protection agent adhering to Kantian philosophy is asked by a killer about the location of the witness, and is torn between the Kantian prohibition to lie and the obligation by law to protect the witness. Without a superiority relation, the obligation to protect the witness is more specific than the general prohibition to lie and hence overrules it.
-		</div>
-	      </div>
-	      <br />
-	      <div>
-		<b>The Self-preserving Kantian Witness Protection Agent</b><br />
-		The factual assumptions are given by<br />
-		<code>
-		  protect_witness -> lie, lie and save_yourself -> false
-		</code>.<br />
-		The deontic assumptions are given by<br />
-		<code>
-		  kant:for(lie, true), law:obl(protect_witness, killer_asks), common_sense:obl(save_yourself, true)
-		</code>.<br />
-		Apart from the empty relation, possible relations are given by<br />
-		<code>
-		  kant beats law, law beats common_sense, common_sense beats kant
-		</code> or
-		<code>
-		  law beats kant, kant beats common_sense, common_sense beats law
-		</code>.<br />
-		Possible questions again are <code>obl(lie, killer_asks)</code> or <code>for(lie, killer_asks)</code>. <button onclick="myFunction('exmplKantWitP2')">Details</button>
-		<div class="abstract" id="exmplKantWitP2">
-		  This example extends the previous one with a third obligation rooted in common sense. The additional assumption is that the killer would notice that the agent is lying and kill both the witness and the agent. The superiority relation could have many different forms, the two suggested ones are interesting in that they show that the relation may contain cycles of length three.
-		</div>
-	      </div>
-	      <br />
-	    </div>
--->
 	    <div id="examples3" class="collapse">
 	      <div>
 		<br />
@@ -381,10 +282,6 @@ The relevant portion of the Bebauungsplan is <a href="files/pd6963.pdf">Plandoku
 	  <h4><kbd>Description</kbd></h4>
 	  <p>
 	    BRISEprover is a prototype implementation of a theorem prover for a deontic logic to reason about Viennese building law.
-<!--
-
-	    deonticProver2.0 is a Prolog implementation of a generic theorem prover for Deontic Logic extended with reasoning from factual and deontic assumptions, using the specificity principle and a superiority relation for conflict resolution. It is based on the article <i>Sequent Rules for Reasoning and Conflict Resolution in Conditional Norms</i> (submitted).
--->
 	  </p>
 
 	  <p>
@@ -452,15 +349,6 @@ The <i>nontrivial operators</i> are given as a list of operators. The
 	    pdf output is produced. However, you may still download the latex
 	    source code and manually split the derivation.
 	  </p>
-
-<!--
-<p>
-The precursor <i>deonticProver</i> can be found <a href="http://subsell.logic.at/bprover/deonticProver/">here</a>.
-</p>
--->
-<!--
-<p>The source code in <a href="http://www.swi-prolog.org/">SWI-Prolog</a> can be obtained <a href="iiProve.tar.gz">here</a>. To run the prover, follow the instructions in the Readme. In order to typeset the output you will also need <a href="https://www.latex-project.org">LaTeX</a></p>
--->
 
 	  <p>
 	    For further information, contact <a href="https://sites.google.com/view/bjoern-lellmann/">Bj&ouml;rn Lellmann</a>. We thank <a href="https://sites.google.com/site/carlosolarte/">Carlos Olarte</a> for his help in implementing this site.
