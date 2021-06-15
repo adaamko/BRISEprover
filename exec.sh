@@ -1,13 +1,13 @@
 #!/bin/bash 
 #
 
-tmp_file1=$(mktemp ./output/XXXXXXXXXX)
+tmp_file1=$(mktemp output/XXXXXXXXXX)
 tmp_file2=$tmp_file1".tex"
 tmp_file3=$tmp_file1".txt"
 tmp_file4=$tmp_file1".html"
 
 prolog_command="./iprove.out"
-latex="/usr/bin/pdflatex"
+latex="bash latexdockercmd.sh pdflatex"
 # return_value=$tmp_file1".pdf"
 
 #while [ "tmp_file1" != "bye" ]
@@ -29,10 +29,12 @@ fi
 if test "${11}" = "derivation"
    then
        echo "Got to step 1 for derivation!";
-       swipl -q -g "prove_online( $1 , [$2] , [$3] , [$4] , [$5] , [$6], [$7], [$8], [$9], '${10}', 'derivability', '$tmp_file2' )" -t halt 'deonticProver.pl' &> $tmp_file3
+       
+       echo "docker run -v "$PWD":/src --rm -it --entrypoint=swipl swipl -q -g prove_online( $1 , [$2] , [$3] , [$4] , [$5] , [$6], [$7], [$8], [$9], '${10}', 'derivability', 'src/$tmp_file2' ) -t halt 'src/deonticProver.pl'";
+       docker run -v "$PWD":/src --rm -it --entrypoint=swipl swipl -q -g "prove_online( $1 , [$2] , [$3] , [$4] , [$5] , [$6], [$7], [$8], [$9], '${10}', 'derivability', 'src/$tmp_file2' )" -t halt 'src/deonticProver.pl' &> $tmp_file3
 else
     echo "got to step 1 for explanation!";
-    swipl -q -g "explain_online( $1 , [$2] , [$3] , [$4] , [$5] , [$6], [$7], [$8], [$9], '${10}', 'derivability', '$tmp_file4' )" -t halt 'deonticProver.pl' &> $tmp_file3
+    docker run -v "$PWD":/src --rm -it --entrypoint=swipl swipl -q -g "explain_online( $1 , [$2] , [$3] , [$4] , [$5] , [$6], [$7], [$8], [$9], '${10}', 'derivability', 'src/$tmp_file4' )" -t halt 'src/deonticProver.pl' &> $tmp_file3
 fi    
 # mv 'output/output.tex' $tmp_file1".tex"
 if grep -q ERROR $tmp_file3; then
