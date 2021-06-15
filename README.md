@@ -4,6 +4,14 @@ Tentative prover for the BRISE project - formalisation of natural language with 
 
 See [here](http://subsell.logic.at/bprover/briseprover/) for the web interface.
 
+## Prover service
+A Flask based REST API is also provided, you can start the python service (you need Python3 and miniconda enviroment):
+```
+python prover.py
+```
+
+Then the service is started on port 5007. The service uses Docker containers to run prolog and latex services. Make sure you have Docker installed on your system before using the service.
+
 ## Usage
 
 To use BRISEprover, first make sure you have [SWI-prolog](https://www.swi-prolog.org) installed and download the files. For running BRISEprover on your system only the prolog files (*.pl*) are necessary. If you want to latex the derivation you also need the file *header.sty* and a latex distribution. Put all the files into the directory of your choice, then run swipl and load *deonticprover.pl*.
